@@ -5,4 +5,15 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+<url>
+  <loc>https://electricpmr.vercel.app/pricing</loc>
+  <changefreq>weekly</changefreq>
+  <priority>0.9</priority>
+</url>
+
+<url>
+  <loc>https://electricpmr.vercel.app/features</loc>
+  <changefreq>weekly</changefreq>
+  <priority>0.9</priority>
+</url>
 </urlset>

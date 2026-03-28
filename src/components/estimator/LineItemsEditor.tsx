@@ -268,7 +268,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
     <div className="space-y-3">
       {/* Quick Actions - Desktop */}
       {!isMobile && !readOnly && (
-        <div className="flex flex-wrap gap-2 sticky top-0 bg-background z-10 py-2 -mt-2 border-b">
+        <div className="flex flex-wrap gap-2 sticky top-[72px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 z-20 py-2 -mt-2 border-b">
           <Button variant="default" size="sm" onClick={handleAddEmpty} disabled={addLineItem.isPending}>
             <Plus className="h-4 w-4 mr-1.5" />
             Добавить

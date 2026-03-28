@@ -20,15 +20,18 @@ import {
 import { Plus, CheckCircle2, Clock, Loader2, Receipt, DollarSign, Undo2, AlertTriangle } from "lucide-react";
 import { Estimate, PAYMENT_METHODS } from "@/types/estimator";
 import { usePayments, useCreatePayment, useConfirmPayment, useRefundPayment } from "@/hooks/usePayments";
+import { useCompanyAccounts } from "@/hooks/useCompanyAccounts";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
 interface PaymentManagerProps {
   estimate: Estimate;
   canConfirm: boolean;
+  projectId?: string | null;
+  objectId?: string | null;
 }
 
-const PaymentManager = ({ estimate, canConfirm }: PaymentManagerProps) => {
+const PaymentManager = ({ estimate, canConfirm, projectId, objectId }: PaymentManagerProps) => {
   const { data: payments, isLoading } = usePayments(estimate.id);
   const createPayment = useCreatePayment();
   const confirmPayment = useConfirmPayment();
@@ -39,14 +42,19 @@ const PaymentManager = ({ estimate, canConfirm }: PaymentManagerProps) => {
   const [refundReason, setRefundReason] = useState("");
 
   const [amount, setAmount] = useState("");
+  const [accountId, setAccountId] = useState("");
   const [method, setMethod] = useState("");
   const [recipient, setRecipient] = useState("");
   const [reference, setReference] = useState("");
+  const { data: accounts } = useCompanyAccounts();
 
   const handleCreate = async () => {
     if (!amount || parseFloat(amount) <= 0) return;
     await createPayment.mutateAsync({
       estimate_id: estimate.id,
+      ...(projectId ? { project_id: projectId } : {}),
+      ...(objectId ? { object_id: objectId } : {}),
+      account_id: accountId,
       amount: parseFloat(amount),
       currency: estimate.currency,
       method: method || undefined,
@@ -55,6 +63,7 @@ const PaymentManager = ({ estimate, canConfirm }: PaymentManagerProps) => {
     });
     setDialogOpen(false);
     setAmount("");
+    setAccountId("");
     setMethod("");
     setRecipient("");
     setReference("");
@@ -200,6 +209,21 @@ const PaymentManager = ({ estimate, canConfirm }: PaymentManagerProps) => {
               />
             </div>
             <div>
+              <label className="text-sm font-medium mb-1 block">Счёт компании *</label>
+              <Select value={accountId} onValueChange={setAccountId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Выберите счёт" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(accounts || []).map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.name} ({a.type})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <label className="text-sm font-medium mb-1 block">Способ оплаты</label>
               <Select value={method} onValueChange={setMethod}>
                 <SelectTrigger>
@@ -223,7 +247,7 @@ const PaymentManager = ({ estimate, canConfirm }: PaymentManagerProps) => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Отмена</Button>
-            <Button onClick={handleCreate} disabled={!amount || createPayment.isPending}>
+            <Button onClick={handleCreate} disabled={!amount || !accountId || createPayment.isPending}>
               {createPayment.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
               Добавить
             </Button>

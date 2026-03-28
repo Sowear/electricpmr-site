@@ -18,6 +18,30 @@ export function useEstimates() {
   });
 }
 
+export function useProjectEstimates(projectId: string | undefined, objectId?: string) {
+  return useQuery({
+    queryKey: ["project-estimates", projectId, objectId || "all"],
+    queryFn: async () => {
+      if (!projectId) return [];
+
+      let query = supabase
+        .from("estimates")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: false });
+
+      if (objectId) {
+        query = query.eq("object_id", objectId);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as unknown as Estimate[];
+    },
+    enabled: !!projectId,
+  });
+}
+
 export function useEstimate(id: string | undefined) {
   return useQuery({
     queryKey: ["estimate", id],
@@ -82,6 +106,8 @@ export function useCreateEstimate() {
         title: estimate.title,
         currency: estimate.currency || "RUB_PMR",
         request_id: estimate.request_id,
+        project_id: estimate.project_id,
+        object_id: estimate.object_id || null,
         valid_until: estimate.valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
         created_by: user?.id,
       };

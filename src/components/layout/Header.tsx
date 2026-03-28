@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, Menu, X, LogOut, AlertTriangle, Calculator, FolderOpen, BarChart3 } from "lucide-react";
+import { Zap, Menu, X, LogOut, AlertTriangle, Calculator, FolderOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -12,7 +12,8 @@ const Header = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [hasWorkspaceAccess, setHasWorkspaceAccess] = useState(false);
+  const [hasAdminAccess, setHasAdminAccess] = useState(false);
   const [emergencyOpen, setEmergencyOpen] = useState(false);
 
   useEffect(() => {
@@ -24,7 +25,8 @@ const Header = () => {
             checkAdminRole(session.user.id);
           }, 0);
         } else {
-          setIsAdmin(false);
+          setHasWorkspaceAccess(false);
+          setHasAdminAccess(false);
         }
       }
     );
@@ -44,9 +46,11 @@ const Header = () => {
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
-      .in('role', ['admin', 'super_admin', 'manager']);
-    
-    setIsAdmin(!!(data && data.length > 0));
+      .in('role', ['admin', 'super_admin', 'manager', 'technician']);
+
+    const roles = (data || []).map((r) => r.role);
+    setHasWorkspaceAccess(roles.length > 0);
+    setHasAdminAccess(roles.includes('admin') || roles.includes('super_admin'));
   };
 
   const handleLogout = async () => {
@@ -65,8 +69,8 @@ const Header = () => {
 
   const navLinks = [
     { href: "/", label: "Главная" },
-    { href: "/features", label: "Услуги" },
-    { href: "/pricing", label: "Стоимость" },
+    { href: "/uslugi", label: "Услуги" },
+    { href: "/stoimost", label: "Стоимость" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -107,7 +111,7 @@ const Header = () => {
             <div className="hidden md:flex items-center gap-2 shrink-0">
               {user ? (
                 <>
-                  {isAdmin && (
+                  {hasWorkspaceAccess && (
                     <>
                       <Button variant="ghost" size="sm" asChild>
                         <Link to="/projects">
@@ -115,21 +119,16 @@ const Header = () => {
                           Проекты
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to="/estimator">Сметы</Link>
-                      </Button>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to="/admin/finance">
-                          <BarChart3 className="h-4 w-4 mr-1" />
-                          Финансы
-                        </Link>
-                      </Button>
+                    </>
+                  )}
+                  {hasAdminAccess && (
+                    <>
                       <Button variant="ghost" size="sm" asChild>
                         <Link to="/admin/users">Админ</Link>
                       </Button>
                     </>
                   )}
-                  {isAdmin && <NotificationBell />}
+                  {hasWorkspaceAccess && <NotificationBell />}
                   <Button variant="outline" size="sm" asChild>
                     <Link to="/dashboard">Мои заявки</Link>
                   </Button>
@@ -188,7 +187,7 @@ const Header = () => {
                 <div className="flex flex-col gap-2 pt-4 border-t border-border">
                   {user ? (
                     <>
-                      {isAdmin && (
+                      {hasWorkspaceAccess && (
                         <>
                           <Button variant="ghost" size="sm" asChild>
                             <Link to="/projects" onClick={() => setIsMenuOpen(false)}>
@@ -196,17 +195,10 @@ const Header = () => {
                               Проекты
                             </Link>
                           </Button>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to="/estimator" onClick={() => setIsMenuOpen(false)}>
-                              Сметы
-                            </Link>
-                          </Button>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to="/admin/finance" onClick={() => setIsMenuOpen(false)}>
-                              <BarChart3 className="h-4 w-4 mr-1" />
-                              Финансы
-                            </Link>
-                          </Button>
+                        </>
+                      )}
+                      {hasAdminAccess && (
+                        <>
                           <Button variant="ghost" size="sm" asChild>
                             <Link to="/admin/users" onClick={() => setIsMenuOpen(false)}>
                               Админ-панель

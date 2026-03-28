@@ -79,6 +79,19 @@ export function useChangeEstimateStatus() {
         throw new Error(validation.reason);
       }
 
+      if (newStatus === 'approved') {
+        const { count, error: participantCountError } = await (supabase as any)
+          .from("estimate_participants")
+          .select("id", { count: "exact", head: true })
+          .eq("estimate_id", estimateId);
+
+        if (participantCountError) throw participantCountError;
+
+        if ((count || 0) === 0) {
+          throw new Error("Нельзя согласовать смету без назначенных участников. Добавьте хотя бы одного участника.");
+        }
+      }
+
       const oldStatus = estimate.status;
 
       // Build update
@@ -201,7 +214,7 @@ async function createStatusChangeNotification(
   try {
     const { data: estimate } = await supabase
       .from("estimates")
-      .select("estimate_number, client_name, created_by")
+      .select("estimate_number, client_name, created_by, project_id")
       .eq("id", estimateId)
       .single();
 
@@ -218,12 +231,14 @@ async function createStatusChangeNotification(
     const targetUserId = estimate.created_by;
     if (!targetUserId || targetUserId === userId) return;
 
+    const estimateLink = `/projects/${(estimate as any).project_id || ''}/estimates/${estimateId}`;
+
     await supabase.from("notifications").insert({
       user_id: targetUserId,
       type: "status_change",
       title: `${estimate.estimate_number}: ${STATUS_LABELS[oldStatus] || oldStatus} → ${STATUS_LABELS[newStatus] || newStatus}`,
       message: `Смета для ${estimate.client_name}`,
-      link: `/estimator/${estimateId}`,
+      link: (estimate as any).project_id ? estimateLink : `/estimator/${estimateId}`,
     });
   } catch (e) {
     console.error("Failed to create notification:", e);

@@ -52,6 +52,15 @@ function formatCurrency(amount: number, currency: string): string {
   );
 }
 
+function buildSiteLogoSvg(size = 40): string {
+  return `
+    <svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0" y="0" width="100" height="100" rx="22" ry="22" fill="#eab308" />
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" transform="translate(22,22) scale(2.3)" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `.trim();
+}
+
 export function generatePDFPreviewHTML(estimate: EstimateData): string {
   const lineItemsHTML = estimate.line_items
     .map(
@@ -305,7 +314,7 @@ export function generatePDFPreviewHTML(estimate: EstimateData): string {
     <div class="header">
       <div class="header-left">
         <div class="logo">
-          <span class="logo-icon">⚡</span>
+          <span class="logo-icon">${buildSiteLogoSvg(40)}</span>
           <span class="logo-text">ЭлектроМастер</span>
         </div>
       </div>
@@ -395,7 +404,7 @@ export function generatePDFPreviewHTML(estimate: EstimateData): string {
       </div>
       <div class="footer-brand">
         ЭлектроМастер — профессиональный электромонтаж в Приднестровье<br>
-        <a href="https://electricpmr.lovable.app">electricpmr.lovable.app</a>
+        <a href="https://electricpmr.vercel.app">electricpmr.vercel.app</a>
       </div>
     </div>
   </div>

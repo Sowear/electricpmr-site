@@ -34,6 +34,7 @@ export interface Estimate {
   // Linked request / project
   request_id?: string;
   project_id?: string;
+  object_id?: string | null;
   version: number;
   
   // Client comment & locking

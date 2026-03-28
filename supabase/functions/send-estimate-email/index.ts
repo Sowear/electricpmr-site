@@ -175,7 +175,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from("estimate_line_items").select("*").eq("estimate_id", estimateId).order("position");
 
     const publicLink = estimate.public_token
-      ? `https://electricpmr.lovable.app/estimate/view/${estimate.public_token}`
+      ? `https://electricpmr.vercel.app/estimate/view/${estimate.public_token}`
       : "";
 
     // Generate HTML attachments

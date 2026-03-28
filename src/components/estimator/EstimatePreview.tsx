@@ -182,7 +182,7 @@ const EstimatePreview = ({ estimate, formData }: EstimatePreviewProps) => {
         {/* Footer */}
         <div className="pt-4 border-t text-center text-sm text-muted-foreground">
           <p>ЭлектроМастер | +373 777 46642</p>
-          <p>mmxxnon@gmail.com | electricpmr.lovable.app</p>
+          <p>mmxxnon@gmail.com | electricpmr.vercel.app</p>
         </div>
       </div>
     </div>

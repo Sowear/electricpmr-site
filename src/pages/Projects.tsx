@@ -16,12 +16,14 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Plus, Search, FolderOpen, FileText, Phone, Globe, MessageSquare,
-  Instagram, Users, MoreHorizontal, Loader2,
+  FolderOpen, Phone, Globe, MessageSquare,
+  Instagram, Users, MoreHorizontal, Loader2, Info,
+  Plus, FileText, Search,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useProjects, useCreateProject, useCreateEstimateFromProject, type Project } from "@/hooks/useProjects";
 import { useUserRole } from "@/hooks/useUserRole";
 import { format } from "date-fns";
@@ -116,7 +118,7 @@ const Projects = () => {
     if (result) {
       setEstimateDialogOpen(false);
       setClientComment("");
-      navigate(`/estimator/${result.id}`);
+      navigate(`/projects/${selectedProject.id}/estimates/${result.id}`);
     }
   };
 
@@ -137,12 +139,18 @@ const Projects = () => {
               <h1 className="text-2xl font-bold">Проекты</h1>
               <p className="text-muted-foreground">Заявки, клиенты и связанные сметы</p>
             </div>
-            {canManageEstimates && (
-              <Button onClick={() => setCreateDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Новый проект
+            <div className="flex flex-wrap gap-2">
+              {canManageEstimates && (
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Новый проект
+                </Button>
+              )}
+              <Button variant="outline" onClick={() => navigate('/estimator')}>
+                <FileText className="h-4 w-4 mr-2" />
+                Все сметы
               </Button>
-            )}
+            </div>
           </div>
 
           {/* Search */}
@@ -166,11 +174,91 @@ const Projects = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Клиент</TableHead>
-                    <TableHead>Источник</TableHead>
-                    <TableHead>Сметы</TableHead>
-                    <TableHead>Статус</TableHead>
-                    <TableHead>Дата</TableHead>
+                    <TableHead>
+                      <div className="flex items-center gap-1">
+                        Клиент
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                                <Info className="h-3.5 w-3.5" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
+                              Имя клиента и контактная информация
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="flex items-center gap-1">
+                        Источник
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                                <Info className="h-3.5 w-3.5" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
+                              Откуда пришел клиент: сайт, телефон, рекомендация и т.д.
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="flex items-center gap-1">
+                        Сметы
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                                <Info className="h-3.5 w-3.5" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
+                              Количество смет, созданных для этого проекта
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="flex items-center gap-1">
+                        Статус
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                                <Info className="h-3.5 w-3.5" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
+                              Текущий статус проекта: новый, в работе, завершён, отменён
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="flex items-center gap-1">
+                        Дата
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                                <Info className="h-3.5 w-3.5" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
+                              Дата создания проекта
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -180,7 +268,11 @@ const Projects = () => {
                     const statusInfo = STATUS_LABELS[project.status] || STATUS_LABELS.new;
 
                     return (
-                      <TableRow key={project.id} className="cursor-pointer hover:bg-muted/50">
+                      <TableRow
+                        key={project.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => navigate(`/projects/${project.id}`)}
+                      >
                         <TableCell>
                           <div>
                             <p className="font-medium">{project.client_name}</p>
@@ -198,14 +290,28 @@ const Projects = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {ec ? (
-                            <Badge variant="outline" className="text-xs">
-                              <FileText className="h-3 w-3 mr-1" />
-                              {ec.count}
-                            </Badge>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          )}
+                          <div className="flex items-center gap-1">
+                            {ec ? (
+                              <Badge variant="outline" className="text-xs">
+                                <FileText className="h-3 w-3 mr-1" />
+                                {ec.count}
+                              </Badge>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            )}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                                    <Info className="h-3.5 w-3.5" />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
+                                  Количество смет, созданных для этого проекта
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Badge className={statusInfo.color}>{statusInfo.label}</Badge>
@@ -218,13 +324,20 @@ const Projects = () => {
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
+                              <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/projects/${project.id}`);
+                              }}>
+                                <FolderOpen className="h-4 w-4 mr-2" /> Открыть проект
+                              </DropdownMenuItem>
                               {canManageEstimates && (
-                                <DropdownMenuItem onClick={() => {
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation();
                                   setSelectedProject(project);
                                   setEstimateDialogOpen(true);
                                 }}>

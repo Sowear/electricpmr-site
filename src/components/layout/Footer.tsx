@@ -20,7 +20,7 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Navigation Links */}
           <div>
             <h4 className="font-display font-semibold mb-4">Навигация</h4>
             <ul className="space-y-2">
@@ -64,6 +64,22 @@ const Footer = () => {
                 <span>г. Тирасполь, Приднестровье</span>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Additional Cities */}
+        <div className="mt-12 pt-8 border-t border-background/10">
+          <h4 className="font-display font-semibold mb-4 text-center">Работаем по городам</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+            <Link to="/elektrik-v-tiraspole" className="text-center text-background/70 hover:text-background transition-colors">
+              Электрик в Тирасполе
+            </Link>
+            <Link to="/elektrik-v-benderah" className="text-center text-background/70 hover:text-background transition-colors">
+              Электрик в Бендерах
+            </Link>
+            <Link to="/elektrik-v-slobodzee" className="text-center text-background/70 hover:text-background transition-colors">
+              Электрик в Слободзее
+            </Link>
           </div>
         </div>
 

@@ -5,6 +5,9 @@ import { useToast } from "@/hooks/use-toast";
 export interface Payment {
   id: string;
   estimate_id: string;
+  project_id?: string | null;
+  object_id?: string | null;
+  account_id?: string | null;
   amount: number;
   currency: string;
   method: string | null;
@@ -19,6 +22,7 @@ export interface Payment {
   net_amount: number | null;
   created_by: string | null;
   created_at: string;
+  confirmed_at?: string | null;
   updated_at: string;
 }
 
@@ -46,6 +50,9 @@ export function useCreatePayment() {
   return useMutation({
     mutationFn: async (payment: {
       estimate_id: string;
+      project_id?: string;
+      object_id?: string;
+      account_id?: string;
       amount: number;
       currency?: string;
       method?: string;
@@ -54,6 +61,9 @@ export function useCreatePayment() {
       receipt_url?: string;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
+      if (!payment.account_id) {
+        throw new Error("Выберите счёт компании для платежа");
+      }
       const { data, error } = await supabase
         .from("payments")
         .insert({
@@ -85,8 +95,13 @@ export function useConfirmPayment() {
   return useMutation({
     mutationFn: async (paymentId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await (supabase as any).rpc("confirm_payment_and_generate_finance", {
+        p_payment_id: paymentId,
+        p_actor_id: user?.id,
+        p_snapshot_threshold: 0,
+      });
+      if (error) throw error;
 
-      // Get payment
       const { data: payment, error: fetchErr } = await supabase
         .from("payments")
         .select("*")
@@ -94,67 +109,7 @@ export function useConfirmPayment() {
         .single();
       if (fetchErr) throw fetchErr;
 
-      // IDEMPOTENCY: if already confirmed, skip
-      if (payment.status === "confirmed") {
-        return payment;
-      }
-
-      // Update payment status
-      const { error: updateErr } = await supabase
-        .from("payments")
-        .update({
-          status: "confirmed",
-          verified: true,
-          verified_by: user?.id,
-        })
-        .eq("id", paymentId);
-      if (updateErr) throw updateErr;
-
-      // Check if finance_entry already exists (double idempotency guard)
-      const { data: existingFE } = await supabase
-        .from("finance_entries")
-        .select("id")
-        .eq("payment_id", payment.id)
-        .eq("type", "income")
-        .limit(1);
-
-      if (!existingFE || existingFE.length === 0) {
-        // Auto-create finance_entry
-        const { error: finErr } = await supabase
-          .from("finance_entries")
-          .insert({
-            type: "income",
-            amount: payment.amount,
-            currency: payment.currency,
-            source: "estimate_payment",
-            description: `Оплата по смете`,
-            estimate_id: payment.estimate_id,
-            payment_id: payment.id,
-            created_by: user?.id,
-            gross_amount: payment.amount,
-            net_amount: payment.amount - (payment.fees || 0),
-            fees: payment.fees || 0,
-          });
-        if (finErr) throw finErr;
-      }
-
-      // Update estimate paid_amount
-      const { data: allPayments } = await supabase
-        .from("payments")
-        .select("amount")
-        .eq("estimate_id", payment.estimate_id)
-        .eq("status", "confirmed");
-
-      const totalPaid = (allPayments || []).reduce((sum: number, p: any) => sum + p.amount, 0);
-
-      await supabase
-        .from("estimates")
-        .update({ paid_amount: totalPaid })
-        .eq("id", payment.estimate_id);
-
-      // Create notification for managers
       await createPaymentNotification(payment.estimate_id, payment.amount, user?.id);
-
       return payment;
     },
     onSuccess: (payment) => {
@@ -258,7 +213,7 @@ async function createPaymentNotification(estimateId: string, amount: number, use
     // Get estimate info
     const { data: estimate } = await supabase
       .from("estimates")
-      .select("estimate_number, client_name, created_by")
+      .select("estimate_number, client_name, created_by, project_id")
       .eq("id", estimateId)
       .single();
 
@@ -273,7 +228,7 @@ async function createPaymentNotification(estimateId: string, amount: number, use
       type: "payment_confirmed",
       title: `Платёж подтверждён — ${estimate.estimate_number}`,
       message: `${amount.toLocaleString("ru-RU")} ₽ по смете ${estimate.client_name}`,
-      link: `/estimator/${estimateId}`,
+      link: (estimate as any).project_id ? `/projects/${(estimate as any).project_id}/estimates/${estimateId}` : `/estimator/${estimateId}`,
     });
   } catch (e) {
     console.error("Failed to create notification:", e);

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { Loader2, Search, Users, FileText, Clock, CheckCircle2, Wrench, Filter, Image, Calculator, Shield, ShieldOff, Crown, UserCog, Plus } from "lucide-react";
+import { Loader2, Search, Users, FileText, Clock, CheckCircle2, Wrench, Filter, Image, Shield, Crown, UserCog } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
@@ -163,18 +163,6 @@ const AdminUsers = () => {
     }
   };
 
-  const handleCreateEstimateFromRequest = (request: Request) => {
-    // Navigate to estimator with request data as query params
-    const params = new URLSearchParams({
-      request_id: request.id,
-      client_name: request.name,
-      client_phone: request.phone,
-      client_comment: request.description || '',
-      address: request.address || '',
-    });
-    navigate(`/estimator?${params.toString()}`);
-  };
-
   const toggleRole = async (targetUserId: string, role: UserRole, hasRole: boolean) => {
     const targetProfile = profiles.find(p => p.user_id === targetUserId);
     if (!targetProfile || !currentUserId) return;
@@ -270,7 +258,7 @@ const AdminUsers = () => {
             <Users className="mr-2 h-4 w-4" />Пользователи ({profiles.length})
           </Button>
           <Button variant="outline" size="sm" asChild><Link to="/admin/work-examples"><Image className="mr-2 h-4 w-4" />Примеры работ</Link></Button>
-          <Button variant="outline" size="sm" asChild><Link to="/estimator"><Calculator className="mr-2 h-4 w-4" />Сметтер</Link></Button>
+          <Button variant="outline" size="sm" asChild><Link to="/admin/finance-settings">Фин. настройки</Link></Button>
         </div>
 
         {isLoading ? (
@@ -349,11 +337,6 @@ const AdminUsers = () => {
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t">
-                      <Button size="sm" className="w-full" onClick={() => handleCreateEstimateFromRequest(selectedRequest)}>
-                        <Plus className="h-4 w-4 mr-1" />Создать смету из заявки
-                      </Button>
-                    </div>
                   </div>
                 ) : (
                   <div className="card-industrial p-6 text-center text-muted-foreground"><p>Выберите заявку</p></div>

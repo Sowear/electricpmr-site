@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, Camera } from "lucide-react";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import heroImage from "@/assets/hero-electrical-panel.png";
 const HeroSection = () => {
@@ -12,16 +12,20 @@ const HeroSection = () => {
   };
   const trustBadges = [{
     icon: CheckCircle2,
-    title: "ПУЭ",
-    subtitle: "работаем по нормам"
+    title: "Работа по ПУЭ",
+    subtitle: "соблюдаем нормы безопасности"
   }, {
     icon: Shield,
-    title: "5 лет",
+    title: "До 5 лет",
     subtitle: "гарантии на работы"
   }, {
     icon: Users,
-    title: "Своя команда",
-    subtitle: "без посредников"
+    title: "Без посредников",
+    subtitle: "работаем своей командой"
+  }, {
+    icon: FileText,
+    title: "Чёткая смета",
+    subtitle: "без скрытых доплат"
   }];
   return <section className="relative min-h-[90vh] overflow-hidden bg-industrial-dark">
       {/* Gradient overlays */}
@@ -75,16 +79,16 @@ const HeroSection = () => {
               </Button>
             </div>
 
-            {/* Trust Badges */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 animate-slide-up" style={{
-            animationDelay: "0.3s"
-          }}>
-              {trustBadges.map((badge, index) => <div key={index} className="flex flex-col items-start p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors">
-                  <badge.icon className="h-6 w-6 text-primary mb-3" />
-                  <span className="text-xl md:text-2xl font-bold text-white">{badge.title}</span>
-                  <span className="text-sm text-white/60">{badge.subtitle}</span>
-                </div>)}
-            </div>
+             {/* Trust Badges */}
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 animate-slide-up" style={{
+             animationDelay: "0.3s"
+           }}>
+               {trustBadges.map((badge, index) => <div key={index} className="flex flex-col items-center text-center p-5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors min-h-[150px]">
+                   <badge.icon className="h-6 w-6 text-primary mb-3 flex-shrink-0" />
+                   <span className="text-lg md:text-xl font-bold text-white mb-1 break-words max-w-[140px]">{badge.title}</span>
+                   <span className="text-xs md:text-sm text-white/60 break-words max-w-[140px]">{badge.subtitle}</span>
+                 </div>)}
+             </div>
           </div>
         </div>
       </div>

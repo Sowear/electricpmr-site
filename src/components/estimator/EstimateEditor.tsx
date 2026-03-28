@@ -27,7 +27,10 @@ import {
   Plus
 } from "lucide-react";
 import { useEstimate, useUpdateEstimate } from "@/hooks/useEstimates";
-import { useDuplicateEstimate } from "@/hooks/useProjects";
+import {
+  useDuplicateEstimate,
+  useProjectObjects,
+} from "@/hooks/useProjects";
 import { CURRENCIES, EDITABLE_STATUSES, Estimate, EstimateStatus } from "@/types/estimator";
 import { useUserRole } from "@/hooks/useUserRole";
 import LineItemsEditor from "./LineItemsEditor";
@@ -42,9 +45,15 @@ import { generatePDFPreviewHTML, printPDF, EstimateData, LineItemData } from "@/
 import { downloadEstimatePDF, PDFEstimateData, PDFLineItem } from "@/lib/pdfDocumentGenerator";
 import { useDebounce } from "@/hooks/useDebounce";
 import FieldWithTooltip from "./FieldWithTooltip";
+import EstimateParticipantsPanel from "./EstimateParticipantsPanel";
 
 const EstimateEditor = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: routeEstimateId, estimateId: projectEstimateId, projectId } = useParams<{
+    id?: string;
+    estimateId?: string;
+    projectId?: string;
+  }>();
+  const id = routeEstimateId || projectEstimateId;
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: estimate, isLoading } = useEstimate(id);
@@ -69,6 +78,9 @@ const EstimateEditor = () => {
     payment_method: "",
     payment_recipient: "",
   });
+
+  const effectiveProjectId = projectId || estimate?.project_id;
+  const { data: projectObjects } = useProjectObjects(effectiveProjectId);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -108,6 +120,7 @@ const EstimateEditor = () => {
         valid_until: estimate.valid_until || "",
         payment_method: (estimate as any).payment_method || "",
         payment_recipient: (estimate as any).payment_recipient || "",
+        object_id: (estimate as any).object_id || null,
       });
       if (estimate.status === 'sent') {
         setSendStatus('sent');
@@ -290,7 +303,16 @@ const EstimateEditor = () => {
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">Смета не найдена</p>
-        <Button variant="link" onClick={() => navigate("/estimator")}>
+        <Button
+          variant="link"
+          onClick={() => {
+            if (effectiveProjectId) {
+              navigate(`/projects/${effectiveProjectId}`);
+              return;
+            }
+            navigate("/estimator");
+          }}
+        >
           Вернуться к списку
         </Button>
       </div>
@@ -302,7 +324,18 @@ const EstimateEditor = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row gap-3 justify-between items-start lg:items-center bg-card border rounded-lg p-3 lg:p-4">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/estimator")} className="shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (effectiveProjectId) {
+                navigate(`/projects/${effectiveProjectId}`);
+                return;
+              }
+              navigate("/estimator");
+            }}
+            className="shrink-0"
+          >
             <ArrowLeft className="h-5 w-5" />
           </Button>
             <div className="min-w-0 flex-1">
@@ -366,7 +399,13 @@ const EstimateEditor = () => {
             className="shrink-0 text-xs"
             onClick={async () => {
               const result = await duplicateEstimate.mutateAsync(estimate.id);
-              if (result) navigate(`/estimator/${result.id}`);
+              if (result) {
+                if (effectiveProjectId) {
+                  navigate(`/projects/${effectiveProjectId}/estimates/${result.id}`);
+                } else {
+                  navigate(`/estimator/${result.id}`);
+                }
+              }
             }}
             disabled={duplicateEstimate.isPending}
           >
@@ -387,9 +426,9 @@ const EstimateEditor = () => {
       )}
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 2xl:gap-6">
-        {/* Left Column - Editor */}
-        <div className="xl:col-span-2 space-y-4">
+      <div className="grid grid-cols-1 gap-4 2xl:gap-6">
+        {/* Full-width Editor */}
+        <div className="space-y-4">
           {/* Client & Settings Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Client Info */}
@@ -512,8 +551,41 @@ const EstimateEditor = () => {
                       disabled={isReadOnly}
                     />
                   </FieldWithTooltip>
+                  <FieldWithTooltip
+                    label="Объект проекта"
+                    tooltip="Связь сметы с конкретным объектом проекта."
+                    className="col-span-2"
+                  >
+                    <Select
+                      value={(formData.object_id as string) || "none"}
+                      onValueChange={(v) => {
+                        const nextObjectId = v === "none" ? null : v;
+                        handleChange("object_id", nextObjectId);
+                      }}
+                      disabled={isReadOnly || !effectiveProjectId}
+                    >
+                      <SelectTrigger className="h-8">
+                        <SelectValue placeholder={effectiveProjectId ? "Выберите объект" : "Сначала назначьте проект"} />
+                      </SelectTrigger>
+                      <SelectContent className="z-[200] bg-popover">
+                        <SelectItem value="none">Без объекта</SelectItem>
+                        {(projectObjects || []).map((obj) => (
+                          <SelectItem key={obj.id} value={obj.id}>{obj.title}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FieldWithTooltip>
                 </div>
               </div>
+            )}
+
+            {!isTechnician && canManageEstimates && effectiveProjectId && (
+              <EstimateParticipantsPanel
+                estimateId={id!}
+                projectId={effectiveProjectId}
+                objectId={(formData.object_id as string) || null}
+                readOnly={isReadOnly}
+              />
             )}
           </div>
 
@@ -551,6 +623,8 @@ const EstimateEditor = () => {
             <PaymentManager
               estimate={estimate}
               canConfirm={canManageEstimates}
+              projectId={effectiveProjectId}
+              objectId={(formData.object_id as string) || null}
             />
           )}
 
@@ -626,44 +700,6 @@ const EstimateEditor = () => {
           </div>
         </div>
 
-        {/* Right Column - PDF Preview */}
-        <div className="hidden xl:block">
-          <div className="sticky top-20 space-y-2">
-            <Button 
-              variant="outline" size="sm" 
-              onClick={() => setShowPreview(!showPreview)}
-              className="w-full"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              {showPreview ? "Скрыть предпросмотр" : "Показать предпросмотр"}
-            </Button>
-            {showPreview && (
-              <EstimatePDFPreview 
-                estimate={estimate} 
-                formData={debouncedFormData}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile PDF Preview */}
-      <div className="xl:hidden">
-        <Button 
-          variant="outline" className="w-full"
-          onClick={() => setShowPreview(!showPreview)}
-        >
-          <Eye className="h-4 w-4 mr-2" />
-          {showPreview ? "Скрыть предпросмотр" : "Предпросмотр PDF"}
-          <Badge variant="outline" className="ml-auto text-xs">
-            {(estimate.line_items || []).length} поз.
-          </Badge>
-        </Button>
-        {showPreview && (
-          <div className="mt-3">
-            <EstimatePDFPreview estimate={estimate} formData={debouncedFormData} />
-          </div>
-        )}
       </div>
       {/* Mobile Sticky Action Bar */}
       <div className="xl:hidden sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t p-3 -mx-3 -mb-3 flex gap-2 z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">

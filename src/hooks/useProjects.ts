@@ -4,6 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface Project {
   id: string;
+  title?: string;
+  address?: string;
   request_id?: string;
   client_name: string;
   client_phone?: string;
@@ -18,6 +20,28 @@ export interface Project {
   estimates_count?: number;
   latest_estimate_status?: string;
   latest_estimate_total?: number;
+}
+
+export interface ProjectObject {
+  id: string;
+  project_id: string;
+  title: string;
+  address?: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectMember {
+  id: string;
+  project_id: string;
+  object_id?: string | null;
+  user_id: string;
+  role: "manager" | "technician" | "organizer";
+  payout_type: "percent_profit" | "percent_revenue" | "fixed" | "hybrid";
+  fixed_amount: number;
+  percent_share: number;
+  created_at: string;
 }
 
 export function useProjects() {
@@ -176,6 +200,114 @@ export function useCreateEstimateFromProject() {
   });
 }
 
+export function useProjectObjects(projectId: string | undefined) {
+  return useQuery({
+    queryKey: ["project-objects", projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      const { data, error } = await (supabase as any)
+        .from("project_objects")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return (data || []) as ProjectObject[];
+    },
+    enabled: !!projectId,
+  });
+}
+
+export function useCreateProjectObject() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ projectId, title, address }: { projectId: string; title: string; address?: string }) => {
+      const { data, error } = await (supabase as any)
+        .from("project_objects")
+        .insert({
+          project_id: projectId,
+          title,
+          address: address || null,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as ProjectObject;
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["project-objects", vars.projectId] });
+      toast({ title: "Объект добавлен" });
+    },
+    onError: (error) => {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    },
+  });
+}
+
+export function useProjectMembers(projectId: string | undefined, objectId?: string) {
+  return useQuery({
+    queryKey: ["project-members", projectId, objectId || "all"],
+    queryFn: async () => {
+      if (!projectId) return [];
+
+      let query = (supabase as any)
+        .from("project_members")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: false });
+
+      if (objectId) {
+        query = query.or(`object_id.eq.${objectId},object_id.is.null`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data || []) as ProjectMember[];
+    },
+    enabled: !!projectId,
+  });
+}
+
+export function useUpsertProjectMember() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (payload: {
+      project_id: string;
+      object_id?: string | null;
+      user_id: string;
+      role: "manager" | "technician" | "organizer";
+      payout_type: "percent_profit" | "percent_revenue" | "fixed" | "hybrid";
+      fixed_amount?: number;
+      percent_share?: number;
+    }) => {
+      const { data, error } = await (supabase as any)
+        .from("project_members")
+        .upsert({
+          ...payload,
+          fixed_amount: payload.fixed_amount || 0,
+          percent_share: payload.percent_share || 0,
+        }, { onConflict: "project_id,object_id,user_id,role" })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as ProjectMember;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["project-members", data.project_id] });
+      toast({ title: "Участник назначен" });
+    },
+    onError: (error) => {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    },
+  });
+}
+
 export function useDuplicateEstimate() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -217,6 +349,7 @@ export function useDuplicateEstimate() {
         .from("estimates")
         .insert({
           project_id: original.project_id,
+          object_id: (original as any).object_id || null,
           client_name: original.client_name,
           client_phone: original.client_phone,
           client_email: original.client_email,

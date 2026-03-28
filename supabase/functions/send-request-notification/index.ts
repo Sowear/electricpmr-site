@@ -189,7 +189,7 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px;">
           <h3 style="margin: 0 0 10px 0; color: #666;">Источник</h3>
           <p style="margin: 5px 0; font-size: 14px; color: #888;">
-            Ссылка на сайт: <a href="https://electricpmr.lovable.app">https://electricpmr.lovable.app</a>
+            Ссылка на сайт: <a href="https://electricpmr.vercel.app">https://electricpmr.vercel.app</a>
           </p>
           ${data.utm_source || data.utm_medium || data.utm_campaign ? `
           <p style="margin: 5px 0; font-size: 14px; color: #888;">
@@ -219,7 +219,7 @@ const handler = async (req: Request): Promise<Response> => {
 Комментарий: ${data.description || "-"}
 Желаемая дата: ${data.desired_date || "-"}
 Дата: ${currentDate}
-Ссылка на сайт: https://electricpmr.lovable.app
+Ссылка на сайт: https://electricpmr.vercel.app
 UTM: ${data.utm_source || ""} ${data.utm_medium || ""} ${data.utm_campaign || ""}
 IP: ${data.ip || "-"}
     `.trim();

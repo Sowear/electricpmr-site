@@ -1,6 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import FaqAccordion from "@/components/common/FaqAccordion";
 import { Calculator, FileText, Phone, CheckCircle2 } from "lucide-react";
 
 const pricingFormats = [
@@ -33,7 +34,10 @@ const whyNoPrices = [
 
 const Pricing = () => {
   return (
-    <Layout>
+    <Layout
+      title="Стоимость электромонтажа — ЭлектроМастер"
+      description="Цены на электромонтаж в Приднестровье. Прозрачный расчет, без скрытых работ. Бесплатный выезд на осмотр и составление сметы."
+    >
       {/* Hero */}
       <section className="section-padding bg-secondary/30">
         <div className="container-main">
@@ -145,6 +149,59 @@ const Pricing = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="section-padding bg-secondary/30">
+        <div className="container-main">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
+              Вопросы о стоимости
+            </h2>
+            
+            <FaqAccordion 
+              items={[
+                {
+                  question: "Как формируется стоимость работ?",
+                  answer: "Стоимость зависит от объёма работ, состояния проводки и сложности проекта. Мы не называем \"примерно\", а сначала уточняем задачу и даём понятный расчёт без скрытых доплат."
+                },
+                {
+                  question: "Выезд на осмотр — платный?",
+                  answer: "Выезд инженера платный и зависит от удаленности объекта. Онлайн-консультация по фото/видео — бесплатна."
+                },
+                {
+                  question: "Есть ли фиксированные цены?",
+                  answer: "Мы не используем фиксированные цены, так как каждый объект уникален. Каждый расчёт делается индивидуально после осмотра."
+                },
+                {
+                  question: "Бывают ли скрытые доплаты?",
+                  answer: "Нет, мы против скрытых доплат. Все работы согласовываются заранее, и стоимость фиксируется в смете до начала работ."
+                },
+                {
+                  question: "Как оплачивается работа?",
+                  answer: "Мы работаем по предоплате и поэтапным оплатам. Размер предоплаты и график оплат оговаривается индивидуально по каждому проекту."
+                },
+                {
+                  question: "Можно ли оплатить по факту?",
+                  answer: "Для новых клиентов мы обычно требуем небольшую предоплату. При длительном сотрудничестве возможен расчёт по факту выполнения работ."
+                },
+                {
+                  question: "Делаете ли вы скидки?",
+                  answer: "Да, при объемных работах возможна индивидуальная система скидок. Подробности обсуждаются в каждом случае отдельно."
+                }
+              ]}
+              className="max-w-2xl mx-auto"
+              itemClassName="bg-background"
+            />
+            
+            <div className="text-center pt-6">
+              <p className="text-sm text-muted-foreground mb-4">Не нашли свой вопрос? Напишите нам</p>
+              <Button asChild>
+                <Link to="/#request-form">Задать вопрос</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

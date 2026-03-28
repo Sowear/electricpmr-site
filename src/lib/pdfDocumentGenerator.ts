@@ -121,14 +121,60 @@ function formatCurrency(amount: number, currency: string): string {
 
 let logoDataUrl: string | null = null;
 
+function createCompanyLogoDataUrl(size = 96): string | null {
+  if (typeof document === "undefined") return null;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  const r = Math.round(size * 0.22);
+
+  ctx.fillStyle = COLORS.accent;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(size - r, 0);
+  ctx.quadraticCurveTo(size, 0, size, r);
+  ctx.lineTo(size, size - r);
+  ctx.quadraticCurveTo(size, size, size - r, size);
+  ctx.lineTo(r, size);
+  ctx.quadraticCurveTo(0, size, 0, size - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fill();
+
+  const iconBox = size * 0.6;
+  const iconX = (size - iconBox) / 2;
+  const iconY = (size - iconBox) / 2;
+
+  ctx.save();
+  ctx.translate(iconX, iconY);
+  ctx.scale(iconBox / 24, iconBox / 24);
+  ctx.strokeStyle = "#111111";
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  const boltPath = new Path2D("M13 2L3 14h9l-1 8 10-12h-9l1-8z");
+  ctx.stroke(boltPath);
+  ctx.restore();
+
+  return canvas.toDataURL("image/png");
+}
+
 async function loadLogo(): Promise<string | null> {
   if (logoDataUrl) return logoDataUrl;
-  
+
   try {
+    logoDataUrl = createCompanyLogoDataUrl();
+    if (logoDataUrl) return logoDataUrl;
+
     const logoModule = await import("@/assets/logo-icon.png");
     const response = await fetch(logoModule.default);
     const blob = await response.blob();
-    
+
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -341,7 +387,7 @@ class PDFBuilder {
     this.setFillColor(COLORS.accent);
     this.pdf.roundedRect(PAGE.marginLeft, startY, logoSize, logoSize, 2, 2, "F");
     this.setFont("bold", 14);
-    this.setColor(COLORS.white);
+    this.setColor(COLORS.black);
     this.pdf.text("⚡", PAGE.marginLeft + 3.5, startY + 8.5);
   }
 
@@ -388,11 +434,6 @@ class PDFBuilder {
     this.setDrawColor(COLORS.border);
     this.pdf.setLineWidth(0.5);
     this.pdf.roundedRect(cardX, cardY, CONTENT_WIDTH, cardHeight, 4, 4, "S");
-
-    // Shadow effect
-    this.setDrawColor("#d1d5db");
-    this.pdf.setLineWidth(0.2);
-    this.pdf.line(cardX + 4, cardY + cardHeight + 0.8, cardX + CONTENT_WIDTH - 4, cardY + cardHeight + 0.8);
 
     let textY = cardY + padding + 4;
 
@@ -727,7 +768,7 @@ class PDFBuilder {
     // Website
     this.setFont("normal", 8);
     this.setColor(COLORS.lightGray);
-    this.pdf.text("electricpmr.lovable.app", PAGE.marginLeft, this.y);
+    this.pdf.text("electricpmr.vercel.app", PAGE.marginLeft, this.y);
   }
 
   // ---------------------------------------------------------------------------
@@ -811,16 +852,19 @@ export function generatePreviewHTML(data: PDFEstimateData): string {
     </tr>
   `).join('');
 
+  const siteLogoSvg = `
+    <svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0" y="0" width="100" height="100" rx="22" ry="22" fill="#eab308" />
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" transform="translate(22,22) scale(2.3)" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `.trim();
+
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; background: white; color: #1a1a1a;">
       <!-- Header -->
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 48px; height: 48px; background: #eab308; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-            </svg>
-          </div>
+          <div style="width: 48px; height: 48px; border-radius: 8px; overflow: hidden;">${siteLogoSvg}</div>
           <span style="font-size: 24px; font-weight: 700; color: #1a1a1a;">ЭлектроМастер</span>
         </div>
         <div style="background: #f3f4f6; padding: 12px 20px; border-radius: 8px; text-align: center;">
@@ -836,7 +880,7 @@ export function generatePreviewHTML(data: PDFEstimateData): string {
       ${data.title ? `<h2 style="font-size: 18px; font-weight: 600; margin: 0 0 20px 0; color: #1a1a1a;">${data.title}</h2>` : ''}
 
       <!-- Client Card -->
-      <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 28px;">
         <div style="font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Заказчик</div>
         <div style="font-size: 16px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px;">${data.client_name}</div>
         ${data.client_phone ? `<div style="font-size: 14px; color: #374151; margin-bottom: 4px;">Тел: ${data.client_phone}</div>` : ''}
@@ -910,7 +954,7 @@ export function generatePreviewHTML(data: PDFEstimateData): string {
         ` : ''}
         <div style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">Гарантия на работы — 12 месяцев</div>
         <div style="font-size: 14px; color: #374151; margin-bottom: 6px;">+373 777 46642  •  mmxxnon@gmail.com  •  Telegram: @ElectricPMR</div>
-        <div style="font-size: 12px; color: #9ca3af;">electricpmr.lovable.app</div>
+        <div style="font-size: 12px; color: #9ca3af;">electricpmr.vercel.app</div>
       </div>
     </div>
   `;

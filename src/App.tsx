@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import ElectricianTiraspol from "./pages/ElectricianTiraspol";
 import ElectricianBendery from "./pages/ElectricianBendery";
 import ElectricianSlobozia from "./pages/ElectricianSlobozia";
@@ -61,6 +62,7 @@ const App = () => (
         </Routes>
         </BrowserRouter>
       </HelmetProvider>
+      <SpeedInsights />
     </TooltipProvider>
   </QueryClientProvider>
 );

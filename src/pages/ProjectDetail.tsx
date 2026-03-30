@@ -340,23 +340,6 @@ const ProjectDetail = () => {
                   </TooltipProvider>
                 </div>
               </TabsTrigger>
-              <TabsTrigger value="objects" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
-                <div className="flex items-center gap-1">
-                  Объекты
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Объекты, на которых проводятся работы по данному проекту
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
               <TabsTrigger value="estimates" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
                 <div className="flex items-center gap-1">
                   Сметы

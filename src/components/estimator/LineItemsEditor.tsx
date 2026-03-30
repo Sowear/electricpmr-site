@@ -83,7 +83,7 @@ const MARKET_PRICE_RANGES: Array<{ keyword: string; range: string }> = [
   { keyword: "монтаж", range: "200-500 руб" },
 ];
 
-const normalize = (value: string) => value.toLowerCase().replaceAll("ё", "е");
+const normalize = (value: string) => value.toLowerCase().replace(/ё/g, "е");
 
 const getMarketRange = (text: string) => {
   const normalized = normalize(text);
@@ -431,7 +431,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
 
       {/* Presets Dialog */}
       <Dialog open={presetsOpen} onOpenChange={setPresetsOpen}>
-        <DialogContent className="max-w-xl h-[80vh] flex flex-col p-0 gap-0">
+        <DialogContent className="w-[96vw] max-w-[1400px] h-[88vh] flex flex-col p-0 gap-0">
           <DialogHeader className="px-6 py-4 border-b shrink-0">
             <DialogTitle>Каталог услуг</DialogTitle>
           </DialogHeader>

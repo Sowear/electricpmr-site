@@ -54,7 +54,7 @@ const SEARCH_ALIASES: Record<string, string[]> = {
   интернет: ["слаботоч", "витая", "lan", "tv"],
 };
 
-const normalize = (value: string) => value.toLowerCase().replaceAll("ё", "е").trim();
+const normalize = (value: string) => value.toLowerCase().replace(/ё/g, "е").trim();
 
 const isElectricalPreset = (preset: LineItemPreset) => {
   const searchable = normalize(`${preset.name} ${preset.description || ""} ${preset.category || ""}`);
@@ -165,7 +165,7 @@ const PresetSearch = ({ presets, onSelect, onAddNew }: PresetSearchProps) => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Поиск: розетка, штроба, кабель..."
-          className="pl-10"
+          className="pl-10 h-11 text-base"
           autoFocus
         />
       </div>
@@ -193,20 +193,20 @@ const PresetSearch = ({ presets, onSelect, onAddNew }: PresetSearchProps) => {
       <div className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full">
           {filteredPresets.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-2 pr-4 pb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pr-4 pb-4">
               {filteredPresets.map((preset) => (
                 <button
                   key={preset.id}
                   type="button"
-                  className="h-full text-left p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
+                  className="h-full min-h-[170px] text-left p-4 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
                   onClick={() => handleSelectPreset(preset)}
                 >
                   <div className="flex h-full flex-col gap-2">
-                    <p className="font-medium text-sm leading-5">{highlightMatch(preset.name, searchQuery)}</p>
-                    <p className="text-xs text-muted-foreground leading-4">
+                    <p className="font-medium text-base leading-6">{highlightMatch(preset.name, searchQuery)}</p>
+                    <p className="text-sm text-muted-foreground leading-5">
                       {highlightMatch(preset.description || "", searchQuery)}
                     </p>
-                    <div className="mt-auto pt-1 text-xs text-muted-foreground tabular-nums">
+                    <div className="mt-auto pt-2 text-sm text-muted-foreground tabular-nums">
                       {preset.unit_price?.toLocaleString("ru-RU")} руб / {preset.unit}
                     </div>
                   </div>

@@ -21,7 +21,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Plus, 
@@ -60,6 +62,34 @@ const UNITS = [
   { value: "час", label: "час" },
   { value: "точка", label: "точка" },
 ];
+
+const ESTIMATION_TYPES = [
+  { value: "fixed", label: "Фиксированная" },
+  { value: "per_unit", label: "За единицу" },
+];
+
+const MARKET_PRICE_RANGES: Array<{ keyword: string; range: string }> = [
+  { keyword: "розет", range: "150-250 руб" },
+  { keyword: "выключ", range: "120-220 руб" },
+  { keyword: "штроб", range: "200-400 руб" },
+  { keyword: "кабел", range: "45-90 руб" },
+  { keyword: "щит", range: "1500-4500 руб" },
+  { keyword: "автомат", range: "300-700 руб" },
+  { keyword: "светиль", range: "250-600 руб" },
+  { keyword: "люстр", range: "400-900 руб" },
+  { keyword: "заземл", range: "900-2400 руб" },
+  { keyword: "слаботоч", range: "250-550 руб" },
+  { keyword: "демонтаж", range: "120-350 руб" },
+  { keyword: "монтаж", range: "200-500 руб" },
+];
+
+const normalize = (value: string) => value.toLowerCase().replaceAll("ё", "е");
+
+const getMarketRange = (text: string) => {
+  const normalized = normalize(text);
+  const match = MARKET_PRICE_RANGES.find((entry) => normalized.includes(entry.keyword));
+  return match?.range || "150-300 руб";
+};
 
 interface LineItemsEditorProps {
   estimateId: string;
@@ -219,6 +249,11 @@ LineItemRow.displayName = "LineItemRow";
 const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: LineItemsEditorProps) => {
   const [presetsOpen, setPresetsOpen] = useState(false);
   const [presetManagerOpen, setPresetManagerOpen] = useState(false);
+  const [configurePresetOpen, setConfigurePresetOpen] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<LineItemPreset | null>(null);
+  const [presetQuantity, setPresetQuantity] = useState("1");
+  const [presetUnitPrice, setPresetUnitPrice] = useState("0");
+  const [estimationType, setEstimationType] = useState("per_unit");
   const isMobile = useIsMobile();
   
   const { data: presets } = useLineItemPresets();
@@ -235,9 +270,35 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   }, [estimateId, addLineItem]);
 
   const handleAddPreset = useCallback((preset: LineItemPreset) => {
-    addFromPreset.mutate({ estimateId, preset });
+    setSelectedPreset(preset);
+    setPresetQuantity(String(preset.quantity || 1));
+    setPresetUnitPrice(String(preset.unit_price || 0));
+    setEstimationType("per_unit");
+    setConfigurePresetOpen(true);
+  }, []);
+
+  const handleConfirmPreset = useCallback(() => {
+    if (!selectedPreset) return;
+
+    const quantity = parseFloat(presetQuantity);
+    const unitPrice = parseFloat(presetUnitPrice);
+
+    if (!Number.isFinite(quantity) || quantity <= 0) return;
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) return;
+
+    addFromPreset.mutate({
+      estimateId,
+      preset: {
+        ...selectedPreset,
+        quantity,
+        unit_price: unitPrice,
+      },
+    });
+
+    setConfigurePresetOpen(false);
     setPresetsOpen(false);
-  }, [estimateId, addFromPreset]);
+    setSelectedPreset(null);
+  }, [addFromPreset, estimateId, presetQuantity, presetUnitPrice, selectedPreset]);
 
   const handleUpdateField = useCallback((itemId: string, field: keyof LineItem, value: any) => {
     updateLineItem.mutate({ id: itemId, estimateId, [field]: value });
@@ -393,6 +454,78 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
               </div>
             </TabsContent>
           </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={configurePresetOpen} onOpenChange={setConfigurePresetOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Настройка позиции</DialogTitle>
+          </DialogHeader>
+
+          {selectedPreset && (
+            <div className="space-y-4">
+              <div className="rounded-lg border p-3">
+                <p className="font-medium text-sm">{selectedPreset.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">{selectedPreset.description}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="preset-quantity">Количество *</Label>
+                  <Input
+                    id="preset-quantity"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    value={presetQuantity}
+                    onChange={(e) => setPresetQuantity(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="preset-price">Цена за единицу *</Label>
+                  <Input
+                    id="preset-price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={presetUnitPrice}
+                    onChange={(e) => setPresetUnitPrice(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="preset-estimation-type">Тип расчета</Label>
+                <Select value={estimationType} onValueChange={setEstimationType}>
+                  <SelectTrigger id="preset-estimation-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ESTIMATION_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="rounded-lg border p-3 text-sm">
+                <p className="font-medium">Рекомендуемая цена (диапазон рынка)</p>
+                <p className="text-muted-foreground mt-1">{getMarketRange(`${selectedPreset.name} ${selectedPreset.description}`)}</p>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfigurePresetOpen(false)}>
+              Отмена
+            </Button>
+            <Button onClick={handleConfirmPreset} disabled={!selectedPreset || addFromPreset.isPending}>
+              {addFromPreset.isPending ? "Добавление..." : "Добавить в смету"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

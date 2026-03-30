@@ -41,6 +41,34 @@ import {
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
+const PROJECT_TABS = [
+  {
+    value: "overview",
+    label: "Обзор",
+    tooltip: "Общая информация о проекте, основные показатели и действия",
+  },
+  {
+    value: "objects",
+    label: "Объекты",
+    tooltip: "Объекты, на которых проводятся работы по данному проекту",
+  },
+  {
+    value: "estimates",
+    label: "Сметы",
+    tooltip: "Сметы, созданные для данного проекта и связанные с объектами",
+  },
+  {
+    value: "payments",
+    label: "Платежи",
+    tooltip: "Платежи, поступившие по сметам проекта",
+  },
+  {
+    value: "finance",
+    label: "Финансы",
+    tooltip: "Финансовые записи: доходы, расходы, прибыль и распределения",
+  },
+] as const;
+
 const ProjectDetail = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
@@ -254,92 +282,30 @@ const ProjectDetail = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-4">
-             <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 pb-2">
-              <TabsTrigger value="overview" className="flex-shrink-0 whitespace-nowrap min-w-[100px]">
-                <div className="flex items-center gap-1">
-                  Обзор
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Общая информация о проекте, основные показатели и действия
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="objects" className="flex-shrink-0 whitespace-nowrap min-w-[100px]">
-                <div className="flex items-center gap-1">
-                  Объекты
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Объекты, на которых проводятся работы по данному проекту
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="estimates" className="flex-shrink-0 whitespace-nowrap min-w-[100px]">
-                <div className="flex items-center gap-1">
-                  Сметы
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Сметы, созданные для данного проекта и связанные с объектами
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="payments" className="flex-shrink-0 whitespace-nowrap min-w-[100px]">
-                <div className="flex items-center gap-1">
-                  Платежи
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Платежи, поступившие по сметам проекта
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="finance" className="flex-shrink-0 whitespace-nowrap min-w-[100px]">
-                <div className="flex items-center gap-1">
-                  Финансы
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Финансовые записи: доходы, расходы, прибыль и распределения
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
+            <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 pb-2">
+              {PROJECT_TABS.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="flex-shrink-0 whitespace-nowrap min-w-[100px]"
+                >
+                  <div className="flex items-center gap-1">
+                    {tab.label}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                            <Info className="h-3.5 w-3.5" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
+                          {tab.tooltip}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             <TabsContent value="overview" className="space-y-3">

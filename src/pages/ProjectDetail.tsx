@@ -160,7 +160,7 @@ const ProjectDetail = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3">
             <div className="border rounded-lg p-3">
               <div className="flex items-center gap-1">
                 <p className="text-xs text-muted-foreground">Объекты</p>
@@ -254,8 +254,8 @@ const ProjectDetail = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-4">
-             <TabsList className="grid grid-cols-5 w-full lg:w-auto">
-              <TabsTrigger value="overview">
+             <TabsList className="w-full flex flex-col sm:grid sm:grid-cols-5 sm:flex-row sm:flex-wrap">
+              <TabsTrigger value="overview" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
                 <div className="flex items-center gap-1">
                   Обзор
                   <TooltipProvider>
@@ -272,7 +272,7 @@ const ProjectDetail = () => {
                   </TooltipProvider>
                 </div>
               </TabsTrigger>
-              <TabsTrigger value="objects">
+              <TabsTrigger value="objects" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
                 <div className="flex items-center gap-1">
                   Объекты
                   <TooltipProvider>
@@ -289,7 +289,7 @@ const ProjectDetail = () => {
                   </TooltipProvider>
                 </div>
               </TabsTrigger>
-              <TabsTrigger value="estimates">
+              <TabsTrigger value="estimates" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
                 <div className="flex items-center gap-1">
                   Сметы
                   <TooltipProvider>
@@ -306,7 +306,7 @@ const ProjectDetail = () => {
                   </TooltipProvider>
                 </div>
               </TabsTrigger>
-              <TabsTrigger value="payments">
+              <TabsTrigger value="payments" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
                 <div className="flex items-center gap-1">
                   Платежи
                   <TooltipProvider>
@@ -323,7 +323,7 @@ const ProjectDetail = () => {
                   </TooltipProvider>
                 </div>
               </TabsTrigger>
-              <TabsTrigger value="finance">
+              <TabsTrigger value="finance" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
                 <div className="flex items-center gap-1">
                   Финансы
                   <TooltipProvider>

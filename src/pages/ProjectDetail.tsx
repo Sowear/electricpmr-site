@@ -340,57 +340,6 @@ const ProjectDetail = () => {
                   </TooltipProvider>
                 </div>
               </TabsTrigger>
-              <TabsTrigger value="estimates" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
-                <div className="flex items-center gap-1">
-                  Сметы
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Сметы, созданные для данного проекта и связанные с объектами
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="payments" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
-                <div className="flex items-center gap-1">
-                  Платежи
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Платежи, поступившие по сметам проекта
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="finance" className="mb-2 sm:mb-0 sm:first:rounded-l-lg sm:last:rounded-r-lg">
-                <div className="flex items-center gap-1">
-                  Финансы
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                          <Info className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                        Финансовые записи: доходы, расходы, прибыль и распределения
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-3">

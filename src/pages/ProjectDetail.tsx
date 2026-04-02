@@ -282,12 +282,12 @@ const ProjectDetail = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 pb-2">
+            <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 pb-2 lg:grid lg:grid-cols-5 lg:overflow-visible lg:gap-2 lg:pb-0 lg:h-auto">
               {PROJECT_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="flex-shrink-0 whitespace-nowrap min-w-[100px]"
+                  className="flex-shrink-0 whitespace-nowrap min-w-[100px] lg:min-w-0 lg:w-full lg:h-11 lg:justify-center lg:px-4 lg:hover:bg-muted/70"
                 >
                   <div className="flex items-center gap-1">
                     {tab.label}

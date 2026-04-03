@@ -1,6 +1,7 @@
 import { useState, useCallback, memo, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { 
   Select, 
   SelectContent, 
@@ -64,23 +65,28 @@ const UNITS = [
 ];
 
 const ESTIMATION_TYPES = [
-  { value: "fixed", label: "Фиксированная" },
-  { value: "per_unit", label: "За единицу" },
+  { value: "piece", label: "Штука" },
+  { value: "meter", label: "Метр" },
+  { value: "point", label: "Точка" },
+  { value: "line", label: "Линия" },
+  { value: "object", label: "Объект" },
+  { value: "set", label: "Комплект" },
+  { value: "percent", label: "Процент" },
+  { value: "contract", label: "Договорная" },
 ];
 
-const MARKET_PRICE_RANGES: Array<{ keyword: string; range: string }> = [
-  { keyword: "розет", range: "150-250 руб" },
-  { keyword: "выключ", range: "120-220 руб" },
-  { keyword: "штроб", range: "200-400 руб" },
-  { keyword: "кабел", range: "45-90 руб" },
-  { keyword: "щит", range: "1500-4500 руб" },
-  { keyword: "автомат", range: "300-700 руб" },
-  { keyword: "светиль", range: "250-600 руб" },
-  { keyword: "люстр", range: "400-900 руб" },
-  { keyword: "заземл", range: "900-2400 руб" },
-  { keyword: "слаботоч", range: "250-550 руб" },
-  { keyword: "демонтаж", range: "120-350 руб" },
-  { keyword: "монтаж", range: "200-500 руб" },
+const MARKET_PRICE_RANGES: Array<{ keyword: string; range: string; type?: string }> = [
+  { keyword: "розет", range: "56-104 руб" },
+  { keyword: "выключ", range: "84-156 руб" },
+  { keyword: "штроб", range: "28-52 руб" },
+  { keyword: "кабел", range: "18-33 руб" },
+  { keyword: "щит", range: "280-520 руб" },
+  { keyword: "люстр", range: "140-260 руб" },
+  { keyword: "светиль", range: "105-195 руб" },
+  { keyword: "заземл", range: "2100-3900 руб" },
+  { keyword: "работа на высоте", range: "14-26%", type: "percent" },
+  { keyword: "демонтаж проводки", range: "35-65%", type: "percent" },
+  { keyword: "аварийн", range: "Договорная", type: "contract" },
 ];
 
 const normalize = (value: string) => value.toLowerCase().replace(/ё/g, "е");
@@ -88,7 +94,7 @@ const normalize = (value: string) => value.toLowerCase().replace(/ё/g, "е");
 const getMarketRange = (text: string) => {
   const normalized = normalize(text);
   const match = MARKET_PRICE_RANGES.find((entry) => normalized.includes(entry.keyword));
-  return match?.range || "150-300 руб";
+  return match?.range || "70-130 руб";
 };
 
 interface LineItemsEditorProps {
@@ -253,7 +259,8 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   const [selectedPreset, setSelectedPreset] = useState<LineItemPreset | null>(null);
   const [presetQuantity, setPresetQuantity] = useState("1");
   const [presetUnitPrice, setPresetUnitPrice] = useState("0");
-  const [estimationType, setEstimationType] = useState("per_unit");
+  const [estimationType, setEstimationType] = useState("piece");
+  const [presetComment, setPresetComment] = useState("");
   const isMobile = useIsMobile();
   
   const { data: presets } = useLineItemPresets();
@@ -273,7 +280,8 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
     setSelectedPreset(preset);
     setPresetQuantity(String(preset.quantity || 1));
     setPresetUnitPrice(String(preset.unit_price || 0));
-    setEstimationType("per_unit");
+    setEstimationType(preset.calc_default || "piece");
+    setPresetComment("");
     setConfigurePresetOpen(true);
   }, []);
 
@@ -291,14 +299,18 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
       preset: {
         ...selectedPreset,
         quantity,
-        unit_price: unitPrice,
+        unit_price: estimationType === "contract" ? 0 : unitPrice,
+        description: presetComment
+          ? `${selectedPreset.description}\nКомментарий: ${presetComment}`
+          : selectedPreset.description,
       },
     });
 
     setConfigurePresetOpen(false);
     setPresetsOpen(false);
     setSelectedPreset(null);
-  }, [addFromPreset, estimateId, presetQuantity, presetUnitPrice, selectedPreset]);
+    setPresetComment("");
+  }, [addFromPreset, estimateId, estimationType, presetComment, presetQuantity, presetUnitPrice, selectedPreset]);
 
   const handleUpdateField = useCallback((itemId: string, field: keyof LineItem, value: any) => {
     updateLineItem.mutate({ id: itemId, estimateId, [field]: value });
@@ -468,6 +480,11 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
               <div className="rounded-lg border p-3">
                 <p className="font-medium text-sm">{selectedPreset.name}</p>
                 <p className="text-xs text-muted-foreground mt-1">{selectedPreset.description}</p>
+                {selectedPreset.special_type && (
+                  <Badge variant="outline" className="mt-2 text-[11px]">
+                    Дополнительные работы
+                  </Badge>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -491,6 +508,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
                     step="0.01"
                     value={presetUnitPrice}
                     onChange={(e) => setPresetUnitPrice(e.target.value)}
+                    disabled={estimationType === "contract"}
                   />
                 </div>
               </div>
@@ -514,6 +532,16 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
               <div className="rounded-lg border p-3 text-sm">
                 <p className="font-medium">Рекомендуемая цена (диапазон рынка)</p>
                 <p className="text-muted-foreground mt-1">{getMarketRange(`${selectedPreset.name} ${selectedPreset.description}`)}</p>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="preset-comment">Комментарий</Label>
+                <Input
+                  id="preset-comment"
+                  value={presetComment}
+                  onChange={(e) => setPresetComment(e.target.value)}
+                  placeholder="Дополнительные условия..."
+                />
               </div>
             </div>
           )}

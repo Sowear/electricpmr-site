@@ -110,6 +110,14 @@ export interface LineItemPreset {
   markup_pct: number;
   category?: string;
   is_active: boolean;
+  market_min?: number | null;
+  market_max?: number | null;
+  keywords?: string[];
+  category_key?: string;
+  popular?: boolean;
+  special_type?: "height_markup" | "dismantle_percent" | "emergency_contract";
+  calc_default?: string;
+  source?: "builtin" | "custom";
 }
 
 export interface EstimateTemplate {

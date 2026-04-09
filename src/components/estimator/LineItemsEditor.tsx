@@ -75,6 +75,29 @@ const ESTIMATION_TYPES = [
   { value: "contract", label: "Договорная" },
 ];
 
+const PRICE_CACHE_KEY = "estimate_catalog_price_cache";
+
+const readPriceCache = () => {
+  if (typeof window === "undefined") return {} as Record<string, string>;
+  try {
+    const raw = window.localStorage.getItem(PRICE_CACHE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return typeof parsed === "object" && parsed ? (parsed as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+};
+
+const writePriceCache = (value: Record<string, string>) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(PRICE_CACHE_KEY, JSON.stringify(value));
+  } catch {
+    // ignore storage errors
+  }
+};
+
 const MARKET_PRICE_RANGES: Array<{ keyword: string; range: string; type?: string }> = [
   { keyword: "розет", range: "56-104 руб" },
   { keyword: "выключ", range: "84-156 руб" },
@@ -97,6 +120,15 @@ const getMarketRange = (text: string) => {
   return match?.range || "70-130 руб";
 };
 
+const parseRangeNumbers = (rangeText: string) => {
+  const matches = rangeText.match(/\d+/g);
+  if (!matches || matches.length < 2) return null;
+  const min = Number(matches[0]);
+  const max = Number(matches[1]);
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return null;
+  return { min, max };
+};
+
 interface LineItemsEditorProps {
   estimateId: string;
   lineItems: LineItem[];
@@ -106,7 +138,7 @@ interface LineItemsEditorProps {
 
 interface LineItemRowProps {
   item: LineItem;
-  onUpdate: (id: string, field: keyof LineItem, value: any) => void;
+  onUpdate: (id: string, field: keyof LineItem, value: LineItem[keyof LineItem]) => void;
   onDelete: (id: string) => void;
   onDuplicate: (item: LineItem) => void;
   readOnly?: boolean;
@@ -261,9 +293,15 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   const [presetUnitPrice, setPresetUnitPrice] = useState("0");
   const [estimationType, setEstimationType] = useState("piece");
   const [presetComment, setPresetComment] = useState("");
+  const [priceCache, setPriceCache] = useState<Record<string, string>>(() => readPriceCache());
   const isMobile = useIsMobile();
   
-  const { data: presets } = useLineItemPresets();
+  const {
+    data: presets,
+    isLoading: presetsLoading,
+    isError: presetsError,
+    error: presetsErrorObject,
+  } = useLineItemPresets();
   const addLineItem = useAddLineItem();
   const updateLineItem = useUpdateLineItem();
   const deleteLineItem = useDeleteLineItem();
@@ -279,11 +317,12 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   const handleAddPreset = useCallback((preset: LineItemPreset) => {
     setSelectedPreset(preset);
     setPresetQuantity(String(preset.quantity || 1));
-    setPresetUnitPrice(String(preset.unit_price || 0));
+    const cached = priceCache[preset.id];
+    setPresetUnitPrice(cached || String(preset.unit_price || 0));
     setEstimationType(preset.calc_default || "piece");
     setPresetComment("");
     setConfigurePresetOpen(true);
-  }, []);
+  }, [priceCache]);
 
   const handleConfirmPreset = useCallback(() => {
     if (!selectedPreset) return;
@@ -292,7 +331,14 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
     const unitPrice = parseFloat(presetUnitPrice);
 
     if (!Number.isFinite(quantity) || quantity <= 0) return;
-    if (!Number.isFinite(unitPrice) || unitPrice < 0) return;
+    if (!Number.isFinite(unitPrice) || (estimationType !== "contract" && unitPrice <= 0)) return;
+
+    const nextCache = {
+      ...priceCache,
+      [selectedPreset.id]: String(unitPrice),
+    };
+    setPriceCache(nextCache);
+    writePriceCache(nextCache);
 
     addFromPreset.mutate({
       estimateId,
@@ -304,15 +350,16 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
           ? `${selectedPreset.description}\nКомментарий: ${presetComment}`
           : selectedPreset.description,
       },
+      comment: presetComment || undefined,
     });
 
     setConfigurePresetOpen(false);
     setPresetsOpen(false);
     setSelectedPreset(null);
     setPresetComment("");
-  }, [addFromPreset, estimateId, estimationType, presetComment, presetQuantity, presetUnitPrice, selectedPreset]);
+  }, [addFromPreset, estimateId, estimationType, presetComment, presetQuantity, presetUnitPrice, priceCache, selectedPreset]);
 
-  const handleUpdateField = useCallback((itemId: string, field: keyof LineItem, value: any) => {
+  const handleUpdateField = useCallback((itemId: string, field: keyof LineItem, value: LineItem[keyof LineItem]) => {
     updateLineItem.mutate({ id: itemId, estimateId, [field]: value });
   }, [estimateId, updateLineItem]);
 
@@ -454,7 +501,14 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
             </TabsList>
             <TabsContent value="search" className="flex-1 min-h-0 px-6 pb-6 mt-4 overflow-hidden">
               <div className="h-full flex flex-col">
-                <PresetSearch presets={presets || []} onSelect={handleAddPreset} onAddNew={() => setPresetManagerOpen(true)} />
+                <PresetSearch
+                  presets={presets || []}
+                  isLoading={presetsLoading}
+                  isError={presetsError}
+                  errorMessage={presetsErrorObject instanceof Error ? presetsErrorObject.message : undefined}
+                  onSelect={handleAddPreset}
+                  onAddNew={() => setPresetManagerOpen(true)}
+                />
               </div>
             </TabsContent>
             <TabsContent value="manage" className="px-6 pb-6 mt-4 overflow-auto">
@@ -532,6 +586,41 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
               <div className="rounded-lg border p-3 text-sm">
                 <p className="font-medium">Рекомендуемая цена (диапазон рынка)</p>
                 <p className="text-muted-foreground mt-1">{getMarketRange(`${selectedPreset.name} ${selectedPreset.description}`)}</p>
+              </div>
+
+              <div className="rounded-lg border p-3 text-sm">
+                <p className="font-medium">Контроль цены</p>
+                {(() => {
+                  const rangeText = getMarketRange(`${selectedPreset.name} ${selectedPreset.description}`);
+                  const parsed = parseRangeNumbers(rangeText);
+                  const current = Number(presetUnitPrice);
+
+                  if (!parsed || !Number.isFinite(current) || estimationType === "contract") {
+                    return <p className="text-muted-foreground mt-1">Сравнение недоступно</p>;
+                  }
+
+                  if (current < parsed.min) {
+                    return <p className="mt-1 text-yellow-600">Ниже рынка ({parsed.min}-{parsed.max})</p>;
+                  }
+
+                  if (current > parsed.max) {
+                    return <p className="mt-1 text-red-600">Выше рынка ({parsed.min}-{parsed.max})</p>;
+                  }
+
+                  return <p className="mt-1 text-emerald-600">В рынке ({parsed.min}-{parsed.max})</p>;
+                })()}
+              </div>
+
+              <div className="rounded-lg border p-3 text-sm">
+                <p className="font-medium">Итог по позиции</p>
+                <p className="mt-1 tabular-nums">
+                  {(() => {
+                    const quantity = Number(presetQuantity);
+                    const unitPrice = Number(presetUnitPrice);
+                    if (!Number.isFinite(quantity) || !Number.isFinite(unitPrice)) return "0";
+                    return (quantity * (estimationType === "contract" ? 0 : unitPrice)).toLocaleString("ru-RU");
+                  })()} руб
+                </p>
               </div>
 
               <div className="space-y-1">

@@ -4,9 +4,11 @@ export type LineItemType = 'material' | 'labor' | 'service' | 'other';
 export interface LineItem {
   id: string;
   position: number;
+  catalog_item_id?: string | null;
   item_type: LineItemType;
   item_code?: string;
   description: string;
+  comment?: string;
   unit: string;
   quantity: number;
   unit_price: number;
@@ -110,8 +112,13 @@ export interface LineItemPreset {
   markup_pct: number;
   category?: string;
   is_active: boolean;
+  base_price?: number;
   market_min?: number | null;
   market_max?: number | null;
+  tags?: string[];
+  synonyms?: string[];
+  complexity?: "low" | "medium" | "high";
+  popularity_score?: number;
   keywords?: string[];
   category_key?: string;
   popular?: boolean;

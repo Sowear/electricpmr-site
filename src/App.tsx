@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
+import SeoRouterMeta from "./components/SeoRouterMeta";
 import ElectricianTiraspol from "./pages/ElectricianTiraspol";
 import ElectricianBendery from "./pages/ElectricianBendery";
 import ElectricianSlobozia from "./pages/ElectricianSlobozia";
@@ -35,6 +36,7 @@ const App = () => (
       <Sonner />
       <HelmetProvider>
         <BrowserRouter>
+        <SeoRouterMeta />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/features" element={<LazyComponent Component={Features} />} />

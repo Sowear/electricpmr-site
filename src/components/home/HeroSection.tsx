@@ -52,9 +52,9 @@ const HeroSection = () => {
             </div>
 
             {/* Headline */}
-            <h1 className="font-display text-[2.2rem] md:text-5xl lg:text-[3.55rem] font-bold leading-[1.15] tracking-[0.012em] mb-6 text-white animate-slide-up">
-              Электрика, в которой
-              <span className="block mt-1 text-gradient bg-primary text-[1.08em] font-extrabold tracking-[0.01em]">вы уверены на 100%</span>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 text-white animate-slide-up">
+              Электрика, в которой{" "}
+              <span className="text-gradient bg-primary text-right text-6xl font-sans">вы уверены на 100%</span>
             </h1>
 
             {/* Subheadline */}

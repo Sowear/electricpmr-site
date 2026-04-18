@@ -13,15 +13,15 @@ const HeroSection = () => {
   const trustBadges = [{
     icon: Users,
     title: "Работаем с объектами любого масштаба",
-    subtitle: "Коммерческие, жилые и смешанные объекты"
+    subtitle: "Коммерческие и жилые проекты"
   }, {
     icon: FileText,
     title: "Фиксируем объем и стоимость до старта",
-    subtitle: "Технически обоснованная смета до выхода на объект"
+    subtitle: "Смета согласуется до выхода на объект"
   }, {
     icon: CheckCircle2,
     title: "Соблюдаем нормы и регламент работ",
-    subtitle: "Контроль качества на каждом этапе реализации"
+    subtitle: "Технический контроль на каждом этапе"
   }, {
     icon: Shield,
     title: "Сроки, качество и гарантия закреплены",
@@ -44,7 +44,7 @@ const HeroSection = () => {
       {/* Content */}
       <div className="container-main relative z-20">
         <div className="py-20 md:py-28 lg:py-36">
-          <div className="max-w-2xl">
+          <div className="max-w-[48rem]">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8 animate-fade-in">
               <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
@@ -52,17 +52,16 @@ const HeroSection = () => {
             </div>
 
             {/* Headline */}
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.16] tracking-[0.015em] mb-6 text-white animate-slide-up">
-              Электромонтаж и системы
-              <span className="block mt-1 text-gradient bg-primary text-[1.08em] font-extrabold tracking-[0.01em]">электроснабжения под ключ в Приднестровье</span>
+            <h1 className="font-display text-[2.2rem] md:text-5xl lg:text-[3.55rem] font-bold leading-[1.15] tracking-[0.012em] mb-6 text-white animate-slide-up">
+              Электромонтаж и системы <span className="text-gradient bg-primary text-[1.08em] font-extrabold tracking-[0.01em]">электроснабжения под ключ в Приднестровье</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-white/85 mb-4 max-w-xl animate-slide-up leading-[1.4]" style={{
+            <p className="text-base md:text-lg text-white/80 mb-4 max-w-[42rem] animate-slide-up leading-[1.42]" style={{
             animationDelay: "0.1s"
           }}>
-              Проектируем, монтируем и сопровождаем электрические системы для коммерческих и жилых объектов.
-              Работаем по техническим нормам с контролем на каждом этапе.
+              Проектируем, монтируем и сопровождаем системы электроснабжения для коммерческих и жилых объектов.
+              Выполняем работы по техническим нормам с поэтапным контролем качества.
             </p>
 
             <p className="text-sm text-white/60 mb-10 max-w-xl animate-slide-up" style={{
@@ -75,29 +74,29 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 mb-16 animate-slide-up" style={{
             animationDelay: "0.2s"
           }}>
-              <Button size="lg" onClick={scrollToForm} className="btn-hero group text-base h-14 px-8">
+              <Button size="lg" onClick={scrollToForm} className="btn-hero group text-base h-13 md:h-14 px-7 md:px-8 shadow-[0_10px_26px_rgba(234,179,8,0.24)]">
                 Оставить заявку
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button size="lg" variant="outline" className="h-14 px-8 text-base border-2 border-white/30 bg-transparent text-white hover:bg-white/10 hover:border-white/50" onClick={() => setEmergencyOpen(true)}>
+              <Button size="lg" variant="outline" className="h-13 md:h-14 px-7 md:px-8 text-base border-2 border-white/25 bg-transparent text-white/90 hover:bg-white/10 hover:border-white/40" onClick={() => setEmergencyOpen(true)}>
                 <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
                 Получить расчёт
               </Button>
             </div>
+          </div>
 
              {/* Trust Badges */}
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:[grid-template-columns:repeat(4,minmax(260px,280px))] lg:justify-center animate-slide-up" style={{
+             <div className="w-full max-w-[1180px] mx-auto grid grid-cols-2 gap-4 md:gap-5 lg:[grid-template-columns:repeat(4,minmax(240px,280px))] lg:justify-center animate-slide-up" style={{
               animationDelay: "0.3s"
             }}>
-               {trustBadges.map((badge, index) => <div key={index} className="flex aspect-square flex-col items-center justify-center text-center p-6 md:p-7 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-primary/60 hover:shadow-[0_0_24px_rgba(234,179,8,0.2)] hover:scale-[1.03] transition-all duration-300">
+               {trustBadges.map((badge, index) => <div key={index} className="flex aspect-square flex-col items-center justify-center text-center p-6 md:p-7 rounded-xl bg-white/[0.07] border border-white/15 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-white/[0.09] hover:border-primary/65 hover:shadow-[0_0_24px_rgba(234,179,8,0.22)] hover:scale-[1.03] transition-all duration-300">
                    <div className="h-10 w-10 flex items-center justify-center mb-4 flex-shrink-0">
                      <badge.icon className="h-7 w-7 text-primary" />
                    </div>
-                   <span className="text-base md:text-lg font-bold text-white mb-2 max-w-[18ch] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] overflow-hidden leading-snug">{badge.title}</span>
+                   <span className="text-[15px] md:text-base font-bold text-white mb-2 max-w-[22ch] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] overflow-hidden leading-snug">{badge.title}</span>
                    <span className="text-xs md:text-sm text-white/65 max-w-[24ch] [display:-webkit-box] [-webkit-line-clamp:3] [-webkit-box-orient:vertical] overflow-hidden leading-relaxed">{badge.subtitle}</span>
-                 </div>)}
+                  </div>)}
              </div>
-          </div>
         </div>
       </div>
 

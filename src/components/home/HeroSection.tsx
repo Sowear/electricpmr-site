@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, Camera } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText } from "lucide-react";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import heroImage from "@/assets/hero-electricalhome.png";
 const HeroSection = () => {
@@ -11,21 +11,21 @@ const HeroSection = () => {
     });
   };
   const trustBadges = [{
-    icon: CheckCircle2,
-    title: "Работа по ПУЭ",
-    subtitle: "соблюдаем нормы безопасности"
-  }, {
-    icon: Shield,
-    title: "До 5 лет",
-    subtitle: "гарантии на работы"
-  }, {
     icon: Users,
-    title: "Без посредников",
-    subtitle: "работаем своей командой"
+    title: "Коммерческие и жилые объекты",
+    subtitle: "работаем с объектами разного масштаба"
   }, {
     icon: FileText,
-    title: "Чёткая смета",
-    subtitle: "без скрытых доплат"
+    title: "Технически обоснованная смета",
+    subtitle: "фиксируем объем и стоимость до старта"
+  }, {
+    icon: CheckCircle2,
+    title: "Контроль на каждом этапе",
+    subtitle: "соблюдаем нормы и регламент работ"
+  }, {
+    icon: Shield,
+    title: "Ответственность по договору",
+    subtitle: "сроки, качество и гарантия закреплены"
   }];
   return <section className="relative min-h-[90vh] overflow-hidden bg-industrial-dark">
       {/* Gradient overlays */}
@@ -53,16 +53,22 @@ const HeroSection = () => {
 
             {/* Headline */}
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 text-white animate-slide-up">
-              Электрика, в которой{" "}
-              <span className="text-gradient bg-primary text-right text-6xl font-sans">вы уверены на 100%</span>
+              Электромонтаж и системы
+              <span className="block text-gradient bg-primary">электроснабжения под ключ в Приднестровье</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-white/70 mb-10 max-w-xl animate-slide-up leading-relaxed" style={{
+            <p className="text-lg md:text-xl text-white/70 mb-4 max-w-xl animate-slide-up leading-relaxed" style={{
             animationDelay: "0.1s"
           }}>
-              Проектируем, монтируем и обслуживаем электросети 
-              в Приднестровье по современным стандартам безопасности
+              Проектируем, монтируем и сопровождаем электрические системы для коммерческих и жилых объектов.
+              Работаем по техническим нормам с контролем на каждом этапе.
+            </p>
+
+            <p className="text-sm text-white/60 mb-10 max-w-xl animate-slide-up" style={{
+            animationDelay: "0.15s"
+          }}>
+              Работаем по договору, с фиксированной зоной ответственности и прозрачной структурой стоимости.
             </p>
 
             {/* CTA Buttons */}
@@ -70,12 +76,12 @@ const HeroSection = () => {
             animationDelay: "0.2s"
           }}>
               <Button size="lg" onClick={scrollToForm} className="btn-hero group text-base h-14 px-8">
-                Получить расчёт бесплатно
+                Оставить заявку
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button size="lg" variant="outline" className="h-14 px-8 text-base border-2 border-white/30 bg-transparent text-white hover:bg-white/10 hover:border-white/50" onClick={() => setEmergencyOpen(true)}>
                 <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
-                Аварийный вызов
+                Получить расчёт
               </Button>
             </div>
 

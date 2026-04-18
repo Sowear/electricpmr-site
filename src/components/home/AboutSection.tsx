@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useAnimation } from "framer-motion";
 import { Shield, Award, Clock, CheckCircle2 } from "lucide-react";
-import aboutPanelImage from "@/assets/about-electrical-panel.png";
+import aboutPanelImage from "@/assets/about-electrical-96panel.png";
 
 interface CounterProps {
   end: number;

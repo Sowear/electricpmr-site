@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, Camera } from "lucide-react";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
-import heroImage from "@/assets/hero-electrical-panel.png";
+import heroImage from "@/assets/hero-electricalhome.png";
 const HeroSection = () => {
   const [emergencyOpen, setEmergencyOpen] = useState(false);
   const scrollToForm = () => {

@@ -1,16 +1,11 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Keep private/admin routes out of indexing
+Disallow: /auth
+Disallow: /dashboard
+Disallow: /projects
+Disallow: /estimator
+Disallow: /admin
 
 Sitemap: https://electricpmr.vercel.app/sitemap.xml

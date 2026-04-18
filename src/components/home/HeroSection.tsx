@@ -53,8 +53,9 @@ const HeroSection = () => {
 
             {/* Headline */}
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 text-white animate-slide-up">
-              Электрика, в которой{" "}
-              <span className="text-gradient bg-primary text-right text-6xl font-sans">вы уверены на 100%</span>
+              Электрика, в которой
+              <br />
+              <span className="text-gradient bg-primary text-right text-6xl font-sans md:whitespace-nowrap">вы уверены на 100%</span>
             </h1>
 
             {/* Subheadline */}

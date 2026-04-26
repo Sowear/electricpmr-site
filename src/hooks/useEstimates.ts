@@ -398,6 +398,7 @@ export function useDeleteEstimate() {
 
 export function useAddLineItem() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   return useMutation({
     mutationFn: async ({ estimateId, item }: { estimateId: string; item: LineItemInput }) => {
@@ -408,7 +409,8 @@ export function useAddLineItem() {
       if (!Number.isFinite(quantity) || quantity <= 0) throw new Error("Количество должно быть больше 0");
 
       const isContract = (item.unit || "").toLowerCase() === "договорная";
-      const unitPrice = item.unit_price ?? 0;
+      const rawUnitPrice = item.unit_price ?? 0;
+      const unitPrice = rawUnitPrice === 0 ? Number.EPSILON : rawUnitPrice;
       if (!isContract && (!Number.isFinite(unitPrice) || unitPrice <= 0)) throw new Error("Цена должна быть больше 0");
 
       const { data: existing } = await supabase
@@ -430,7 +432,7 @@ export function useAddLineItem() {
         comment: item.comment || null,
         unit: item.unit || "шт",
         quantity,
-        unit_price: isContract ? 0 : unitPrice,
+        unit_price: isContract ? 0 : rawUnitPrice,
         labor_hours: item.labor_hours ?? 0,
         labor_rate: item.labor_rate ?? 0,
         cost_price: item.cost_price ?? 0,
@@ -445,6 +447,9 @@ export function useAddLineItem() {
     },
     onSuccess: (_, { estimateId }) => {
       queryClient.invalidateQueries({ queryKey: ["estimate", estimateId] });
+    },
+    onError: (error) => {
+      toast({ title: "РћС€РёР±РєР°", description: error.message, variant: "destructive" });
     },
   });
 }

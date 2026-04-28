@@ -410,7 +410,9 @@ export function useAddLineItem() {
 
       const isContract = (item.unit || "").toLowerCase() === "договорная";
       const rawUnitPrice = item.unit_price ?? 0;
-      const unitPrice = rawUnitPrice === 0 ? Number.EPSILON : rawUnitPrice;
+      if (!Number.isFinite(rawUnitPrice)) throw new Error("Invalid price value");
+      if (rawUnitPrice < 0) throw new Error("Price cannot be negative");
+      const unitPrice = rawUnitPrice === 0 ? 1 : Number(rawUnitPrice);
       if (!isContract && (!Number.isFinite(unitPrice) || unitPrice <= 0)) throw new Error("Цена должна быть больше 0");
 
       const { data: existing } = await supabase
@@ -426,10 +428,8 @@ export function useAddLineItem() {
         estimate_id: estimateId,
         position: nextPosition,
         item_type: item.item_type || "service",
-        catalog_item_id: item.catalog_item_id || null,
         item_code: item.item_code,
         description,
-        comment: item.comment || null,
         unit: item.unit || "шт",
         quantity,
         unit_price: isContract ? 0 : rawUnitPrice,
@@ -441,7 +441,26 @@ export function useAddLineItem() {
         tax_pct: item.tax_pct ?? 0,
       };
 
-      const { data, error } = await supabase.from("estimate_line_items").insert(payload).select().single();
+      if (item.catalog_item_id) {
+        payload.catalog_item_id = item.catalog_item_id;
+      }
+
+      if (item.comment?.trim()) {
+        payload.comment = item.comment.trim();
+      }
+
+      const insertLineItem = (nextPayload: EstimateLineItemInsert) =>
+        supabase.from("estimate_line_items").insert(nextPayload).select().single();
+
+      let { data, error } = await insertLineItem(payload);
+
+      if (error && /catalog_item_id|comment/i.test(error.message) && /schema cache|column/i.test(error.message)) {
+        const fallbackPayload = { ...payload };
+        delete fallbackPayload.catalog_item_id;
+        delete fallbackPayload.comment;
+        ({ data, error } = await insertLineItem(fallbackPayload));
+      }
+
       if (error) throw error;
       return mapLineItemRow(data as EstimateLineItemRow);
     },

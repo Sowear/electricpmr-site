@@ -2,8 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Zap, Menu, X, LogOut, AlertTriangle, Calculator, FolderOpen } from "lucide-react";
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { supabase, type User } from "@/integrations/supabase/client";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import NotificationBell from "./NotificationBell";
 

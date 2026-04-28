@@ -4,15 +4,14 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { supabase, type User } from "@/integrations/supabase/client";
 import { Loader2, Search, Users, FileText, Clock, CheckCircle2, Wrench, Filter, Image, Shield, Crown, UserCog } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useUserRole, canChangeRole, type UserRole, SUPER_ADMIN_ID } from "@/hooks/useUserRole";
+import { useUserRole, canChangeRole, type UserRole } from "@/hooks/useUserRole";
 
 type RequestStatus = "new" | "in_progress" | "done";
 

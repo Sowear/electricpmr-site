@@ -1,0 +1,16 @@
+name = "electricpmr"
+main = "cloudflare/worker.ts"
+compatibility_date = "2026-04-29"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "electricpmr"
+database_id = "replace-with-your-d1-database-id"
+
+[[r2_buckets]]
+binding = "WORK_EXAMPLES_BUCKET"
+bucket_name = "electricpmr-work-examples"
+
+[vars]
+APP_BASE_URL = "http://127.0.0.1:8787"
+SESSION_TTL_DAYS = "30"

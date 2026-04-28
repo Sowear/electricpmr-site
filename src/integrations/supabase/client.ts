@@ -1,3 +1,6 @@
+import { createClient, type User as SupabaseAuthUser } from "@supabase/supabase-js";
+import type { Database } from "./types";
+
 type JsonRecord = Record<string, unknown>;
 
 export type AuthUser = {
@@ -43,7 +46,11 @@ class ApiError extends Error {
 }
 
 const SESSION_STORAGE_KEY = "electricpmr.cloudflare.session";
-const API_BASE_URL = String(import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+const SUPABASE_URL = String(import.meta.env.VITE_SUPABASE_URL || "").trim();
+const SUPABASE_PUBLISHABLE_KEY = String(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "").trim();
+const RAW_API_BASE_URL = String(import.meta.env.VITE_API_BASE_URL || "").trim();
+const API_BASE_URL = RAW_API_BASE_URL.replace(/\/+$/, "").replace(/\/api$/, "");
+const USE_CLOUDFLARE_API = API_BASE_URL.length > 0;
 const authSubscribers = new Set<(event: AuthChangeEvent, session: AuthSession | null) => void>();
 
 const isBrowser = typeof window !== "undefined";
@@ -550,7 +557,7 @@ const storage = {
   },
 };
 
-export const supabase = {
+const cloudflareClient = {
   auth,
   functions,
   storage,
@@ -577,4 +584,17 @@ export const supabase = {
   },
 };
 
-export type User = AuthUser;
+const supabaseClient =
+  SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY
+    ? createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+        auth: {
+          storage: typeof window !== "undefined" ? window.localStorage : undefined,
+          persistSession: true,
+          autoRefreshToken: true,
+        },
+      })
+    : null;
+
+export const supabase = (USE_CLOUDFLARE_API || !supabaseClient ? cloudflareClient : supabaseClient) as typeof cloudflareClient;
+
+export type User = AuthUser | SupabaseAuthUser;

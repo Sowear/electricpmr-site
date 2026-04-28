@@ -1,11 +1,11 @@
 name = "electricpmr"
 main = "cloudflare/worker.ts"
-compatibility_date = "2026-04-29"
+compatibility_date = "2025-04-29"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "electricpmr"
-database_id = "replace-with-your-d1-database-id"
+database_id = "9aeea559-27c5-4684-a5aa-1883beb65750"
 
 [[r2_buckets]]
 binding = "WORK_EXAMPLES_BUCKET"

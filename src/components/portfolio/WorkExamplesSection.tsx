@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { useWorkExamples, WorkExample } from "@/hooks/useWorkExamples";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Eye, ArrowRight } from "lucide-react";
+import { ArrowRight, Eye } from "lucide-react";
 import WorkExampleLightbox from "./WorkExampleLightbox";
 
 const WorkExamplesSection = () => {
@@ -11,6 +11,11 @@ const WorkExamplesSection = () => {
   const [selectedExample, setSelectedExample] = useState<WorkExample | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const hasExamples = (examples?.length ?? 0) > 0;
+
+  if (!isLoading && !hasExamples) {
+    return null;
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -35,14 +40,14 @@ const WorkExamplesSection = () => {
   };
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      id="examples" 
+      id="examples"
       className="py-20 lg:py-28 bg-muted/30"
     >
       <div className="container-main">
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="text-center max-w-2xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -67,14 +72,14 @@ const WorkExamplesSection = () => {
               <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
             ))}
           </div>
-        ) : examples && examples.length > 0 ? (
+        ) : (
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
             variants={containerVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
           >
-            {examples.map((example) => (
+            {examples!.map((example) => (
               <motion.div
                 key={example.id}
                 variants={itemVariants}
@@ -89,6 +94,7 @@ const WorkExamplesSection = () => {
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
                     loading="lazy"
                   />
+
                   {/* After Image */}
                   <img
                     src={example.after_image_url}
@@ -96,10 +102,10 @@ const WorkExamplesSection = () => {
                     className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                     loading="lazy"
                   />
-                  
+
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
+
                   {/* Labels */}
                   <div className="absolute top-3 left-3 flex gap-2">
                     <span className="px-2 py-1 text-xs font-medium bg-black/60 text-white rounded-md backdrop-blur-sm">
@@ -109,7 +115,7 @@ const WorkExamplesSection = () => {
                       ПОСЛЕ
                     </span>
                   </div>
-                  
+
                   {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                     <h3 className="text-white font-semibold text-lg mb-1">
@@ -121,7 +127,7 @@ const WorkExamplesSection = () => {
                       </p>
                     )}
                   </div>
-                  
+
                   {/* View Icon */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300">
                     <Eye className="h-6 w-6 text-primary-foreground" />
@@ -139,15 +145,11 @@ const WorkExamplesSection = () => {
               </motion.div>
             ))}
           </motion.div>
-        ) : (
-          <div className="text-center py-16 text-muted-foreground">
-            <p>Примеры работ скоро появятся</p>
-          </div>
         )}
 
         {/* CTA */}
-        {examples && examples.length > 0 && (
-          <motion.div 
+        {hasExamples && (
+          <motion.div
             className="text-center mt-12"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}

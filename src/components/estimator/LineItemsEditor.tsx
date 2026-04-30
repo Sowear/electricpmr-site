@@ -75,28 +75,7 @@ const ESTIMATION_TYPES = [
   { value: "contract", label: "Договорная" },
 ];
 
-const PRICE_CACHE_KEY = "estimate_catalog_price_cache";
 
-const readPriceCache = () => {
-  if (typeof window === "undefined") return {} as Record<string, string>;
-  try {
-    const raw = window.localStorage.getItem(PRICE_CACHE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return typeof parsed === "object" && parsed ? (parsed as Record<string, string>) : {};
-  } catch {
-    return {};
-  }
-};
-
-const writePriceCache = (value: Record<string, string>) => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(PRICE_CACHE_KEY, JSON.stringify(value));
-  } catch {
-    // ignore storage errors
-  }
-};
 
 const MARKET_PRICE_RANGES: Array<{ keyword: string; range: string; type?: string }> = [
   { keyword: "розет", range: "56-104 руб" },
@@ -171,6 +150,26 @@ const LineItemRow = memo(({
     (value: number) => onUpdate(item.id, "unit_price", value),
     300
   );
+
+  React.useEffect(() => {
+    if (localDescription !== item.description) {
+      setLocalDescription(item.description);
+    }
+  }, [item.description]);
+
+  React.useEffect(() => {
+    const num = parseFloat(localQuantity);
+    if (num !== item.quantity && !(isNaN(num) && item.quantity === 0)) {
+      setLocalQuantity(String(item.quantity));
+    }
+  }, [item.quantity]);
+
+  React.useEffect(() => {
+    const num = parseFloat(localPrice);
+    if (num !== item.unit_price && !(isNaN(num) && item.unit_price === 0)) {
+      setLocalPrice(String(item.unit_price));
+    }
+  }, [item.unit_price]);
 
   const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -293,7 +292,6 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   const [presetUnitPrice, setPresetUnitPrice] = useState("0");
   const [estimationType, setEstimationType] = useState("piece");
   const [presetComment, setPresetComment] = useState("");
-  const [priceCache, setPriceCache] = useState<Record<string, string>>(() => readPriceCache());
   const isMobile = useIsMobile();
   
   const {
@@ -317,12 +315,11 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   const handleAddPreset = useCallback((preset: LineItemPreset) => {
     setSelectedPreset(preset);
     setPresetQuantity(String(preset.quantity || 1));
-    const cached = priceCache[preset.id];
-    setPresetUnitPrice(cached || String(preset.unit_price || 0));
+    setPresetUnitPrice(String(preset.unit_price || 0));
     setEstimationType(preset.calc_default || "piece");
     setPresetComment("");
     setConfigurePresetOpen(true);
-  }, [priceCache]);
+  }, []);
 
   const handleConfirmPreset = useCallback(() => {
     if (!selectedPreset) return;
@@ -331,14 +328,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
     const unitPrice = parseFloat(presetUnitPrice);
 
     if (!Number.isFinite(quantity) || quantity <= 0) return;
-    if (!Number.isFinite(unitPrice) || (estimationType !== "contract" && unitPrice <= 0)) return;
-
-    const nextCache = {
-      ...priceCache,
-      [selectedPreset.id]: String(unitPrice),
-    };
-    setPriceCache(nextCache);
-    writePriceCache(nextCache);
+    if (!Number.isFinite(unitPrice) || (estimationType !== "contract" && unitPrice < 0)) return;
 
     addFromPreset.mutate({
       estimateId,
@@ -346,9 +336,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
         ...selectedPreset,
         quantity,
         unit_price: estimationType === "contract" ? 0 : unitPrice,
-        description: presetComment
-          ? `${selectedPreset.description}\nКомментарий: ${presetComment}`
-          : selectedPreset.description,
+        description: selectedPreset.description,
       },
       comment: presetComment || undefined,
     });
@@ -357,7 +345,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
     setPresetsOpen(false);
     setSelectedPreset(null);
     setPresetComment("");
-  }, [addFromPreset, estimateId, estimationType, presetComment, presetQuantity, presetUnitPrice, priceCache, selectedPreset]);
+  }, [addFromPreset, estimateId, estimationType, presetComment, presetQuantity, presetUnitPrice, selectedPreset]);
 
   const handleUpdateField = useCallback((itemId: string, field: keyof LineItem, value: LineItem[keyof LineItem]) => {
     updateLineItem.mutate({ id: itemId, estimateId, [field]: value });

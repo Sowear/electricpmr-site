@@ -86,6 +86,31 @@ const mapCatalogRowToPreset = (row: CatalogItemRow): LineItemPreset => ({
   is_active: !row.is_hidden,
 });
 
+const calculateEstimateTotals = (estimate: Estimate, lineItems: LineItem[]) => {
+  const subtotal = lineItems.reduce((sum, item) => sum + (item.line_total || 0), 0);
+  const globalDiscountPct = estimate.global_discount_pct || 0;
+  const globalDiscountAmount = estimate.global_discount_amount || 0;
+  const globalTaxPct = estimate.global_tax_pct || 0;
+  const extraFees = estimate.extra_fees || 0;
+  const depositPct = estimate.deposit_pct || 0;
+  const depositAmount = estimate.deposit_amount || 0;
+
+  const globalDiscount = Math.max(subtotal * (globalDiscountPct / 100), globalDiscountAmount);
+  const taxBase = subtotal - globalDiscount;
+  const taxAmount = taxBase * (globalTaxPct / 100);
+  const total = taxBase + taxAmount + extraFees;
+  const deposit = Math.max(total * (depositPct / 100), depositAmount);
+  const balanceDue = total - deposit;
+
+  return {
+    subtotal: Math.round(subtotal * 100) / 100,
+    tax_amount: Math.round(taxAmount * 100) / 100,
+    total: Math.round(total * 100) / 100,
+    deposit_amount: Math.round(deposit * 100) / 100,
+    balance_due: Math.round(balanceDue * 100) / 100,
+  };
+};
+
 const mapEstimateRow = (row: EstimateRow): Estimate => row as unknown as Estimate;
 const mapLineItemRow = (row: EstimateLineItemRow): LineItem => row as unknown as LineItem;
 
@@ -410,10 +435,9 @@ export function useAddLineItem() {
 
       const isContract = (item.unit || "").toLowerCase() === "договорная";
       const rawUnitPrice = item.unit_price ?? 0;
-      if (!Number.isFinite(rawUnitPrice)) throw new Error("Invalid price value");
-      if (rawUnitPrice < 0) throw new Error("Price cannot be negative");
-      const unitPrice = rawUnitPrice === 0 ? 1 : Number(rawUnitPrice);
-      if (!isContract && (!Number.isFinite(unitPrice) || unitPrice <= 0)) throw new Error("Цена должна быть больше 0");
+      if (!Number.isFinite(rawUnitPrice) || rawUnitPrice < 0) {
+        throw new Error("Недопустимая цена");
+      }
 
       const { data: existing } = await supabase
         .from("estimate_line_items")
@@ -449,17 +473,7 @@ export function useAddLineItem() {
         payload.comment = item.comment.trim();
       }
 
-      const insertLineItem = (nextPayload: EstimateLineItemInsert) =>
-        supabase.from("estimate_line_items").insert(nextPayload).select().single();
-
-      let { data, error } = await insertLineItem(payload);
-
-      if (error && /catalog_item_id|comment/i.test(error.message) && /schema cache|column/i.test(error.message)) {
-        const fallbackPayload = { ...payload };
-        delete fallbackPayload.catalog_item_id;
-        delete fallbackPayload.comment;
-        ({ data, error } = await insertLineItem(fallbackPayload));
-      }
+      const { data, error } = await supabase.from("estimate_line_items").insert(payload).select().single();
 
       if (error) throw error;
       return mapLineItemRow(data as EstimateLineItemRow);
@@ -468,7 +482,7 @@ export function useAddLineItem() {
       queryClient.invalidateQueries({ queryKey: ["estimate", estimateId] });
     },
     onError: (error) => {
-      toast({ title: "РћС€РёР±РєР°", description: error.message, variant: "destructive" });
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
     },
   });
 }
@@ -491,11 +505,14 @@ export function useUpdateLineItem() {
 
       queryClient.setQueryData<EstimateCache>(["estimate", estimateId], (old) => {
         if (!old?.line_items) return old;
+        const updatedLineItems = old.line_items.map((li) =>
+          li.id === id ? { ...li, ...updates, line_total: calculateLineTotal({ ...li, ...updates }) } : li,
+        );
+        const totals = calculateEstimateTotals(old, updatedLineItems as LineItem[]);
         return {
           ...old,
-          line_items: old.line_items.map((li) =>
-            li.id === id ? { ...li, ...updates, line_total: calculateLineTotal({ ...li, ...updates }) } : li,
-          ),
+          ...totals,
+          line_items: updatedLineItems,
         };
       });
 
@@ -525,9 +542,12 @@ export function useDeleteLineItem() {
 
       queryClient.setQueryData<EstimateCache>(["estimate", estimateId], (old) => {
         if (!old?.line_items) return old;
+        const updatedLineItems = old.line_items.filter((li) => li.id !== id);
+        const totals = calculateEstimateTotals(old, updatedLineItems as LineItem[]);
         return {
           ...old,
-          line_items: old.line_items.filter((li) => li.id !== id),
+          ...totals,
+          line_items: updatedLineItems,
         };
       });
 

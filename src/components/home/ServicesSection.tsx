@@ -76,8 +76,8 @@ const ServicesSection = () => {
                   
                   <div className="space-y-3 mb-8">
                     {currentData.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-center gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
                         <span className="text-sm font-medium text-foreground/90">{feature}</span>
                       </div>
                     ))}

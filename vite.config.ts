@@ -3,8 +3,6 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-import prerender from '@prerenderer/rollup-plugin';
-import JSDOMRenderer from '@prerenderer/renderer-jsdom';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
@@ -29,20 +27,6 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    prerender({
-      staticDir: path.join(__dirname, 'dist'),
-      routes: [
-        '/',
-        '/uslugi',
-        '/stoimost',
-        '/elektrik-v-tiraspole',
-        '/elektrik-v-benderah',
-        '/elektrik-v-slobodzee'
-      ],
-      renderer: new JSDOMRenderer({
-        renderAfterTime: 5000,
-      })
-    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'logo-192x192.png', 'logo-512x512.png'],

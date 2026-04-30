@@ -1517,6 +1517,126 @@ const handleRpc = async (request: Request, env: Env, session: SessionContext | n
     return json({ data: changed });
   }
 
+  if (name === "get_projects_with_counts") {
+    const { results } = await env.DB.prepare(`
+      SELECT p.*,
+        (SELECT COUNT(*) FROM estimates e WHERE e.project_id = p.id AND e.status != 'rejected') as estimates_count
+      FROM projects p
+      ORDER BY p.created_at DESC
+    `).all();
+    return json({ data: results });
+  }
+
+  if (name === "get_project_kpi") {
+    const projectId = String(body.p_project_id || "");
+    if (!projectId) return textError("Project ID required", 400);
+
+    const incomesRow = await env.DB.prepare(
+      "SELECT COALESCE(SUM(amount), 0) as total FROM finance_entries WHERE project_id = ? AND type = 'income'"
+    ).bind(projectId).first<{ total: number }>();
+
+    const expensesRow = await env.DB.prepare(
+      "SELECT COALESCE(SUM(amount), 0) as total FROM finance_entries WHERE project_id = ? AND type = 'expense'"
+    ).bind(projectId).first<{ total: number }>();
+
+    const estimatesRow = await env.DB.prepare(
+      "SELECT COUNT(*) as count FROM estimates WHERE project_id = ? AND status != 'rejected'"
+    ).bind(projectId).first<{ count: number }>();
+
+    const objectsRow = await env.DB.prepare(
+      "SELECT COUNT(*) as count FROM project_objects WHERE project_id = ?"
+    ).bind(projectId).first<{ count: number }>();
+
+    return json({
+      data: {
+        totalRevenue: Number(incomesRow?.total || 0),
+        totalExpenses: Number(expensesRow?.total || 0),
+        netProfit: Number(incomesRow?.total || 0) - Number(expensesRow?.total || 0),
+        activeEstimates: Number(estimatesRow?.count || 0),
+        objectsCount: Number(objectsRow?.count || 0),
+      }
+    });
+  }
+
+  if (name === "duplicate_estimate") {
+    const estimateId = String(body.p_estimate_id || "");
+    const title = body.p_title ? String(body.p_title) : null;
+    const actorId = session?.user.id || null;
+
+    const original = await fetchRowById(env, "estimates", estimateId);
+    if (!original) return textError("Estimate not found", 404);
+
+    let nextVersion = 1;
+    if (original.project_id) {
+      const versionsRow = await env.DB.prepare(
+        "SELECT MAX(version) as max_v FROM estimates WHERE project_id = ?"
+      ).bind(original.project_id).first<{ max_v: number }>();
+      nextVersion = (versionsRow?.max_v || 0) + 1;
+    } else {
+      nextVersion = Number(original.version || 1) + 1;
+    }
+
+    const newId = createId();
+    const estimateSuffix = `${Date.now()}`.slice(-6);
+    const newEstimateNumber = `EST-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${estimateSuffix}`;
+    const newPublicToken = createToken().slice(0, 24);
+
+    const preparedEstimate = await prepareInsertRecord("estimates", {
+      ...original,
+      id: newId,
+      estimate_number: newEstimateNumber,
+      title: title || original.title,
+      version: nextVersion,
+      status: "draft",
+      public_token: newPublicToken,
+      created_by: actorId,
+      paid_amount: 0,
+      prepayment_confirmed: 0,
+      prepayment_confirmed_at: null,
+      prepayment_confirmed_by: null,
+      sent_at: null,
+      viewed_at: null,
+      approved_at: null,
+      locked: 0,
+    }, session, env);
+
+    const estEntries = Object.entries(preparedEstimate);
+    const estCols = estEntries.map(([col]) => col);
+    
+    const lineItems = await fetchRows(env, "estimate_line_items", [{ op: "eq", column: "estimate_id", value: estimateId }]);
+    
+    const preparedItems = [];
+    for (const li of lineItems) {
+      const { id, estimate_id, created_at, updated_at, ...rest } = li;
+      const prep = await prepareInsertRecord("estimate_line_items", {
+        ...rest,
+        estimate_id: newId
+      }, session, env);
+      preparedItems.push(prep);
+    }
+
+    const statements = [];
+    statements.push(
+      env.DB.prepare(`INSERT INTO estimates (${estCols.join(", ")}) VALUES (${estCols.map(() => "?").join(", ")})`)
+        .bind(...estEntries.map(([, v]) => v))
+    );
+
+    for (const prep of preparedItems) {
+      const liEntries = Object.entries(prep);
+      const liCols = liEntries.map(([col]) => col);
+      statements.push(
+        env.DB.prepare(`INSERT INTO estimate_line_items (${liCols.join(", ")}) VALUES (${liCols.map(() => "?").join(", ")})`)
+          .bind(...liEntries.map(([, v]) => v))
+      );
+    }
+
+    await env.DB.batch(statements);
+    await recalculateEstimate(env, newId);
+
+    const created = await fetchRowById(env, "estimates", newId);
+    return json({ data: created });
+  }
+
   return textError("Unknown RPC", 404);
 };
 

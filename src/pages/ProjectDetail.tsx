@@ -23,6 +23,7 @@ import {
   Receipt,
   Wallet,
   Info,
+  Trash2,
 } from "lucide-react";
 import {
   Tooltip,
@@ -36,6 +37,8 @@ import {
   useCreateProjectObject,
   useProjectObjects,
   useProjects,
+  useProjectKpi,
+  useDeleteProjectObject,
   type ProjectObject,
 } from "@/hooks/useProjects";
 import { format } from "date-fns";
@@ -81,6 +84,7 @@ const ProjectDetail = () => {
 
   const { data: objects, isLoading: objectsLoading } = useProjectObjects(projectId);
   const createProjectObject = useCreateProjectObject();
+  const deleteProjectObject = useDeleteProjectObject();
 
   const { data: estimates, isLoading: estimatesLoading } = useQuery({
     queryKey: ["project-estimates", projectId],
@@ -137,19 +141,15 @@ const ProjectDetail = () => {
     return map;
   }, [objects]);
 
-  const kpi = useMemo(() => {
-    const incomes = (financeEntries || []).filter((x: any) => x.type === "income");
-    const expenses = (financeEntries || []).filter((x: any) => x.type === "expense");
-    const totalRevenue = incomes.reduce((sum: number, x: any) => sum + Number(x.amount || 0), 0);
-    const totalExpenses = expenses.reduce((sum: number, x: any) => sum + Number(x.amount || 0), 0);
-    return {
-      totalRevenue,
-      totalExpenses,
-      netProfit: totalRevenue - totalExpenses,
-      activeEstimates: (estimates || []).filter((e: any) => e.status !== "rejected").length,
-      objectsCount: (objects || []).length,
-    };
-  }, [financeEntries, estimates, objects]);
+  const { data: kpiData } = useProjectKpi(projectId);
+
+  const kpi = kpiData || {
+    totalRevenue: 0,
+    totalExpenses: 0,
+    netProfit: 0,
+    activeEstimates: 0,
+    objectsCount: 0,
+  };
 
   const handleCreateObject = async () => {
     if (!projectId || !newObject.title.trim()) return;
@@ -377,7 +377,24 @@ const ProjectDetail = () => {
                            </TooltipProvider>
                          </div>
                           </div>
-                          <Badge variant="outline">{obj.status}</Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">{obj.status}</Badge>
+                            {canManageEstimates && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm("Удалить этот объект? Связанные данные (сметы, платежи) могут потерять привязку.")) {
+                                    deleteProjectObject.mutate({ objectId: obj.id, projectId: projectId });
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
                           <div>Доход: <span className="font-medium">{objIncome.toLocaleString("ru-RU")}</span></div>

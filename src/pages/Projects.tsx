@@ -67,29 +67,7 @@ const Projects = () => {
   const createEstimateFromProject = useCreateEstimateFromProject();
   const { canManageEstimates } = useUserRole();
 
-  // Fetch linked estimates count per project
-  const { data: projectEstimateCounts } = useQuery({
-    queryKey: ["project-estimate-counts"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("estimates")
-        .select("project_id, status, total");
 
-      if (error) throw error;
-      
-      const counts: Record<string, { count: number; latestStatus?: string; latestTotal?: number }> = {};
-      (data || []).forEach((e: { project_id: string; status: string; total: number }) => {
-        if (!e.project_id) return;
-        if (!counts[e.project_id]) {
-          counts[e.project_id] = { count: 0 };
-        }
-        counts[e.project_id].count++;
-        counts[e.project_id].latestStatus = e.status;
-        counts[e.project_id].latestTotal = e.total;
-      });
-      return counts;
-    },
-  });
 
   const filteredProjects = projects?.filter((p) => {
     const q = searchQuery.toLowerCase();
@@ -172,7 +150,7 @@ const Projects = () => {
               </div>
             ) : filteredProjects && filteredProjects.length > 0 ? (
               filteredProjects.map((project) => {
-                const ec = projectEstimateCounts?.[project.id];
+                const ec = project.estimates_count ? { count: project.estimates_count } : null;
                 const statusInfo = STATUS_LABELS[project.status] || STATUS_LABELS.new;
                 
                 return (
@@ -360,7 +338,7 @@ const Projects = () => {
                   </TableHeader>
                   <TableBody>
                     {filteredProjects.map((project) => {
-                      const ec = projectEstimateCounts?.[project.id];
+                      const ec = project.estimates_count ? { count: project.estimates_count } : null;
                       const statusInfo = STATUS_LABELS[project.status] || STATUS_LABELS.new;
 
                       return (

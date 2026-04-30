@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import heroImage from "@/assets/hero-electricalhome.png";
 
@@ -45,6 +45,35 @@ const imageVariants = {
     scale: 1,
     transition: { duration: 1, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.3 },
   },
+};
+
+const TextFlipper = ({ words }: { words: string[] }) => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((current) => (current + 1) % words.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [words.length]);
+
+  return (
+    <div className="relative inline-block overflow-hidden h-[1.1em] align-bottom min-w-[250px] lg:min-w-[320px]">
+      <AnimatePresence>
+        <motion.span
+          key={index}
+          initial={{ y: 50, opacity: 0, rotateX: -90 }}
+          animate={{ y: 0, opacity: 1, rotateX: 0 }}
+          exit={{ y: -50, opacity: 0, rotateX: 90 }}
+          transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
+          className="absolute left-0 top-0 whitespace-nowrap"
+          style={{ transformOrigin: "50% 50% -20px" }}
+        >
+          {words[index]}
+        </motion.span>
+      </AnimatePresence>
+    </div>
+  );
 };
 
 const HeroSection = () => {
@@ -116,11 +145,15 @@ const HeroSection = () => {
             {/* Headline */}
             <motion.h1 
               variants={itemVariants}
-              className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 text-white"
+              className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.2] mb-6 text-white perspective-[1000px]"
             >
-              Электрика, в которой
+              Профессиональный
               <br />
-              <span className="text-gradient bg-primary text-right text-6xl font-sans md:whitespace-nowrap">вы уверены на 100%</span>
+              электромонтаж для
+              <br className="md:hidden" />
+              <span className="text-gradient bg-primary font-sans md:whitespace-nowrap ml-0 md:ml-3 inline-block mt-2 md:mt-0">
+                <TextFlipper words={['квартир', 'домов', 'бизнеса', 'новостроек']} />
+              </span>
             </motion.h1>
 
             {/* Subheadline */}

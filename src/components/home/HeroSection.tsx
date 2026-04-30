@@ -151,7 +151,7 @@ const HeroSection = () => {
               <br />
               электромонтаж для
               <br className="md:hidden" />
-              <span className="text-gradient bg-primary font-sans md:whitespace-nowrap ml-0 md:ml-3 inline-block mt-2 md:mt-0">
+              <span className="text-primary font-sans md:whitespace-nowrap ml-0 md:ml-3 inline-block mt-2 md:mt-0 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]">
                 <TextFlipper words={['квартир', 'домов', 'бизнеса', 'новостроек']} />
               </span>
             </motion.h1>

@@ -1,126 +1,106 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Home, Building, Construction, Cable, Zap, Plug, ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-
-const services = [
-  {
-    icon: Home,
-    title: "Электромонтаж в квартирах",
-    description: "Полный комплекс работ по электрике в квартирах любой планировки",
-  },
-  {
-    icon: Building,
-    title: "Электромонтаж в домах",
-    description: "Электрификация частных домов и коттеджей под ключ",
-  },
-  {
-    icon: Construction,
-    title: "Монтаж в новостройках",
-    description: "Разводка электрики с нуля в новых зданиях",
-  },
-  {
-    icon: Cable,
-    title: "Замена проводки",
-    description: "Полная или частичная замена устаревшей проводки",
-  },
-  {
-    icon: Zap,
-    title: "Установка щитков",
-    description: "Монтаж и сборка электрощитов любой сложности",
-  },
-  {
-    icon: Plug,
-    title: "Подключение техники",
-    description: "Установка розеток, выключателей, подключение бытовой техники",
-  },
-];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
-};
+import { motion, AnimatePresence } from "framer-motion";
+import SmartBlueprintSVG, { zonesData, ZoneId } from "./SmartBlueprintSVG";
 
 const ServicesSection = () => {
+  const [activeZone, setActiveZone] = useState<ZoneId | null>("hallway");
+
+  // If no zone hovered, default to hallway to keep panel populated
+  const currentData = activeZone ? zonesData[activeZone] : zonesData["hallway"];
+
   return (
-    <section className="section-padding">
+    <section className="section-padding overflow-hidden">
       <div className="container-main">
         {/* Header */}
         <motion.div 
-          className="text-center max-w-2xl mx-auto mb-12"
+          className="text-center max-w-2xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            Наши услуги
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            Проектируем электрику <span className="text-primary">с умом</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Полный спектр электромонтажных работ для жилых и коммерческих объектов
+            Наведите курсор на комнаты на плане, чтобы узнать особенности электромонтажа в каждой зоне.
           </p>
         </motion.div>
 
-        {/* Services Grid */}
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-        >
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              whileHover={{ scale: 1.02, y: -5 }}
-              className="card-industrial p-6 group cursor-pointer"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
-                <service.icon className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-display text-lg font-semibold mb-2">
-                {service.title}
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                {service.description}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Blueprint Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Column: SVG Interactive Plan */}
+          <motion.div 
+            className="lg:col-span-7 xl:col-span-8 w-full"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <SmartBlueprintSVG activeZone={activeZone} onHover={(zone) => zone && setActiveZone(zone as ZoneId)} />
+          </motion.div>
 
-        {/* CTA */}
-        <motion.div 
-          className="text-center mt-10"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/features" className="group">
-              Все услуги
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
-        </motion.div>
+          {/* Right Column: Dynamic Info Panel */}
+          <motion.div 
+            className="lg:col-span-5 xl:col-span-4 flex flex-col h-full justify-center"
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="card-industrial p-8 min-h-[400px] flex flex-col relative overflow-hidden">
+              {/* Background glow matching primary color */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -z-10" />
+              
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentData.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex-1 flex flex-col"
+                >
+                  <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-6 w-fit">
+                    Зона: {currentData.id === 'hallway' ? 'Входная группа' : 
+                          currentData.id === 'kitchen' ? 'Высокая нагрузка' : 
+                          currentData.id === 'living' ? 'Мультимедиа' :
+                          currentData.id === 'bathroom' ? 'Влажная зона' : 'Зона отдыха'}
+                  </div>
+                  
+                  <h3 className="font-display text-2xl md:text-3xl font-bold mb-4 text-white">
+                    {currentData.title}
+                  </h3>
+                  
+                  <p className="text-muted-foreground text-base leading-relaxed mb-8 flex-1">
+                    {currentData.description}
+                  </p>
+                  
+                  <div className="space-y-3 mb-8">
+                    {currentData.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                        <span className="text-sm font-medium text-white/90">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              <Button className="w-full group" asChild>
+                <Link to="/contact">
+                  Рассчитать проект
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
       </div>
     </section>
   );

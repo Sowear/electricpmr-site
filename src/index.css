@@ -245,4 +245,33 @@
       transform: scale(1);
     }
   }
+
+  @keyframes sparkMove {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .btn-spark {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .btn-spark::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: calc(var(--radius) + 2px);
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5), white, hsl(var(--primary) / 0.5), transparent);
+    background-size: 200% 100%;
+    animation: sparkMove 1.5s linear infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    filter: blur(4px);
+    pointer-events: none;
+  }
+  
+  .btn-spark:hover::before {
+    opacity: 1;
+  }
 }

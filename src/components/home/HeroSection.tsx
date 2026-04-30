@@ -181,11 +181,11 @@ const HeroSection = () => {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 mb-16"
             >
-              <Button size="lg" onClick={scrollToForm} className="btn-hero group text-base h-13 md:h-14 px-7 md:px-8 shadow-[0_10px_26px_rgba(234,179,8,0.24)]">
+              <Button size="lg" onClick={scrollToForm} className="btn-hero btn-spark group text-base h-13 md:h-14 px-7 md:px-8 shadow-[0_10px_26px_rgba(234,179,8,0.24)]">
                 Оставить заявку
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button size="lg" variant="outline" className="h-13 md:h-14 px-7 md:px-8 text-base border-2 border-white/25 bg-transparent text-white/90 hover:bg-white/10 hover:border-white/40" onClick={() => setEmergencyOpen(true)}>
+              <Button size="lg" variant="outline" className="btn-spark h-13 md:h-14 px-7 md:px-8 text-base border-2 border-white/25 bg-transparent text-white/90 hover:bg-white/10 hover:border-white/40" onClick={() => setEmergencyOpen(true)}>
                 <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
                 Аварийный вызов
               </Button>

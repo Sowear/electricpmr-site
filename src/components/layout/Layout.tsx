@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 interface LayoutProps {
   children: ReactNode;
@@ -19,8 +20,19 @@ const Layout = ({
   description = "Профессиональный электромонтаж в Тирасполе, Слободзее, Бендерах. Монтаж, ремонт, аварийный выезд. Качественная работа с гарантией.",
   canonical 
 }: LayoutProps) => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   return (
     <>
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-primary origin-left z-[100] shadow-[0_0_15px_hsl(var(--primary))]"
+        style={{ scaleX }}
+      />
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />

@@ -58,14 +58,14 @@ const TextFlipper = ({ words }: { words: string[] }) => {
   }, [words.length]);
 
   return (
-    <div className="relative inline-block overflow-hidden h-[1.1em] align-bottom min-w-[250px] lg:min-w-[320px]">
+    <div className="relative inline-block h-[1.2em] align-bottom w-[200px] sm:w-[250px] md:w-[300px] lg:w-[380px]">
       <AnimatePresence>
         <motion.span
           key={index}
-          initial={{ y: 50, opacity: 0, rotateX: -90 }}
+          initial={{ y: 40, opacity: 0, rotateX: -90 }}
           animate={{ y: 0, opacity: 1, rotateX: 0 }}
-          exit={{ y: -50, opacity: 0, rotateX: 90 }}
-          transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
+          exit={{ y: -40, opacity: 0, rotateX: 90 }}
+          transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
           className="absolute left-0 top-0 whitespace-nowrap"
           style={{ transformOrigin: "50% 50% -20px" }}
         >
@@ -150,8 +150,7 @@ const HeroSection = () => {
               Профессиональный
               <br />
               электромонтаж для
-              <br className="md:hidden" />
-              <span className="text-primary font-sans md:whitespace-nowrap ml-0 md:ml-3 inline-block mt-2 md:mt-0 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]">
+              <span className="text-primary font-sans md:whitespace-nowrap ml-2 md:ml-4 inline-block drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]">
                 <TextFlipper words={['квартир', 'домов', 'бизнеса', 'новостроек']} />
               </span>
             </motion.h1>

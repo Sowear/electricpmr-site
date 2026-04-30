@@ -46,8 +46,13 @@ const itemVariants = {
 
 const HowWeWorkSection = () => {
   return (
-    <section className="section-padding bg-foreground text-background">
-      <div className="container-main">
+    <section className="relative section-padding bg-foreground text-background">
+      {/* Top diffusion from white to dark */}
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-background to-transparent z-10" />
+      {/* Bottom diffusion from dark to white */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent z-10" />
+
+      <div className="container-main relative z-20">
         {/* Header */}
         <motion.div 
           className="text-center max-w-2xl mx-auto mb-12"

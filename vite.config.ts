@@ -44,6 +44,17 @@ export default defineConfig(({ mode }) => ({
       })
     })
   ].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['framer-motion', 'lucide-react', 'recharts', 'sonner'],
+          supabase: ['@supabase/supabase-js']
+        }
+      }
+    }
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

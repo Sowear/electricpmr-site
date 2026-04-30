@@ -6,13 +6,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
 import SeoRouterMeta from "./components/SeoRouterMeta";
-import ElectricianTiraspol from "./pages/ElectricianTiraspol";
-import ElectricianBendery from "./pages/ElectricianBendery";
-import ElectricianSlobozia from "./pages/ElectricianSlobozia";
 import { LazyComponent } from "./components/LazyPage";
 import Index from "./pages/Index";
-import Estimator from "./pages/Estimator";
-import EstimatorEdit from "./pages/EstimatorEdit";
+
+const ElectricianTiraspol = lazy(() => import("./pages/ElectricianTiraspol"));
+const ElectricianBendery = lazy(() => import("./pages/ElectricianBendery"));
+const ElectricianSlobozia = lazy(() => import("./pages/ElectricianSlobozia"));
+const Estimator = lazy(() => import("./pages/Estimator"));
+const EstimatorEdit = lazy(() => import("./pages/EstimatorEdit"));
 
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -41,9 +42,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/features" element={<LazyComponent Component={Features} />} />
           <Route path="/pricing" element={<LazyComponent Component={Pricing} />} />
-          <Route path="/elektrik-v-tiraspole" element={<ElectricianTiraspol />} />
-          <Route path="/elektrik-v-benderah" element={<ElectricianBendery />} />
-          <Route path="/elektrik-v-slobodzee" element={<ElectricianSlobozia />} />
+          <Route path="/elektrik-v-tiraspole" element={<LazyComponent Component={ElectricianTiraspol} />} />
+          <Route path="/elektrik-v-benderah" element={<LazyComponent Component={ElectricianBendery} />} />
+          <Route path="/elektrik-v-slobodzee" element={<LazyComponent Component={ElectricianSlobozia} />} />
           <Route path="/auth" element={<LazyComponent Component={Auth} />} />
           <Route path="/dashboard" element={<LazyComponent Component={Dashboard} />} />
           <Route path="/admin/users" element={<LazyComponent Component={AdminUsers} />} />
@@ -52,8 +53,8 @@ const App = () => (
           <Route path="/projects/:projectId" element={<LazyComponent Component={ProjectDetail} />} />
           <Route path="/projects/:projectId/estimates/:estimateId" element={<LazyComponent Component={EstimatorEdit} />} />
           <Route path="/projects/:projectId/finance/payouts" element={<LazyComponent Component={ProjectPayouts} />} />
-          <Route path="/estimator" element={<Estimator />} />
-          <Route path="/estimator/:id" element={<EstimatorEdit />} />
+          <Route path="/estimator" element={<LazyComponent Component={Estimator} />} />
+          <Route path="/estimator/:id" element={<LazyComponent Component={EstimatorEdit} />} />
           <Route path="/admin/finance-settings" element={<LazyComponent Component={AdminFinanceSettings} />} />
           <Route path="/uslugi" element={<LazyComponent Component={Features} />} />
           <Route path="/stoimost" element={<LazyComponent Component={Pricing} />} />

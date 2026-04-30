@@ -1,5 +1,4 @@
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+// PDF generation uses dynamic imports for jspdf and html2canvas
 
 export interface EstimateData {
   estimate_number: string;
@@ -415,6 +414,8 @@ export function generatePDFPreviewHTML(estimate: EstimateData): string {
 
 export async function generatePDFFromHTML(htmlContent: string): Promise<Blob | null> {
   try {
+    const { default: jsPDF } = await import("jspdf");
+    const { default: html2canvas } = await import("html2canvas");
     // Create a temporary container for rendering
     const container = document.createElement("div");
     container.style.cssText = `
@@ -484,6 +485,9 @@ export async function generatePDF(elementId: string, filename: string): Promise<
   }
 
   try {
+    const { default: jsPDF } = await import("jspdf");
+    const { default: html2canvas } = await import("html2canvas");
+
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,

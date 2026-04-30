@@ -13,7 +13,7 @@
  * - Жёлтый — только как акцент (итого, маркеры)
  */
 
-import jsPDF from "jspdf";
+import type jsPDF from "jspdf";
 
 // ============================================================================
 // TYPES
@@ -250,8 +250,8 @@ class PDFBuilder {
   private fontName = "helvetica";
   private hidePrices: boolean;
 
-  constructor(data: PDFEstimateData, logoData: string | null = null, fonts: { regular: string; bold: string } | null = null, options?: PDFOptions) {
-    this.pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  constructor(data: PDFEstimateData, jsPDFClass: any, logoData: string | null = null, fonts: { regular: string; bold: string } | null = null, options?: PDFOptions) {
+    this.pdf = new jsPDFClass({ orientation: "portrait", unit: "mm", format: "a4" });
     this.data = data;
     this.y = PAGE.marginTop;
     this.pageNum = 1;
@@ -793,8 +793,12 @@ class PDFBuilder {
 // ============================================================================
 
 export async function generateEstimatePDF(data: PDFEstimateData, options?: PDFOptions): Promise<Blob> {
-  const [logo, fonts] = await Promise.all([loadLogo(), loadFonts()]);
-  const builder = new PDFBuilder(data, logo, fonts, options);
+  const [{ default: jsPDFClass }, logo, fonts] = await Promise.all([
+    import("jspdf"),
+    loadLogo(),
+    loadFonts()
+  ]);
+  const builder = new PDFBuilder(data, jsPDFClass, logo, fonts, options);
   return builder.build();
 }
 

@@ -44,8 +44,6 @@ const App = () => (
           <Route path="/elektrik-v-tiraspole" element={<ElectricianTiraspol />} />
           <Route path="/elektrik-v-benderah" element={<ElectricianBendery />} />
           <Route path="/elektrik-v-slobodzee" element={<ElectricianSlobozia />} />
-          <Route path="/elektrik-v-benderah" element={<ElectricianBendery />} />
-          <Route path="/elektrik-v-slobodzee" element={<ElectricianSlobozia />} />
           <Route path="/auth" element={<LazyComponent Component={Auth} />} />
           <Route path="/dashboard" element={<LazyComponent Component={Dashboard} />} />
           <Route path="/admin/users" element={<LazyComponent Component={AdminUsers} />} />

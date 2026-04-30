@@ -104,7 +104,7 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[90vh] overflow-hidden bg-industrial-dark">
       {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-r from-industrial-dark via-industrial-dark/95 to-industrial-dark/70 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-industrial-dark via-industrial-dark/80 to-transparent z-10" />
       <div className="absolute inset-0 bg-gradient-to-t from-industrial-dark via-transparent to-transparent z-10" />
       
       {/* Bottom diffusion to white */}
@@ -118,7 +118,12 @@ const HeroSection = () => {
           initial="hidden"
           animate="visible"
         >
-          <img src={heroImage} alt="Профессиональный электрощит с аккуратной разводкой" className="absolute right-0 top-1/2 -translate-y-1/2 w-full h-auto max-h-[80%] object-contain opacity-90" />
+          <img 
+            src={heroImage} 
+            alt="Профессиональный электрощит с аккуратной разводкой" 
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-full h-auto max-h-[90%] object-contain opacity-100" 
+            style={{ WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 75%)', maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 75%)' }}
+          />
           {/* Glow effect behind panel */}
           <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]" />
         </motion.div>
@@ -221,7 +226,12 @@ const HeroSection = () => {
       >
         <div className="container-main">
           <div className="relative">
-            <img src={heroImage} alt="Профессиональный электрощит" className="w-full max-w-md mx-auto h-auto opacity-80" />
+            <img 
+              src={heroImage} 
+              alt="Профессиональный электрощит" 
+              className="w-full max-w-md mx-auto h-auto opacity-100" 
+              style={{ WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 80%)', maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 80%)' }}
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-industrial-dark via-transparent to-transparent" />
           </div>
         </div>

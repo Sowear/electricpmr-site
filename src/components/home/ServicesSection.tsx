@@ -66,7 +66,7 @@ const ServicesSection = () => {
                           currentData.id === 'bathroom' ? 'Влажная зона' : 'Зона отдыха'}
                   </div>
                   
-                  <h3 className="font-display text-2xl md:text-3xl font-bold mb-4 text-white">
+                  <h3 className="font-display text-2xl md:text-3xl font-bold mb-4 text-foreground">
                     {currentData.title}
                   </h3>
                   
@@ -78,7 +78,7 @@ const ServicesSection = () => {
                     {currentData.features.map((feature, idx) => (
                       <div key={idx} className="flex items-start gap-3">
                         <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-sm font-medium text-white/90">{feature}</span>
+                        <span className="text-sm font-medium text-foreground/90">{feature}</span>
                       </div>
                     ))}
                   </div>

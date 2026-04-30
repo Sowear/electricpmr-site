@@ -48,10 +48,22 @@ export function useProjects() {
   return useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_projects_with_counts");
+      // Use standard select instead of RPC to avoid 404 errors if function is missing
+      const { data, error } = await supabase
+        .from("projects")
+        .select(`
+          *,
+          estimates:estimates(count)
+        `)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return (data || []) as Project[];
+      
+      // Map the response to the expected Project interface
+      return (data || []).map((project: any) => ({
+        ...project,
+        estimates_count: project.estimates?.[0]?.count || 0
+      })) as Project[];
     },
   });
 }

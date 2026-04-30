@@ -70,6 +70,7 @@ const Header = () => {
     { href: "/", label: "Главная" },
     { href: "/uslugi", label: "Услуги" },
     { href: "/stoimost", label: "Стоимость" },
+    { href: "/contact", label: "Контакты" },
   ];
 
   const isActive = (path: string) => location.pathname === path;

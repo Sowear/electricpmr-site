@@ -40,6 +40,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/contact" className="text-background/70 hover:text-background transition-colors">
+                  Контакты
+                </Link>
+              </li>
+              <li>
                 <Link to="/auth" className="text-background/70 hover:text-background transition-colors">
                   Личный кабинет
                 </Link>

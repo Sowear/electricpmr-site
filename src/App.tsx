@@ -27,6 +27,7 @@ const ProjectPayouts = lazy(() => import("./pages/ProjectPayouts"));
 const AdminFinanceSettings = lazy(() => import("./pages/AdminFinanceSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CityLanding = lazy(() => import("./pages/CityLanding"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/admin/finance-settings" element={<LazyComponent Component={AdminFinanceSettings} />} />
           <Route path="/uslugi" element={<LazyComponent Component={Features} />} />
           <Route path="/stoimost" element={<LazyComponent Component={Pricing} />} />
+          <Route path="/contact" element={<LazyComponent Component={Contact} />} />
           <Route path="*" element={<LazyComponent Component={NotFound} />} />
         </Routes>
         </BrowserRouter>

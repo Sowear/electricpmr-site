@@ -112,7 +112,13 @@ const calculateEstimateTotals = (estimate: Estimate, lineItems: LineItem[]) => {
 };
 
 const mapEstimateRow = (row: EstimateRow): Estimate => row as unknown as Estimate;
-const mapLineItemRow = (row: EstimateLineItemRow): LineItem => row as unknown as LineItem;
+const mapLineItemRow = (row: EstimateLineItemRow): LineItem => {
+  const item = row as unknown as LineItem;
+  return {
+    ...item,
+    line_total: typeof item.line_total === 'number' ? item.line_total : calculateLineTotal(item)
+  };
+};
 
 export function useEstimates() {
   return useQuery({

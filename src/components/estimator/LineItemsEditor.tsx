@@ -1,4 +1,4 @@
-import { useState, useCallback, memo, useMemo } from "react";
+import { useState, useCallback, memo, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -151,20 +151,20 @@ const LineItemRow = memo(({
     300
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localDescription !== item.description) {
       setLocalDescription(item.description);
     }
   }, [item.description]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const num = parseFloat(localQuantity);
     if (num !== item.quantity && !(isNaN(num) && item.quantity === 0)) {
       setLocalQuantity(String(item.quantity));
     }
   }, [item.quantity]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const num = parseFloat(localPrice);
     if (num !== item.unit_price && !(isNaN(num) && item.unit_price === 0)) {
       setLocalPrice(String(item.unit_price));

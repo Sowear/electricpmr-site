@@ -31,7 +31,7 @@ const ServicesSection = () => {
         </motion.div>
 
         {/* Blueprint Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: SVG Interactive Plan */}
           <motion.div 
@@ -45,13 +45,7 @@ const ServicesSection = () => {
           </motion.div>
 
           {/* Right Column: Dynamic Info Panel */}
-          <motion.div 
-            className="lg:col-span-5 xl:col-span-4 flex flex-col h-full justify-center"
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
+          <div className="lg:col-span-5 xl:col-span-4 flex flex-col h-full justify-center w-full">
             <div className="card-industrial p-8 min-h-[400px] flex flex-col relative overflow-hidden">
               {/* Background glow matching primary color */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -z-10" />
@@ -98,7 +92,7 @@ const ServicesSection = () => {
                 </Link>
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
 
       </div>

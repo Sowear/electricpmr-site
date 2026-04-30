@@ -43,7 +43,7 @@ const WorkExamplesSection = () => {
     <section
       ref={sectionRef}
       id="examples"
-      className="py-20 lg:py-28 bg-muted/30"
+      className="section-padding bg-background"
     >
       <div className="container-main">
         {/* Header */}

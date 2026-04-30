@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+import prerender from '@prerenderer/rollup-plugin';
+import PuppeteerRenderer from '@prerenderer/renderer-puppeteer';
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -22,7 +25,25 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+    prerender({
+      staticDir: path.join(__dirname, 'dist'),
+      routes: [
+        '/',
+        '/uslugi',
+        '/stoimost',
+        '/elektrik-v-tiraspole',
+        '/elektrik-v-benderah',
+        '/elektrik-v-slobodzee'
+      ],
+      renderer: new PuppeteerRenderer({
+        renderAfterTime: 5000,
+        headless: true
+      })
+    })
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

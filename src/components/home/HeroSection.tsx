@@ -156,7 +156,7 @@ const HeroSection = () => {
               <br />
               электромонтаж для{' '}
               <span className="text-primary font-sans md:whitespace-nowrap inline-block drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]">
-                <TextFlipper words={['[ квартир ]', '[ домов ]', '[ бизнеса ]', '[ новостроек ]']} />
+                <TextFlipper words={['квартир', 'домов', 'бизнеса', 'новостроек']} />
               </span>
             </motion.h1>
 

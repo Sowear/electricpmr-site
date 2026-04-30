@@ -79,7 +79,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-industrial-dark via-transparent to-transparent z-10" />
       
       {/* Bottom diffusion to white */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-background to-transparent z-10" />
       
       {/* 3D Illustration - Right side */}
       <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[55%] h-full hidden lg:block z-0">

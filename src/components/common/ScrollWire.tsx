@@ -10,7 +10,7 @@ const ScrollWire = () => {
   const distance = useTransform(pathLength, (val) => `${val * 100}%`);
 
   return (
-    <div className="fixed top-0 left-[2%] md:left-[5%] xl:left-[8%] w-12 h-screen pointer-events-none z-[1] hidden md:block opacity-60 mix-blend-screen">
+    <div className="fixed top-0 left-[2%] md:left-[5%] xl:left-[8%] w-12 h-screen pointer-events-none z-40 hidden md:block opacity-90">
       <svg
         className="absolute top-0 left-0 w-full h-[120vh]"
         viewBox="0 0 50 1000"

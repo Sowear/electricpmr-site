@@ -102,10 +102,11 @@ const SmartBlueprintSVG = ({ activeZone, onHover }: BlueprintProps) => {
                 y={room.labelY}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                className="font-display text-sm font-medium select-none pointer-events-none"
-                initial={{ fill: "rgba(255,255,255,0.4)" }}
+                fontSize="32"
+                className="font-display font-bold select-none pointer-events-none drop-shadow-md"
+                initial={{ fill: "rgba(255,255,255,0.7)" }}
                 animate={{ 
-                  fill: isActive ? "rgba(234, 179, 8, 1)" : "rgba(255,255,255,0.4)",
+                  fill: isActive ? "rgba(234, 179, 8, 1)" : "rgba(255,255,255,0.7)",
                   scale: isActive ? 1.1 : 1
                 }}
               >

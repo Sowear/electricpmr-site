@@ -16,13 +16,13 @@ const ServicesSection = () => {
       <div className="container-main">
         {/* Header */}
         <motion.div 
-          className="text-center max-w-2xl mx-auto mb-16"
+          className="text-center max-w-4xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:whitespace-nowrap">
             Проектируем электрику <span className="text-primary">с умом</span>
           </h2>
           <p className="text-muted-foreground text-lg">

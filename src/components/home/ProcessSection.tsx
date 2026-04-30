@@ -1,10 +1,39 @@
 import { MessageSquare, ClipboardCheck, Wrench, BadgeCheck } from "lucide-react";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
 
 const ProcessSection = () => {
   return (
     <section className="section-padding bg-background">
       <div className="container-main max-w-4xl">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
             Как мы работаем — без лишних сложностей
           </h2>
@@ -12,10 +41,16 @@ const ProcessSection = () => {
             Понятный процесс: от заявки до гарантийного обслуживания. 
             Каждый этап контролируется, всё делается аккуратно и по нормам.
           </p>
-        </div>
+        </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <MessageSquare className="h-6 w-6 text-primary" />
             </div>
@@ -24,9 +59,9 @@ const ProcessSection = () => {
               Вы оставляете заявку или связываетесь с нами. 
               Уточняем задачу и ваши пожелания.
             </p>
-          </div>
+          </motion.div>
           
-          <div className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <ClipboardCheck className="h-6 w-6 text-primary" />
             </div>
@@ -35,9 +70,9 @@ const ProcessSection = () => {
               При необходимости выезжаем на осмотр. 
               Даём чёткое техническое заключение.
             </p>
-          </div>
+          </motion.div>
           
-          <div className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <Wrench className="h-6 w-6 text-primary" />
             </div>
@@ -46,9 +81,9 @@ const ProcessSection = () => {
               Составляем понятную смету без скрытых работ. 
               Вы согласовываете стоимость.
             </p>
-          </div>
+          </motion.div>
           
-          <div className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <BadgeCheck className="h-6 w-6 text-primary" />
             </div>
@@ -57,10 +92,16 @@ const ProcessSection = () => {
               Выполняем работу и предоставляем гарантию. 
               Поддержка после сдачи проекта.
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         
-        <div className="mt-12 bg-muted/30 rounded-xl p-6 border">
+        <motion.div 
+          className="mt-12 bg-muted/30 rounded-xl p-6 border"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="flex items-start gap-3">
               <div className="mt-0.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
@@ -99,7 +140,7 @@ const ProcessSection = () => {
               Оставить заявку
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

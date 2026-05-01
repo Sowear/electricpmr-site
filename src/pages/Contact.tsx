@@ -8,27 +8,82 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
 import { Helmet } from "react-helmet-async";
+import { supabase } from "@/integrations/supabase/client";
+
+// Get UTM params from URL
+const getUtmParams = () => {
+  if (typeof window === "undefined") return {};
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get("utm_source") || "",
+    utm_medium: params.get("utm_medium") || "",
+    utm_campaign: params.get("utm_campaign") || "",
+  };
+};
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    description: ""
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // 1. Save to database
+      const { error: dbError } = await supabase.from("requests").insert({
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        service_type: "Заявка со страницы Контакты",
+        description: formData.description.trim() || null,
+      });
+
+      if (dbError) throw dbError;
+
+      // 2. Send notification email via edge function
+      const utmParams = getUtmParams();
+      const notificationPayload = {
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        service_type: "Заявка со страницы Контакты",
+        description: formData.description.trim() || undefined,
+        ...utmParams,
+        referrer: document.referrer || undefined,
+      };
+
+      const { error: fnError } = await supabase.functions.invoke("send-request-notification", {
+        body: notificationPayload,
+      });
+
+      if (fnError && (fnError.message?.includes("RATE_LIMITED") || fnError.message?.includes("429"))) {
+        toast.error("Слишком много запросов. Пожалуйста, подождите 10 минут перед отправкой новой заявки.");
+        setIsSubmitting(false);
+        return;
+      }
+
       setIsSuccess(true);
       toast.success("Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.");
+      setFormData({ name: "", phone: "", description: "" });
       
       // Reset after showing success
       setTimeout(() => {
         setIsSuccess(false);
-        (e.target as HTMLFormElement).reset();
-      }, 3000);
-    }, 1500);
+      }, 5000);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error("Не удалось отправить заявку. Попробуйте позже.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const containerVariants = {
@@ -166,6 +221,8 @@ const Contact = () => {
                       id="name" 
                       required 
                       placeholder="Иван Иванов" 
+                      value={formData.name}
+                      onChange={(e) => handleChange("name", e.target.value)}
                       className="bg-muted/50 border-border focus:border-primary/50 focus:ring-primary/20 transition-all h-12"
                     />
                   </div>
@@ -177,6 +234,8 @@ const Contact = () => {
                       type="tel" 
                       required 
                       placeholder="+373 77X XXXXX" 
+                      value={formData.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
                       className="bg-muted/50 border-border focus:border-primary/50 focus:ring-primary/20 transition-all h-12"
                     />
                   </div>
@@ -186,6 +245,8 @@ const Contact = () => {
                     <Textarea 
                       id="message" 
                       placeholder="Например: нужно заменить проводку в двухкомнатной квартире..." 
+                      value={formData.description}
+                      onChange={(e) => handleChange("description", e.target.value)}
                       className="bg-muted/50 border-border focus:border-primary/50 focus:ring-primary/20 transition-all min-h-[120px] resize-y"
                     />
                   </div>

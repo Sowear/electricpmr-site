@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPin, Phone, ClipboardCheck, Gauge, Ruler } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPin, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
@@ -111,11 +111,6 @@ const HeroSection = () => {
     { icon: Phone, label: "+373 777 46642" },
   ];
 
-  const passportItems = [
-    { icon: ClipboardCheck, label: "Смета", value: "до старта" },
-    { icon: Gauge, label: "Контроль", value: "по этапам" },
-    { icon: Ruler, label: "Монтаж", value: "по нормам" },
-  ];
 
   return (
     <section className="relative isolate min-h-[90vh] overflow-hidden bg-industrial-dark">
@@ -163,21 +158,7 @@ const HeroSection = () => {
           />
           {/* Glow effect behind panel */}
           <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]" />
-          <div className="glass-dark absolute right-[10%] top-[54%] w-[300px] -translate-y-1/2 rounded-xl p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Паспорт работ</span>
-              <span className="rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium text-white/55">PMR-24</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {passportItems.map((item) => (
-                <div key={item.label} className="rounded-lg border border-white/10 bg-white/[0.06] p-3">
-                  <item.icon className="mb-2 h-4 w-4 text-primary" />
-                  <div className="text-[11px] font-medium text-white/55">{item.label}</div>
-                  <div className="text-xs font-semibold text-white">{item.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+
         </motion.div>
       </div>
 

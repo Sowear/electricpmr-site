@@ -177,10 +177,13 @@ export default function SeoRouterMeta() {
       <meta property="og:url" content={canonical} />
       <meta property="og:site_name" content="ЭлектроМастер" />
       <meta property="og:locale" content="ru_RU" />
+      <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/FkixeeY1ilhjYIrAaRZNoNp3JhH3/social-images/social-1771542696440-ChatGPT_Image_20_февр._2026_г.,_01_10_55.webp" />
 
-      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@Lovable" />
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:description" content={seo.description} />
+      <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/FkixeeY1ilhjYIrAaRZNoNp3JhH3/social-images/social-1771542696440-ChatGPT_Image_20_февр._2026_г.,_01_10_55.webp" />
 
       <meta name="googlebot" content={robots} />
 

@@ -36,12 +36,6 @@ const Layout = ({
         style={{ scaleX }}
       />
       <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-        {canonical && <link rel="canonical" href={canonical} />}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#eab308" />
-        
         {/* Organization Schema */}
         <script type="application/ld+json">
           {JSON.stringify({

@@ -121,8 +121,6 @@ const HeroSection = () => {
       <div className="hidden md:block absolute left-[8%] top-24 z-0 h-[560px] w-px bg-gradient-to-b from-transparent via-primary/35 to-transparent" />
       <div className="hidden md:block absolute left-[8%] top-24 z-0 h-px w-[38vw] bg-gradient-to-r from-primary/25 to-transparent" />
       
-      {/* Bottom diffusion to white */}
-      <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-background to-transparent z-10" />
 
       {/* 3D Illustration - Mobile background */}
       <div className="absolute top-[15%] right-[-28%] sm:right-[-15%] w-[150%] sm:w-[112%] md:w-[90%] lg:hidden z-0 overflow-hidden pointer-events-none opacity-[0.28] md:opacity-35">

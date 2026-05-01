@@ -73,7 +73,9 @@ const Header = () => {
 
   const serviceLinks = [
     { href: "/zamena-provodki", label: "Замена проводки" },
-    { href: "/sborka-elektroshchita", label: "Сборка щита" },
+    { href: "/sborka-elektroshchita", label: "Сборка электрощита" },
+    { href: "/elektromontazh-v-kvartire", label: "Электрика в квартире" },
+    { href: "/elektromontazh-v-dome", label: "Электрика в доме" },
     { href: "/avariynyy-elektrik", label: "Аварийный вызов" },
   ];
 
@@ -95,19 +97,51 @@ const Header = () => {
             {/* Desktop Navigation - Centered */}
             <nav className="hidden md:flex items-center justify-center flex-1 px-8">
               <div className="flex items-center gap-8">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    className={`link-underline text-sm font-medium transition-colors whitespace-nowrap ${
-                      isActive(link.href)
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  if (link.href === "/uslugi") {
+                    return (
+                      <div key={link.href} className="relative group py-2">
+                        <Link
+                          to={link.href}
+                          className={`link-underline text-sm font-medium transition-colors whitespace-nowrap ${
+                            isActive(link.href) || location.pathname.startsWith("/zamena-") || location.pathname.startsWith("/sborka-") || location.pathname.startsWith("/elektro") || location.pathname.startsWith("/avariy")
+                              ? "text-foreground"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full hidden w-56 flex-col gap-1 rounded-xl border border-border/70 bg-card p-2 shadow-lg group-hover:flex animate-fade-in">
+                          {serviceLinks.map((s) => (
+                            <Link
+                              key={s.href}
+                              to={s.href}
+                              className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/50 ${
+                                isActive(s.href) ? "bg-muted/30 text-foreground" : "text-muted-foreground hover:text-foreground"
+                              }`}
+                            >
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className={`link-underline text-sm font-medium transition-colors whitespace-nowrap ${
+                        isActive(link.href)
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </div>
             </nav>
 

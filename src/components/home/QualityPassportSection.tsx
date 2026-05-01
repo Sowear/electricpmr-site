@@ -35,7 +35,11 @@ export default function QualityPassportSection() {
     <section className="relative overflow-hidden bg-industrial-dark py-14 text-white md:py-20">
       <div className="tech-grid absolute inset-0 text-white/[0.08] [background-size:48px_48px]" />
       <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-      <div className="absolute right-0 bottom-0 h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+      
+      {/* Bottom diffusion to next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-16 md:h-24 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+      {/* Glow divider line */}
+      <div className="absolute right-0 bottom-0 h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent z-20" />
 
       <div className="container-main relative z-10">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">

@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       <div className="container-main py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold mb-4">
@@ -47,6 +47,38 @@ const Footer = () => {
               <li>
                 <Link to="/auth" className="text-background/70 hover:text-background transition-colors">
                   Личный кабинет
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services Links */}
+          <div>
+            <h4 className="font-display font-semibold mb-4">Услуги</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/zamena-provodki" className="text-background/70 hover:text-background transition-colors">
+                  Замена проводки
+                </Link>
+              </li>
+              <li>
+                <Link to="/sborka-elektroshchita" className="text-background/70 hover:text-background transition-colors">
+                  Сборка электрощита
+                </Link>
+              </li>
+              <li>
+                <Link to="/elektromontazh-v-kvartire" className="text-background/70 hover:text-background transition-colors">
+                  Электрика в квартире
+                </Link>
+              </li>
+              <li>
+                <Link to="/elektromontazh-v-dome" className="text-background/70 hover:text-background transition-colors">
+                  Электрика в частном доме
+                </Link>
+              </li>
+              <li>
+                <Link to="/avariynyy-elektrik" className="text-background/70 hover:text-background transition-colors text-destructive hover:text-destructive/80 font-medium">
+                  Аварийный электрик
                 </Link>
               </li>
             </ul>

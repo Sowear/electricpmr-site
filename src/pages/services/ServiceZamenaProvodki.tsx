@@ -1,2 +1,2 @@
-import ServiceLanding from "./ServiceLanding";
+import ServiceLanding from "../ServiceLanding";
 export default function ServiceZamenaProvodki() { return <ServiceLanding serviceKey="zamena-provodki" />; }

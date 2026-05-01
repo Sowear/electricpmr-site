@@ -1,4 +1,5 @@
 import { Phone, MessageCircle, Send } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const PHONE_NUMBER = "+37377746642";
 const PHONE_RAW = "37377746642";
@@ -25,19 +26,29 @@ const contacts = [
 ];
 
 const FloatingContactBar = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsVisible(window.scrollY > 150);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden">
-      <div className="flex items-center gap-2 bg-foreground/95 backdrop-blur-sm rounded-full px-2 py-2 shadow-lg">
+    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+      <div className="flex items-center gap-2 bg-foreground/95 backdrop-blur-sm rounded-full px-2 py-1.5 shadow-lg">
         {contacts.map((contact) => (
           <a
             key={contact.name}
             href={contact.href}
             target={contact.href.startsWith("http") ? "_blank" : undefined}
             rel={contact.href.startsWith("http") ? "noopener noreferrer" : undefined}
-            className={`flex items-center justify-center w-12 h-12 rounded-full ${contact.color} text-white transition-transform hover:scale-110 active:scale-95`}
+            className={`flex items-center justify-center w-10 h-10 rounded-full ${contact.color} text-white transition-transform hover:scale-110 active:scale-95`}
             aria-label={contact.name}
           >
-            <contact.icon className="h-5 w-5" />
+            <contact.icon className="h-4 w-4" />
           </a>
         ))}
       </div>

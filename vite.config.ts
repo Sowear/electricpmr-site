@@ -59,7 +59,12 @@ export default defineConfig(({ mode }) => ({
         '/stoimost',
         '/elektrik-v-tiraspole',
         '/elektrik-v-benderah',
-        '/elektrik-v-slobodzee'
+        '/elektrik-v-slobodzee',
+        '/zamena-provodki',
+        '/sborka-elektroshchita',
+        '/avariynyy-elektrik',
+        '/elektromontazh-v-kvartire',
+        '/elektromontazh-v-dome'
       ],
       renderer: new PuppeteerRenderer({
         renderAfterTime: 5000,

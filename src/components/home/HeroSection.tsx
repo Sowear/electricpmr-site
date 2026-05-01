@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPin, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
@@ -112,6 +112,24 @@ const HeroSection = () => {
       
       {/* Bottom diffusion to white */}
       <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-background to-transparent z-10" />
+
+      {/* 3D Illustration - Mobile background */}
+      <div className="absolute top-[10%] right-[-25%] sm:right-[-15%] w-[140%] sm:w-[110%] md:w-[90%] lg:hidden z-0 overflow-hidden pointer-events-none opacity-[0.22] md:opacity-30">
+        <motion.div
+          className="relative w-full"
+          variants={imageVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <img 
+            src={heroImage} 
+            alt="Электромонтаж фон" 
+            className="w-full h-auto object-contain"
+            style={{ WebkitMaskImage: 'radial-gradient(ellipse at center, black 45%, transparent 75%)', maskImage: 'radial-gradient(ellipse at center, black 45%, transparent 75%)' }}
+          />
+          <div className="absolute right-[30%] top-[40%] -translate-y-1/2 w-[250px] h-[250px] bg-primary/40 rounded-full blur-[70px]" />
+        </motion.div>
+      </div>
       
       {/* 3D Illustration - Right side */}
       <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[55%] h-full hidden lg:block z-0">
@@ -134,7 +152,7 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="container-main relative z-20">
-        <div className="py-20 md:py-28 lg:py-36">
+        <div className="pt-16 pb-16 md:py-28 lg:py-36">
           <motion.div 
             className="max-w-[48rem]"
             variants={containerVariants}
@@ -153,7 +171,7 @@ const HeroSection = () => {
             {/* Headline */}
             <motion.h1 
               variants={itemVariants}
-              className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.2] mb-6 text-white perspective-[1000px]"
+              className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.2] mb-6 text-white perspective-[1000px]"
             >
               Профессиональный
               <br />
@@ -172,26 +190,39 @@ const HeroSection = () => {
               Выполняем работы по техническим нормам с поэтапным контролем качества.
             </motion.p>
 
-            <motion.p 
+            {/* Quick Proofs */}
+            <motion.div 
               variants={itemVariants}
-              className="text-sm text-white/60 mb-10 max-w-xl"
+              className="flex flex-wrap gap-x-4 gap-y-2 text-[13px] sm:text-sm text-white/90 mb-10 max-w-xl font-medium"
             >
-              Работаем по договору, с фиксированной зоной ответственности и прозрачной структурой стоимости.
-            </motion.p>
+              <div className="flex items-center gap-1.5"><Shield className="h-4 w-4 text-primary" /> 5 лет гарантии</div>
+              <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary" /> Выезд по ПМР</div>
+              <div className="flex items-center gap-1.5"><FileText className="h-4 w-4 text-primary" /> Смета до работы</div>
+              <div className="flex items-center gap-1.5"><Phone className="h-4 w-4 text-primary" /> +373 777 46642</div>
+            </motion.div>
 
             {/* CTA Buttons */}
             <motion.div 
               variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-4 mb-16"
+              className="flex flex-col sm:flex-row gap-4 mb-5"
             >
-              <Button size="lg" onClick={() => setQuizOpen(true)} className="btn-hero btn-spark group text-base h-13 md:h-14 px-7 md:px-8 shadow-[0_10px_26px_rgba(234,179,8,0.24)]">
+              <Button size="lg" onClick={() => setQuizOpen(true)} className="btn-hero btn-spark group text-base min-h-[56px] px-7 md:px-8 shadow-[0_10px_26px_rgba(234,179,8,0.24)]">
                 Узнать стоимость
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button size="lg" variant="outline" className="btn-spark h-13 md:h-14 px-7 md:px-8 text-base border-2 border-white/25 bg-transparent text-white/90 hover:bg-white/10 hover:border-white/40" onClick={() => setEmergencyOpen(true)}>
+              <Button size="lg" variant="outline" className="btn-spark min-h-[56px] px-7 md:px-8 text-base border-2 border-white/25 bg-transparent text-white/90 hover:bg-white/10 hover:border-white/40" onClick={() => setEmergencyOpen(true)}>
                 <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
                 Аварийный вызов
               </Button>
+            </motion.div>
+
+            {/* Service Areas Mini-Block */}
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center gap-2 text-xs md:text-sm text-white/50 mb-12"
+            >
+              <MapPin className="h-3.5 w-3.5" />
+              <span>Работаем: Тирасполь, Бендеры, Слободзея и районы</span>
             </motion.div>
           </motion.div>
 
@@ -219,26 +250,6 @@ const HeroSection = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* Mobile 3D image - shown below content on mobile */}
-      <motion.div 
-        className="lg:hidden relative z-0 -mt-20 pb-8"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-      >
-        <div className="container-main">
-          <div className="relative">
-            <img 
-              src={heroImage} 
-              alt="Профессиональный электрощит" 
-              className="w-full max-w-md mx-auto h-auto opacity-100" 
-              style={{ WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 80%)', maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 80%)' }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-industrial-dark via-transparent to-transparent" />
-          </div>
-        </div>
-      </motion.div>
 
       <EmergencyCallDialog open={emergencyOpen} onOpenChange={setEmergencyOpen} />
       <QuizDialog open={quizOpen} onOpenChange={setQuizOpen} />

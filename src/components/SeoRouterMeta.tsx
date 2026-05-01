@@ -76,6 +76,41 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     changefreq: "monthly",
     priority: 0.7,
   },
+  "/zamena-provodki": {
+    title: "Замена проводки в квартире и доме ПМР | ЭлектроМастер",
+    description: "Профессиональная замена старой электропроводки на медную в Тирасполе, Бендерах. Штробление без пыли, ГОСТ.",
+    index: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  "/sborka-elektroshchita": {
+    title: "Сборка электрощита | Установка автоматов ПМР",
+    description: "Сборка и монтаж распределительных щитов. Установка УЗО, реле напряжения, автоматов защиты. Гарантия безопасности.",
+    index: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  "/avariynyy-elektrik": {
+    title: "Аварийный электрик ПМР | Срочный вызов",
+    description: "Срочный вызов электрика. Устранение замыканий, обрывов сети, искрения розеток. Оперативный выезд по ПМР.",
+    index: true,
+    changefreq: "monthly",
+    priority: 0.9,
+  },
+  "/elektromontazh-v-kvartire": {
+    title: "Электромонтаж в квартире ПМР | Электрика под ключ",
+    description: "Комплексный электромонтаж в квартирах. Разводка по дизайн-проекту, монтаж слаботочных сетей, сборка щитов.",
+    index: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  "/elektromontazh-v-dome": {
+    title: "Электрика в частном доме ПМР | Ввод электричества",
+    description: "Электромонтаж в частных домах: от ввода электричества и контура заземления до уличного освещения. Под ключ.",
+    index: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
   "/auth": {
     title: "Вход в личный кабинет | ЭлектроМастер",
     description: "Авторизация в системе ЭлектроМастер для работы со сметами, проектами и заявками.",
@@ -177,13 +212,12 @@ export default function SeoRouterMeta() {
       <meta property="og:url" content={canonical} />
       <meta property="og:site_name" content="ЭлектроМастер" />
       <meta property="og:locale" content="ru_RU" />
-      <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/FkixeeY1ilhjYIrAaRZNoNp3JhH3/social-images/social-1771542696440-ChatGPT_Image_20_февр._2026_г.,_01_10_55.webp" />
+      <meta property="og:image" content={`${SITE_URL}/social_og_image.png`} />
 
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@Lovable" />
       <meta name="twitter:title" content={seo.title} />
       <meta name="twitter:description" content={seo.description} />
-      <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/FkixeeY1ilhjYIrAaRZNoNp3JhH3/social-images/social-1771542696440-ChatGPT_Image_20_февр._2026_г.,_01_10_55.webp" />
+      <meta name="twitter:image" content={`${SITE_URL}/social_og_image.png`} />
 
       <meta name="googlebot" content={robots} />
 

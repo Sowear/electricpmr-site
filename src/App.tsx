@@ -15,6 +15,12 @@ const ElectricianSlobozia = lazy(() => import("./pages/ElectricianSlobozia"));
 const Estimator = lazy(() => import("./pages/Estimator"));
 const EstimatorEdit = lazy(() => import("./pages/EstimatorEdit"));
 
+const ServiceZamenaProvodki = lazy(() => import("./pages/services/ServiceZamenaProvodki"));
+const ServiceSborkaShchita = lazy(() => import("./pages/services/ServiceSborkaShchita"));
+const ServiceAvariynyy = lazy(() => import("./pages/services/ServiceAvariynyy"));
+const ServiceKvartira = lazy(() => import("./pages/services/ServiceKvartira"));
+const ServiceDom = lazy(() => import("./pages/services/ServiceDom"));
+
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -46,6 +52,11 @@ const App = () => (
           <Route path="/elektrik-v-tiraspole" element={<LazyComponent Component={ElectricianTiraspol} />} />
           <Route path="/elektrik-v-benderah" element={<LazyComponent Component={ElectricianBendery} />} />
           <Route path="/elektrik-v-slobodzee" element={<LazyComponent Component={ElectricianSlobozia} />} />
+          <Route path="/zamena-provodki" element={<LazyComponent Component={ServiceZamenaProvodki} />} />
+          <Route path="/sborka-elektroshchita" element={<LazyComponent Component={ServiceSborkaShchita} />} />
+          <Route path="/avariynyy-elektrik" element={<LazyComponent Component={ServiceAvariynyy} />} />
+          <Route path="/elektromontazh-v-kvartire" element={<LazyComponent Component={ServiceKvartira} />} />
+          <Route path="/elektromontazh-v-dome" element={<LazyComponent Component={ServiceDom} />} />
           <Route path="/auth" element={<LazyComponent Component={Auth} />} />
           <Route path="/dashboard" element={<LazyComponent Component={Dashboard} />} />
           <Route path="/admin/users" element={<LazyComponent Component={AdminUsers} />} />

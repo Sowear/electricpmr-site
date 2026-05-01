@@ -193,7 +193,9 @@ const Contact = () => {
                   <Button 
                     type="submit" 
                     size="lg" 
-                    className="w-full h-14 text-base relative overflow-hidden group"
+                    className={`w-full h-14 text-base relative overflow-hidden group transition-colors ${
+                      isSuccess ? 'bg-green-600 hover:bg-green-600 text-white dark:bg-green-500 dark:hover:bg-green-500' : ''
+                    }`}
                     disabled={isSubmitting || isSuccess}
                   >
                     <AnimatePresence mode="wait">
@@ -214,7 +216,7 @@ const Contact = () => {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
-                          className="flex items-center text-green-300"
+                          className="flex items-center text-white"
                         >
                           <CheckCircle2 className="mr-2 h-5 w-5" />
                           Успешно

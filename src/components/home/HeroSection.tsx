@@ -118,7 +118,16 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-industrial-dark via-industrial-dark/80 to-transparent z-10" />
       <div className="absolute inset-0 bg-gradient-to-t from-industrial-dark via-transparent to-transparent z-10" />
       <div className="tech-grid absolute inset-0 z-0 text-white/[0.08] [background-size:56px_56px]" />
-      <div className="hidden md:block absolute left-[8%] top-24 z-0 h-[560px] w-px bg-gradient-to-b from-transparent via-primary/35 to-transparent" />
+      
+      {/* Main Conductor Line */}
+      <div className="hidden md:block absolute left-[8%] top-24 bottom-0 z-0 w-px bg-gradient-to-b from-transparent via-primary/30 to-primary/80">
+        {/* Flowing current */}
+        <motion.div 
+          className="absolute -left-[1px] w-[3px] h-[150px] bg-gradient-to-b from-transparent via-primary to-transparent blur-[1px]"
+          animate={{ top: ["-20%", "120%"] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+        />
+      </div>
       <div className="hidden md:block absolute left-[8%] top-24 z-0 h-px w-[38vw] bg-gradient-to-r from-primary/25 to-transparent" />
       
 

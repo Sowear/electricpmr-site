@@ -1,5 +1,6 @@
 import { Camera, CheckCircle2, ClipboardCheck, FileText, Gauge, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 const passportCards = [
   {
@@ -32,42 +33,36 @@ const checklist = [
 ];
 
 export default function QualityPassportSection() {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-20% 0px" });
+
   return (
-    <section className="relative overflow-hidden bg-industrial-dark py-14 text-white md:py-20">
-      {/* The Wire Tracker Transition */}
-      <div className="absolute top-0 left-0 w-full h-32 z-20 pointer-events-none flex justify-center">
-        {/* Subtle horizontal separator */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        
-        <svg width="240" height="128" viewBox="0 0 240 128" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]">
-          {/* Faint track */}
-          <path d="M120,0 L120,24 L160,24 L160,64 L80,64 L80,104 L120,104 L120,128" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinejoin="bevel" />
-          
-          {/* Animated current (wire) */}
-          <motion.path 
-            d="M120,0 L120,24 L160,24 L160,64 L80,64 L80,104 L120,104 L120,128" 
-            stroke="currentColor" 
-            strokeWidth="1.5" 
-            strokeLinejoin="bevel" 
-            className="text-primary"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", times: [0, 0.2, 0.8, 1] }}
-          />
-          
-          {/* Static glowing nodes at corners */}
-          <circle cx="120" cy="24" r="2" fill="currentColor" className="text-primary/70" />
-          <circle cx="160" cy="24" r="2" fill="currentColor" className="text-primary/70" />
-          <circle cx="160" cy="64" r="2" fill="currentColor" className="text-primary/70" />
-          <circle cx="80" cy="64" r="2" fill="currentColor" className="text-primary/70" />
-          <circle cx="80" cy="104" r="2" fill="currentColor" className="text-primary/70" />
-          <circle cx="120" cy="104" r="2" fill="currentColor" className="text-primary/70" />
-          
-          {/* End connection node */}
-          <circle cx="120" cy="128" r="3" fill="currentColor" className="text-primary" />
-          <circle cx="120" cy="128" r="6" fill="currentColor" className="text-primary opacity-20 animate-ping" />
-        </svg>
+    <section ref={sectionRef} className="relative overflow-hidden bg-industrial-dark py-14 text-white md:py-20">
+      {/* Conductor Merge Effect */}
+      <div className="hidden md:block absolute left-[8%] top-0 z-30">
+        {/* Glow spark when in view */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={isInView ? { opacity: [0, 1, 0.5, 1], scale: [0.5, 1.8, 1, 1.2] } : { opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute -left-2 -top-2 w-4 h-4 bg-primary rounded-full shadow-[0_0_20px_rgba(234,179,8,1),0_0_40px_rgba(234,179,8,0.8)]"
+        />
+        <div className="absolute -left-1 -top-1 w-2 h-2 bg-white rounded-full z-10 shadow-[0_0_10px_white]" />
       </div>
+
+      {/* Continuing Conductor Line */}
+      <motion.div 
+        initial={{ height: 0 }}
+        animate={isInView ? { height: "100%" } : { height: 0 }}
+        transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+        className="hidden md:block absolute left-[8%] top-0 z-0 w-px bg-gradient-to-b from-primary/80 via-primary/20 to-transparent overflow-hidden"
+      >
+        <motion.div 
+          className="absolute left-0 w-full h-[150px] bg-gradient-to-b from-transparent via-primary to-transparent"
+          animate={{ top: ["-50%", "120%"] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "linear", delay: 1 }}
+        />
+      </motion.div>
       
       {/* Bottom diffusion to next section */}
       <div className="absolute bottom-0 left-0 right-0 h-10 md:h-12 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
@@ -76,7 +71,11 @@ export default function QualityPassportSection() {
 
       <div className="container-main relative z-10">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div>
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <span className="technical-label mb-5">Паспорт качества</span>
             <h2 className="font-display text-3xl font-bold leading-tight md:text-4xl">
               Инженерная аккуратность, которую видно в каждой детали
@@ -105,9 +104,14 @@ export default function QualityPassportSection() {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="grid gap-3 sm:grid-cols-2"
+          >
             {passportCards.map((card, index) => (
               <div key={card.title} className="group relative min-h-[190px] overflow-hidden rounded-xl border border-white/[0.12] bg-white/[0.07] p-5 backdrop-blur-sm transition-colors hover:border-primary/55 hover:bg-white/[0.09]">
                 <div className="absolute right-4 top-4 text-xs font-semibold text-white/20 transition-colors group-hover:text-primary/70">
@@ -118,7 +122,7 @@ export default function QualityPassportSection() {
                 <p className="mt-3 text-sm leading-relaxed text-white/[0.62]">{card.text}</p>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 import prerender from '@prerenderer/rollup-plugin';
-import PuppeteerRenderer from '@prerenderer/renderer-puppeteer';
+import JSDOMRenderer from '@prerenderer/renderer-jsdom';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -66,9 +66,8 @@ export default defineConfig(({ mode }) => ({
         '/elektromontazh-v-kvartire',
         '/elektromontazh-v-dome'
       ],
-      renderer: new PuppeteerRenderer({
-        renderAfterTime: 5000,
-        headless: true
+      renderer: new JSDOMRenderer({
+        renderAfterTime: 5000
       }),
       server: {
         port: 8080

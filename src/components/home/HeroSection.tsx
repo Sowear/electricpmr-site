@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPin, Phone } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPin, Phone, ClipboardCheck, Gauge, Ruler } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
@@ -104,17 +104,33 @@ const HeroSection = () => {
     subtitle: "Ответственность по договору"
   }];
 
+  const proofItems = [
+    { icon: Shield, label: "5 лет гарантии" },
+    { icon: MapPin, label: "Выезд по ПМР" },
+    { icon: FileText, label: "Смета до работы" },
+    { icon: Phone, label: "+373 777 46642" },
+  ];
+
+  const passportItems = [
+    { icon: ClipboardCheck, label: "Смета", value: "до старта" },
+    { icon: Gauge, label: "Контроль", value: "по этапам" },
+    { icon: Ruler, label: "Монтаж", value: "по нормам" },
+  ];
+
   return (
-    <section className="relative min-h-[90vh] overflow-hidden bg-industrial-dark">
+    <section className="relative isolate min-h-[90vh] overflow-hidden bg-industrial-dark">
       {/* Gradient overlays */}
       <div className="absolute inset-0 bg-gradient-to-r from-industrial-dark via-industrial-dark/80 to-transparent z-10" />
       <div className="absolute inset-0 bg-gradient-to-t from-industrial-dark via-transparent to-transparent z-10" />
+      <div className="tech-grid absolute inset-0 z-0 text-white/[0.08] [background-size:56px_56px]" />
+      <div className="hidden md:block absolute left-[8%] top-24 z-0 h-[560px] w-px bg-gradient-to-b from-transparent via-primary/35 to-transparent" />
+      <div className="hidden md:block absolute left-[8%] top-24 z-0 h-px w-[38vw] bg-gradient-to-r from-primary/25 to-transparent" />
       
       {/* Bottom diffusion to white */}
       <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-background to-transparent z-10" />
 
       {/* 3D Illustration - Mobile background */}
-      <div className="absolute top-[10%] right-[-25%] sm:right-[-15%] w-[140%] sm:w-[110%] md:w-[90%] lg:hidden z-0 overflow-hidden pointer-events-none opacity-[0.22] md:opacity-30">
+      <div className="absolute top-[15%] right-[-28%] sm:right-[-15%] w-[150%] sm:w-[112%] md:w-[90%] lg:hidden z-0 overflow-hidden pointer-events-none opacity-[0.28] md:opacity-35">
         <motion.div
           className="relative w-full"
           variants={imageVariants}
@@ -147,6 +163,21 @@ const HeroSection = () => {
           />
           {/* Glow effect behind panel */}
           <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]" />
+          <div className="glass-dark absolute right-[10%] top-[54%] w-[300px] -translate-y-1/2 rounded-xl p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Паспорт работ</span>
+              <span className="rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium text-white/55">PMR-24</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {passportItems.map((item) => (
+                <div key={item.label} className="rounded-lg border border-white/10 bg-white/[0.06] p-3">
+                  <item.icon className="mb-2 h-4 w-4 text-primary" />
+                  <div className="text-[11px] font-medium text-white/55">{item.label}</div>
+                  <div className="text-xs font-semibold text-white">{item.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </motion.div>
       </div>
 
@@ -162,7 +193,7 @@ const HeroSection = () => {
             {/* Badge */}
             <motion.div 
               variants={badgeVariants}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 mb-7 shadow-[0_0_30px_rgba(234,179,8,0.10)]"
             >
               <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
               <span className="text-sm font-medium text-primary">Электромонтаж по всему Приднестровью</span>
@@ -193,12 +224,14 @@ const HeroSection = () => {
             {/* Quick Proofs */}
             <motion.div 
               variants={itemVariants}
-              className="flex flex-wrap gap-x-4 gap-y-2 text-[13px] sm:text-sm text-white/90 mb-10 max-w-xl font-medium"
+              className="grid grid-cols-2 gap-2.5 text-[13px] text-white/90 mb-10 max-w-xl font-medium sm:flex sm:flex-wrap sm:gap-x-4 sm:gap-y-2 sm:text-sm"
             >
-              <div className="flex items-center gap-1.5"><Shield className="h-4 w-4 text-primary" /> 5 лет гарантии</div>
-              <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary" /> Выезд по ПМР</div>
-              <div className="flex items-center gap-1.5"><FileText className="h-4 w-4 text-primary" /> Смета до работы</div>
-              <div className="flex items-center gap-1.5"><Phone className="h-4 w-4 text-primary" /> +373 777 46642</div>
+              {proofItems.map((item) => (
+                <div key={item.label} className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-2 sm:border-0 sm:bg-transparent sm:p-0">
+                  <item.icon className="h-4 w-4 shrink-0 text-primary" />
+                  <span>{item.label}</span>
+                </div>
+              ))}
             </motion.div>
 
             {/* CTA Buttons */}
@@ -219,7 +252,7 @@ const HeroSection = () => {
             {/* Service Areas Mini-Block */}
             <motion.div
               variants={itemVariants}
-              className="flex items-center gap-2 text-xs md:text-sm text-white/50 mb-12"
+              className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs md:text-sm text-white/60 mb-12 max-w-xl"
             >
               <MapPin className="h-3.5 w-3.5" />
               <span>Работаем: Тирасполь, Бендеры, Слободзея и районы</span>
@@ -238,8 +271,11 @@ const HeroSection = () => {
                 key={index} 
                 variants={itemVariants}
                 whileHover={{ scale: 1.03, y: -5 }}
-                className="flex aspect-square flex-col items-center justify-center text-center p-4 md:p-5 rounded-xl bg-white/[0.07] border border-white/15 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-white/[0.09] hover:border-primary/65 hover:shadow-[0_0_24px_rgba(234,179,8,0.22)] transition-colors duration-300"
+                className="group relative flex min-h-[132px] sm:aspect-square flex-col items-center justify-center text-center p-4 md:p-5 rounded-xl bg-white/[0.07] border border-white/15 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-white/[0.09] hover:border-primary/65 hover:shadow-[0_0_24px_rgba(234,179,8,0.22)] transition-colors duration-300"
               >
+                <span className="absolute right-3 top-3 text-[10px] font-semibold text-white/25 transition-colors group-hover:text-primary/70">
+                  0{index + 1}
+                </span>
                 <div className="h-8 w-8 flex items-center justify-center mb-3 flex-shrink-0">
                   <badge.icon className="h-5 w-5 text-primary" />
                 </div>

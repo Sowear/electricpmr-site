@@ -172,21 +172,37 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
         })}
       </script>
 
-      <section className="section-padding bg-secondary/30 pt-10 md:pt-16">
-        <div className="container-main">
+      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(234,179,8,0.10),transparent_28%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--secondary))_100%)] pt-10 pb-12 md:pt-16 md:pb-20">
+        <div className="tech-grid absolute inset-0 text-foreground/[0.06]" />
+        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+        <div className="container-main relative z-10">
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Column */}
             <div>
-              <p className="text-sm uppercase tracking-wide text-primary font-medium mb-3">
+              <p className="technical-label mb-4">
                 {content.isEmergency ? "Срочный вызов" : "Услуги электромонтажа"}
               </p>
-              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6">
                 {content.heading}
               </h1>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              <p className="text-base md:text-lg text-muted-foreground mb-8 leading-relaxed">
                 {content.description}
               </p>
+
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
+                {[
+                  { icon: Calculator, label: "Расчёт", value: "до начала" },
+                  { icon: ShieldCheck, label: "Гарантия", value: "на работы" },
+                  { icon: CheckCircle2, label: "Проверка", value: "после монтажа" },
+                ].map((item) => (
+                  <div key={item.label} className="card-engineering bg-card/80 p-3 sm:p-4">
+                    <item.icon className="mb-2 sm:mb-3 h-5 w-5 text-primary" />
+                    <div className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">{item.label}</div>
+                    <div className="font-display text-sm sm:text-lg font-bold leading-tight text-foreground">{item.value}</div>
+                  </div>
+                ))}
+              </div>
 
               <div className="flex flex-wrap gap-4 mb-10">
                 <Button size="lg" asChild className="h-14 px-8 text-base shadow-lg shadow-primary/20">
@@ -208,7 +224,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
               </div>
 
               {/* Work Areas */}
-              <div className="p-5 rounded-2xl bg-card border border-border shadow-sm">
+              <div className="card-engineering bg-card/85 p-5">
                 <div className="flex items-center gap-3 text-sm text-foreground/80 font-medium">
                   <MapPin className="h-5 w-5 text-primary shrink-0" />
                   <span>Работаем: Тирасполь, Бендеры, Слободзея и районы.</span>
@@ -219,22 +235,30 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
             {/* Right Column (Cards) */}
             <div className="space-y-6">
               {/* Pricing Card */}
-              <div className="card-industrial p-6 md:p-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-[100px] -z-10" />
-                <h3 className="font-display text-xl font-semibold mb-4 flex items-center gap-2">
+              <div className="relative overflow-hidden rounded-xl border border-white/10 bg-industrial-dark p-6 text-white shadow-[0_26px_80px_-42px_rgba(0,0,0,0.75)] md:p-8">
+                <div className="tech-grid absolute inset-0 text-white/[0.08] [background-size:34px_34px]" />
+                <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
+                <h3 className="relative font-display text-xl font-semibold mb-4 flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-primary" />
                   Цена и расчет
                 </h3>
-                <div className="text-3xl font-bold text-foreground mb-3">
+                <div className="relative text-4xl font-bold text-white mb-3">
                   {content.priceStart}
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="relative text-white/70 text-sm leading-relaxed">
                   {content.priceLogic}
                 </p>
+                <div className="relative mt-6 grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+                  {["Прозрачно", "По этапам", "Без сюрпризов"].map((label) => (
+                    <div key={label} className="rounded-lg border border-white/10 bg-white/[0.06] px-2 py-2 text-center text-[11px] font-semibold text-white/75">
+                      {label}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* What's Included */}
-              <div className="card-industrial p-6 md:p-8">
+              <div className="card-engineering p-6 md:p-8">
                 <h3 className="font-display text-xl font-semibold mb-5 flex items-center gap-2">
                   <Wrench className="h-5 w-5 text-primary" />
                   Что входит в услугу
@@ -254,7 +278,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
           {/* Bottom Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
              {/* Timeline Card */}
-             <div className="card-industrial p-6">
+             <div className="card-engineering p-6">
                 <h3 className="font-display text-lg font-semibold mb-3 flex items-center gap-2">
                   <Clock3 className="h-5 w-5 text-primary" />
                   Сроки работы
@@ -263,7 +287,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
               </div>
 
               {/* Common Faults */}
-              <div className="card-industrial p-6 border-destructive/20 bg-destructive/5">
+              <div className="card-engineering p-6 border-destructive/20 bg-destructive/5">
                 <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-2 text-destructive">
                   <AlertTriangle className="h-5 w-5" />
                   Частые проблемы (когда вызывать)

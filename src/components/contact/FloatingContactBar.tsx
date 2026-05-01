@@ -37,8 +37,8 @@ const FloatingContactBar = () => {
   }, []);
 
   return (
-    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
-      <div className="flex items-center gap-2 bg-foreground/95 backdrop-blur-sm rounded-full px-2 py-1.5 shadow-lg">
+    <div className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-50 md:hidden transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+      <div className="flex items-center gap-2 rounded-full border border-white/10 bg-foreground/95 px-2 py-1.5 shadow-[0_18px_50px_-22px_rgba(0,0,0,0.75)] backdrop-blur-md">
         {contacts.map((contact) => (
           <a
             key={contact.name}

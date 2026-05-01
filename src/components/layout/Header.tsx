@@ -71,16 +71,22 @@ const Header = () => {
     { href: "/contact", label: "Контакты" },
   ];
 
+  const serviceLinks = [
+    { href: "/zamena-provodki", label: "Замена проводки" },
+    { href: "/sborka-elektroshchita", label: "Сборка щита" },
+    { href: "/avariynyy-elektrik", label: "Аварийный вызов" },
+  ];
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/90 shadow-[0_10px_40px_-34px_rgba(15,23,42,0.55)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/75">
         <div className="container-main">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold shrink-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+            <Link to="/" className="flex items-center gap-2.5 font-display text-xl font-bold shrink-0">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-[0_10px_22px_rgba(234,179,8,0.24)]">
                 <Zap className="h-5 w-5 text-primary-foreground" />
               </div>
               <span className="text-lg sm:text-xl">ЭлектроМастер</span>
@@ -158,7 +164,7 @@ const Header = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-2"
+              className="md:hidden rounded-xl border border-border/70 bg-card p-2 shadow-sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -168,20 +174,43 @@ const Header = () => {
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border animate-fade-in">
+            <div className="md:hidden border-t border-border/70 py-4 animate-fade-in">
               <nav className="flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    className={`text-sm font-medium ${
-                      isActive(link.href) ? "text-foreground" : "text-muted-foreground"
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                <div className="grid grid-cols-2 gap-2">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-colors ${
+                        isActive(link.href)
+                          ? "border-primary/35 bg-primary/10 text-foreground"
+                          : "border-border/70 bg-card text-muted-foreground hover:text-foreground"
+                      }`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="rounded-xl border border-border/70 bg-muted/35 p-3">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Частые услуги
+                  </p>
+                  <div className="grid gap-2">
+                    {serviceLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="rounded-lg bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex flex-col gap-2 pt-4 border-t border-border">
                   {user ? (
                     <>

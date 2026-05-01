@@ -10,6 +10,7 @@ import FloatingContactBar from "@/components/contact/FloatingContactBar";
 import FaqAccordion from "@/components/common/FaqAccordion";
 import CompanyInfoSection from "@/components/home/CompanyInfoSection";
 import ProcessSection from "@/components/home/ProcessSection";
+import QualityPassportSection from "@/components/home/QualityPassportSection";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -19,6 +20,7 @@ const Index = () => {
         description="ЭлектроМастер — профессиональный электромонтаж в Тирасполе и Слободзее. Квартиры и частные дома, аварийный выезд и гарантия. Также работаем в Бендерах."
       >
       <HeroSection />
+      <QualityPassportSection />
       <ServicesSection />
       <AboutSection />
       <CompanyInfoSection />

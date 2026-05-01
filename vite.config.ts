@@ -4,7 +4,19 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 import prerender from '@prerenderer/rollup-plugin';
-import PuppeteerRenderer from '@prerenderer/renderer-puppeteer';
+import JSDOMRenderer from '@prerenderer/renderer-jsdom';
+import { ResourceLoader } from 'jsdom';
+
+// Custom resource loader to prevent JSDOM from fetching and parsing Tailwind CSS,
+// which causes a fatal "Could not parse CSS stylesheet" error.
+class NoCssResourceLoader extends ResourceLoader {
+  fetch(url, options) {
+    if (url.endsWith('.css')) {
+      return Promise.resolve(Buffer.from(''));
+    }
+    return super.fetch(url, options);
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -66,9 +78,11 @@ export default defineConfig(({ mode }) => ({
         '/elektromontazh-v-kvartire',
         '/elektromontazh-v-dome'
       ],
-      renderer: new PuppeteerRenderer({
+      renderer: new JSDOMRenderer({
         renderAfterTime: 5000,
-        headless: true
+        JSDOMOptions: {
+          resources: new NoCssResourceLoader(),
+        }
       }),
       server: {
         port: 8080

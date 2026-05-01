@@ -1,4 +1,5 @@
 import { Camera, CheckCircle2, ClipboardCheck, FileText, Gauge, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 const passportCards = [
   {
@@ -33,28 +34,39 @@ const checklist = [
 export default function QualityPassportSection() {
   return (
     <section className="relative overflow-hidden bg-industrial-dark py-14 text-white md:py-20">
-      {/* Marquee Transition Tape */}
-      <div className="absolute top-0 left-0 w-full overflow-hidden border-b border-white/5 bg-black/40 py-2.5 z-20">
-        <div 
-          className="flex whitespace-nowrap text-[10px] md:text-xs font-semibold uppercase tracking-[0.2em] text-primary/60"
-          style={{ animation: 'marquee 40s linear infinite' }}
-        >
-          {/* Double the content for seamless infinite loop */}
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="flex items-center shrink-0">
-              <span className="mx-4 opacity-50">✦</span>
-              <span>Строго по ПУЭ и СНиП</span>
-              <span className="mx-4 opacity-50">✦</span>
-              <span>5 лет гарантии на работы</span>
-              <span className="mx-4 opacity-50">✦</span>
-              <span>Контроль каждого этапа</span>
-              <span className="mx-4 opacity-50">✦</span>
-              <span>Точная смета до старта</span>
-              <span className="mx-4 opacity-50">✦</span>
-              <span>Инженерная аккуратность</span>
-            </div>
-          ))}
-        </div>
+      {/* The Wire Tracker Transition */}
+      <div className="absolute top-0 left-0 w-full h-32 z-20 pointer-events-none flex justify-center">
+        {/* Subtle horizontal separator */}
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        
+        <svg width="240" height="128" viewBox="0 0 240 128" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]">
+          {/* Faint track */}
+          <path d="M120,0 L120,24 L160,24 L160,64 L80,64 L80,104 L120,104 L120,128" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinejoin="bevel" />
+          
+          {/* Animated current (wire) */}
+          <motion.path 
+            d="M120,0 L120,24 L160,24 L160,64 L80,64 L80,104 L120,104 L120,128" 
+            stroke="currentColor" 
+            strokeWidth="1.5" 
+            strokeLinejoin="bevel" 
+            className="text-primary"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", times: [0, 0.2, 0.8, 1] }}
+          />
+          
+          {/* Static glowing nodes at corners */}
+          <circle cx="120" cy="24" r="2" fill="currentColor" className="text-primary/70" />
+          <circle cx="160" cy="24" r="2" fill="currentColor" className="text-primary/70" />
+          <circle cx="160" cy="64" r="2" fill="currentColor" className="text-primary/70" />
+          <circle cx="80" cy="64" r="2" fill="currentColor" className="text-primary/70" />
+          <circle cx="80" cy="104" r="2" fill="currentColor" className="text-primary/70" />
+          <circle cx="120" cy="104" r="2" fill="currentColor" className="text-primary/70" />
+          
+          {/* End connection node */}
+          <circle cx="120" cy="128" r="3" fill="currentColor" className="text-primary" />
+          <circle cx="120" cy="128" r="6" fill="currentColor" className="text-primary opacity-20 animate-ping" />
+        </svg>
       </div>
       
       {/* Bottom diffusion to next section */}

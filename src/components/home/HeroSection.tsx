@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
+import { QuizDialog } from "@/components/contact/QuizDialog";
 import heroImage from "@/assets/hero-electricalhome.png";
 
 const containerVariants = {
@@ -78,6 +79,8 @@ const TextFlipper = ({ words }: { words: string[] }) => {
 
 const HeroSection = () => {
   const [emergencyOpen, setEmergencyOpen] = useState(false);
+  const [quizOpen, setQuizOpen] = useState(false);
+  
   const scrollToForm = () => {
     document.getElementById('request-form')?.scrollIntoView({
       behavior: 'smooth'
@@ -181,8 +184,8 @@ const HeroSection = () => {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 mb-16"
             >
-              <Button size="lg" onClick={scrollToForm} className="btn-hero btn-spark group text-base h-13 md:h-14 px-7 md:px-8 shadow-[0_10px_26px_rgba(234,179,8,0.24)]">
-                Оставить заявку
+              <Button size="lg" onClick={() => setQuizOpen(true)} className="btn-hero btn-spark group text-base h-13 md:h-14 px-7 md:px-8 shadow-[0_10px_26px_rgba(234,179,8,0.24)]">
+                Узнать стоимость
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button size="lg" variant="outline" className="btn-spark h-13 md:h-14 px-7 md:px-8 text-base border-2 border-white/25 bg-transparent text-white/90 hover:bg-white/10 hover:border-white/40" onClick={() => setEmergencyOpen(true)}>
@@ -238,6 +241,7 @@ const HeroSection = () => {
       </motion.div>
 
       <EmergencyCallDialog open={emergencyOpen} onOpenChange={setEmergencyOpen} />
+      <QuizDialog open={quizOpen} onOpenChange={setQuizOpen} />
     </section>
   );
 };

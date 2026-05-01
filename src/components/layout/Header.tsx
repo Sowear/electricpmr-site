@@ -4,6 +4,7 @@ import { Zap, Menu, X, LogOut, AlertTriangle, Calculator, FolderOpen } from "luc
 import { useState, useEffect } from "react";
 import { supabase, type User } from "@/integrations/supabase/client";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
+import { QuizDialog } from "@/components/contact/QuizDialog";
 import NotificationBell from "./NotificationBell";
 
 const Header = () => {
@@ -14,6 +15,7 @@ const Header = () => {
   const [hasWorkspaceAccess, setHasWorkspaceAccess] = useState(false);
   const [hasAdminAccess, setHasAdminAccess] = useState(false);
   const [emergencyOpen, setEmergencyOpen] = useState(false);
+  const [quizOpen, setQuizOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -57,12 +59,8 @@ const Header = () => {
     navigate('/');
   };
 
-  const scrollToForm = () => {
-    if (location.pathname !== '/') {
-      navigate('/#request-form');
-    } else {
-      document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' });
-    }
+  const openQuiz = () => {
+    setQuizOpen(true);
     setIsMenuOpen(false);
   };
 
@@ -142,7 +140,7 @@ const Header = () => {
                   <Button variant="ghost" size="sm" asChild>
                     <Link to="/auth">Войти</Link>
                   </Button>
-                  <Button size="sm" onClick={scrollToForm}>
+                  <Button size="sm" onClick={openQuiz}>
                     <Calculator className="h-4 w-4 mr-2" />
                     Расчёт бесплатно
                   </Button>
@@ -222,7 +220,7 @@ const Header = () => {
                           Войти
                         </Link>
                       </Button>
-                      <Button size="sm" onClick={scrollToForm}>
+                      <Button size="sm" onClick={openQuiz}>
                         <Calculator className="h-4 w-4 mr-2" />
                         Получить расчёт бесплатно
                       </Button>
@@ -247,6 +245,7 @@ const Header = () => {
       </header>
 
       <EmergencyCallDialog open={emergencyOpen} onOpenChange={setEmergencyOpen} />
+      <QuizDialog open={quizOpen} onOpenChange={setQuizOpen} />
     </>
   );
 };

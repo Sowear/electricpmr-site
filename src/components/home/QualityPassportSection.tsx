@@ -36,6 +36,35 @@ export default function QualityPassportSection() {
       <div className="tech-grid absolute inset-0 text-white/[0.08] [background-size:48px_48px]" />
       <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
       
+      {/* Geometric Step Divider (Architectural Transition) */}
+      <div className="absolute top-0 left-0 w-full h-10 md:h-16 z-20 pointer-events-none">
+        {/* Left top line */}
+        <div className="absolute top-0 left-0 w-[15%] md:w-[30%] h-px bg-gradient-to-r from-transparent to-primary/60" />
+        
+        {/* Vertical step */}
+        <div className="absolute top-0 left-[15%] md:left-[30%] w-px h-full bg-primary/60 shadow-[0_0_12px_rgba(234,179,8,0.6)]" />
+        
+        {/* Top corner dot */}
+        <div className="absolute top-0 left-[15%] md:left-[30%] w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
+        
+        {/* Bottom corner dot */}
+        <div className="absolute bottom-0 left-[15%] md:left-[30%] w-1.5 h-1.5 -translate-x-1/2 translate-y-1/2 bg-primary rounded-full shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
+        
+        {/* Right bottom line */}
+        <div className="absolute bottom-0 left-[15%] md:left-[30%] right-0 h-px bg-gradient-to-r from-primary/60 via-primary/20 to-transparent" />
+        
+        {/* Depth shadow - darkens the sunken right part */}
+        <div className="absolute top-0 left-[15%] md:left-[30%] right-0 h-full bg-black/30" />
+        
+        {/* Engineering CAD hatching pattern inside the sunken part */}
+        <div 
+          className="absolute top-0 left-[15%] md:left-[30%] right-0 h-full opacity-[0.15]"
+          style={{ 
+            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.4) 4px, rgba(255,255,255,0.4) 5px)' 
+          }}
+        />
+      </div>
+      
       {/* Bottom diffusion to next section */}
       <div className="absolute bottom-0 left-0 right-0 h-10 md:h-12 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
       {/* Glow divider line */}

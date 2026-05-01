@@ -162,7 +162,7 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="container-main relative z-20">
-        <div className="pt-16 pb-16 md:py-28 lg:py-36">
+        <div className="pt-8 pb-16 md:pt-12 md:pb-28 lg:pt-16 lg:pb-36">
           <motion.div 
             className="max-w-[48rem]"
             variants={containerVariants}

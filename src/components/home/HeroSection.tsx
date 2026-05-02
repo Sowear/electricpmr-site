@@ -4,8 +4,6 @@ import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPi
 import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
-import heroImage from "@/assets/hero-electricalhome.png";
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -71,6 +69,25 @@ const TextFlipper = ({ words }: { words: string[] }) => {
 const HeroSection = () => {
   const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [quizOpen, setQuizOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const showcaseImages = [
+    "/sitephoto/photo_1.jpg",
+    "/sitephoto/photo_2.jpg",
+    "/sitephoto/photo_3.jpg",
+    "/sitephoto/photo_4.jpg",
+    "/sitephoto/photo_5.jpg",
+    "/sitephoto/photo_6.jpg",
+    "/sitephoto/photo_7.jpg",
+    "/sitephoto/photo_8.jpg"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % showcaseImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const trustBadges = [
     {
@@ -186,16 +203,26 @@ const HeroSection = () => {
               />
 
               <motion.div 
-                className="relative z-10 ml-auto w-full max-w-[620px] lg:max-w-[660px]"
+                className="relative z-10 ml-auto w-full max-w-[480px] lg:max-w-[520px] aspect-[4/5] sm:aspect-square"
                 animate={{ y: [-12, 12, -12] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full scale-[0.85]" />
-                <img
-                  src={heroImage}
-                  alt="Профессиональная электросистема"
-                  className="relative z-10 w-full object-contain drop-shadow-[0_20px_35px_rgba(15,23,42,0.12)] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_90%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_90%)]"
-                />
+                <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full scale-[0.85]" />
+                
+                <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-white/60 bg-card shadow-[0_24px_50px_rgba(15,23,42,0.18)] ring-1 ring-border/50">
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={currentImageIndex}
+                      src={showcaseImages[currentImageIndex]}
+                      alt="Электромонтаж на объекте"
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.8, ease: "easeInOut" }}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </AnimatePresence>
+                </div>
               </motion.div>
             </div>
           </motion.div>

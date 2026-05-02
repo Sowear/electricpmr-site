@@ -98,9 +98,6 @@ const Header = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-lg leading-none sm:text-xl">ЭлектроМастер</span>
-                <span className="hidden text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:block">
-                  Проект и монтаж
-                </span>
               </div>
             </Link>
 

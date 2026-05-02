@@ -202,16 +202,16 @@ const Header = () => {
           </div>
 
           {isMenuOpen && (
-            <div className="animate-fade-in border-t border-border/70 py-4 md:hidden">
-              <nav className="flex flex-col gap-4">
-                <div className="rounded-lg border border-border/70 bg-card/90 px-4 py-3 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    Быстрый контакт
+            <div className="absolute top-[72px] left-0 right-0 animate-fade-in border-t border-border/70 bg-background/95 backdrop-blur-2xl md:hidden h-[calc(100dvh-72px)] overflow-y-auto shadow-[0_20px_40px_-20px_rgba(0,0,0,0.5)]">
+              <nav className="flex flex-col gap-6 p-4 pb-24 container-main">
+                <div className="rounded-xl border border-border/70 bg-card/50 px-5 py-4 shadow-sm flex flex-col items-center justify-center text-center">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-1">
+                    Круглосуточная связь
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-foreground">+373 777 46642</p>
+                  <p className="text-lg font-bold text-foreground">+373 777 46642</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {navLinks.map((link) => (
                     <Link
                       key={link.href}
@@ -226,9 +226,9 @@ const Header = () => {
                   ))}
                 </div>
 
-                <div className="rounded-lg border border-border/70 bg-muted/35 p-3">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    Частые услуги
+                <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Популярные услуги
                   </p>
                   <div className="grid gap-2">
                     {serviceLinks.map((link) => (
@@ -244,7 +244,7 @@ const Header = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 border-t border-border pt-4">
+                <div className="flex flex-col gap-3 border-t border-border/50 pt-6">
                   {user ? (
                     <>
                       {hasWorkspaceAccess && (

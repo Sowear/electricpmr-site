@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useAnimation } from "framer-motion";
+import { motion, useInView, useAnimation, useScroll } from "framer-motion";
 import { Shield, Award, Clock, CheckCircle2 } from "lucide-react";
 import aboutPanelImage from "@/assets/about-electrical-96panel.png";
+import CableReveal from "./CableReveal";
 
 interface CounterProps {
   end: number;
@@ -94,6 +95,11 @@ const AboutSection = () => {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+
   useEffect(() => {
     if (isInView) {
       controls.start("visible");
@@ -106,6 +112,11 @@ const AboutSection = () => {
       id="about"
       className="relative py-20 lg:py-28 bg-gradient-to-b from-background to-secondary/20 overflow-hidden"
     >
+      {/* Background Cable Reveal Animation */}
+      <div className="absolute right-0 top-0 bottom-0 opacity-30 xl:opacity-100 xl:right-[5%] 2xl:right-[10%] w-32 pointer-events-none z-0">
+        <CableReveal progress={scrollYProgress} />
+      </div>
+
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.02]">
         <div className="absolute inset-0" style={{
@@ -184,7 +195,7 @@ const AboutSection = () => {
           {/* Right Column - Content (40%) */}
           <motion.div 
             variants={containerVariants}
-            className="lg:col-span-2 order-1 lg:order-2"
+            className="lg:col-span-2 order-1 lg:order-2 relative z-10 bg-background/50 backdrop-blur-sm p-6 rounded-2xl md:bg-transparent md:p-0 md:backdrop-blur-none"
           >
             <motion.span 
               variants={itemVariants}

@@ -1,31 +1,41 @@
-import { motion, MotionValue, useTransform } from "framer-motion";
+import { motion, MotionValue, useTransform, useScroll, useVelocity, useSpring } from "framer-motion";
 
 interface CableRevealProps {
   progress: MotionValue<number>;
 }
 
 const CableReveal = ({ progress }: CableRevealProps) => {
+  // Physical tension effect based on scroll velocity
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
+  const skewY = useTransform(smoothVelocity, [-1000, 1000], [-2, 2]);
+  const xOffset = useTransform(smoothVelocity, [-1000, 1000], [-3, 3]);
+
   // Outer black jacket cuts from top to bottom
   const strip1Y = useTransform(progress, [0.1, 0.7], ["0%", "100%"]);
   // Colored insulation cuts from top to bottom
   const strip2Y = useTransform(progress, [0.3, 0.9], ["0%", "100%"]);
 
   return (
-    <div className="relative w-16 md:w-20 h-full flex justify-center overflow-visible drop-shadow-2xl">
+    <motion.div 
+      className="relative w-16 md:w-20 h-full flex justify-center overflow-visible drop-shadow-2xl"
+      style={{ skewY, x: xOffset }}
+    >
       {/* Background Glow for Copper */}
       <motion.div 
         className="absolute top-0 w-32 h-64 bg-primary/20 blur-[50px] -z-10 rounded-full"
         style={{ top: useTransform(strip2Y, y => y) }}
       />
 
-      {/* Layer 1: Bare Copper Wires (Base) */}
+      {/* Layer 1: Bare Copper Wires (Stranded Texture) */}
       <div className="absolute inset-0 flex justify-center gap-1.5 md:gap-2 px-2 pt-10">
         {/* Phase Copper */}
-        <div className="w-3 md:w-4 h-full bg-gradient-to-r from-[#b87333] via-[#e5aa70] to-[#8a3324] shadow-[inset_2px_0_4px_rgba(255,255,255,0.4),inset_-2px_0_4px_rgba(0,0,0,0.6)] rounded-t-sm" />
+        <div className="w-3 md:w-4 h-full bg-[repeating-linear-gradient(90deg,#b87333,#b87333_1px,#8a3324_1px,#8a3324_2px)] shadow-[inset_2px_0_4px_rgba(255,255,255,0.4),inset_-2px_0_4px_rgba(0,0,0,0.6)] rounded-t-[2px]" />
         {/* Ground Copper */}
-        <div className="w-3 md:w-4 h-full bg-gradient-to-r from-[#b87333] via-[#e5aa70] to-[#8a3324] shadow-[inset_2px_0_4px_rgba(255,255,255,0.4),inset_-2px_0_4px_rgba(0,0,0,0.6)] rounded-t-sm" />
+        <div className="w-3 md:w-4 h-full bg-[repeating-linear-gradient(90deg,#b87333,#b87333_1px,#8a3324_1px,#8a3324_2px)] shadow-[inset_2px_0_4px_rgba(255,255,255,0.4),inset_-2px_0_4px_rgba(0,0,0,0.6)] rounded-t-[2px]" />
         {/* Neutral Copper */}
-        <div className="w-3 md:w-4 h-full bg-gradient-to-r from-[#b87333] via-[#e5aa70] to-[#8a3324] shadow-[inset_2px_0_4px_rgba(255,255,255,0.4),inset_-2px_0_4px_rgba(0,0,0,0.6)] rounded-t-sm" />
+        <div className="w-3 md:w-4 h-full bg-[repeating-linear-gradient(90deg,#b87333,#b87333_1px,#8a3324_1px,#8a3324_2px)] shadow-[inset_2px_0_4px_rgba(255,255,255,0.4),inset_-2px_0_4px_rgba(0,0,0,0.6)] rounded-t-[2px]" />
       </div>
 
       {/* Layer 2: Colored Insulation */}
@@ -33,12 +43,19 @@ const CableReveal = ({ progress }: CableRevealProps) => {
         className="absolute inset-0 flex justify-center gap-1.5 md:gap-2 px-2 pt-4"
         style={{ clipPath: useTransform(strip2Y, y => `inset(${y} 0 0 0)`) }}
       >
+        {/* Cut Caps for Insulation (Cross-sections) */}
+        <div className="absolute top-0 left-0 w-full flex justify-center gap-1.5 md:gap-2 px-2 h-0">
+          <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-amber-600 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5)] z-10" />
+          <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-yellow-400 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5)] z-10 border border-green-500/30" />
+          <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-blue-400 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5)] z-10" />
+        </div>
+
         {/* Brown (Phase) */}
-        <div className="w-3 md:w-4 h-full bg-gradient-to-r from-amber-900 via-amber-700 to-amber-950 shadow-[inset_2px_0_4px_rgba(255,255,255,0.2),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-md border-t-2 border-amber-500/50" />
+        <div className="w-3 md:w-4 h-full bg-gradient-to-r from-amber-900 via-amber-700 to-amber-950 shadow-[inset_2px_0_4px_rgba(255,255,255,0.2),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-sm" />
         {/* Yellow-Green (Ground) */}
-        <div className="w-3 md:w-4 h-full bg-[repeating-linear-gradient(45deg,#facc15,#facc15_8px,#22c55e_8px,#22c55e_16px)] shadow-[inset_2px_0_4px_rgba(255,255,255,0.3),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-md border-t-2 border-yellow-200/50" />
+        <div className="w-3 md:w-4 h-full bg-[repeating-linear-gradient(45deg,#facc15,#facc15_8px,#22c55e_8px,#22c55e_16px)] shadow-[inset_2px_0_4px_rgba(255,255,255,0.3),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-sm" />
         {/* Blue (Neutral) */}
-        <div className="w-3 md:w-4 h-full bg-gradient-to-r from-blue-700 via-blue-500 to-blue-900 shadow-[inset_2px_0_4px_rgba(255,255,255,0.2),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-md border-t-2 border-blue-400/50" />
+        <div className="w-3 md:w-4 h-full bg-gradient-to-r from-blue-700 via-blue-500 to-blue-900 shadow-[inset_2px_0_4px_rgba(255,255,255,0.2),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-sm" />
       </motion.div>
 
       {/* Layer 3: Outer Black PVC Jacket */}
@@ -46,7 +63,13 @@ const CableReveal = ({ progress }: CableRevealProps) => {
         className="absolute inset-0 flex justify-center"
         style={{ clipPath: useTransform(strip1Y, y => `inset(${y} 0 0 0)`) }}
       >
-        <div className="w-full h-full bg-gradient-to-r from-[#111] via-[#2a2a2a] to-[#0a0a0a] shadow-[inset_3px_0_8px_rgba(255,255,255,0.15),inset_-4px_0_12px_rgba(0,0,0,0.9)] rounded-t-xl flex justify-center items-center relative overflow-hidden border-t border-white/10">
+        {/* Outer Cut Cap (Cross-section) */}
+        <div className="absolute top-0 w-full h-3 -mt-1.5 bg-[#333] border border-[#555] rounded-[50%] z-20 shadow-[0_4px_10px_rgba(0,0,0,0.8)] flex justify-center items-center">
+          {/* Inner hole for wires */}
+          <div className="w-[80%] h-[60%] bg-[#111] rounded-[50%] shadow-inner" />
+        </div>
+
+        <div className="w-full h-full bg-gradient-to-r from-[#111] via-[#2a2a2a] to-[#0a0a0a] shadow-[inset_3px_0_8px_rgba(255,255,255,0.15),inset_-4px_0_12px_rgba(0,0,0,0.9)] rounded-t-lg flex justify-center items-center relative overflow-hidden">
            
            {/* Surface texture/grain */}
            <div className="absolute inset-0 opacity-20 mix-blend-overlay" style={{
@@ -65,7 +88,7 @@ const CableReveal = ({ progress }: CableRevealProps) => {
            </div>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 

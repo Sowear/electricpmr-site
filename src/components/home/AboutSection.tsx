@@ -130,7 +130,7 @@ const AboutSection = () => {
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-3xl blur-2xl opacity-60" />
               
               {/* Main image container */}
-              <div className="relative rounded-2xl overflow-hidden bg-card border border-border/50 shadow-2xl">
+              <div className="hud-corner relative rounded-2xl overflow-hidden bg-card border border-border/50 shadow-2xl">
                 {/* Technical overlay grid */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="h-full w-full" style={{
@@ -147,9 +147,13 @@ const AboutSection = () => {
                 />
                 
                 {/* Technical markers */}
-                <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 text-xs font-mono">
-                  <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                  <span className="text-muted-foreground">SYSTEM ACTIVE</span>
+                <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-md px-2 py-1 text-[10px] font-mono border border-border/50 shadow-sm z-20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                  <span className="text-primary font-semibold">SYSTEM ACTIVE</span>
+                </div>
+                
+                <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm rounded-md px-2 py-1 text-[10px] font-mono text-muted-foreground border border-border/50 z-20">
+                  PWR: 14.2kW
                 </div>
                 
                 <div className="absolute bottom-4 right-4 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 text-xs font-mono text-muted-foreground">

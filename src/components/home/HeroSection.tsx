@@ -209,7 +209,18 @@ const HeroSection = () => {
               >
                 <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full scale-[0.85]" />
                 
-                <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-white/60 bg-card shadow-[0_24px_50px_rgba(15,23,42,0.18)] ring-1 ring-border/50">
+                <div className="hud-corner relative h-full w-full overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_24px_50px_rgba(15,23,42,0.18)] ring-1 ring-border/50">
+                  {/* HUD Elements */}
+                  <div className="absolute top-4 left-4 z-20 flex gap-2 items-center bg-background/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono font-semibold text-primary shadow-sm border border-border/50">
+                    <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                    SYS_ONLINE
+                  </div>
+                  <div className="absolute top-4 right-4 z-20 bg-background/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono text-muted-foreground border border-border/50">
+                    230V / 50Hz
+                  </div>
+                  <div className="absolute bottom-4 right-4 z-20 bg-background/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono text-muted-foreground border border-border/50">
+                    ID: 4829
+                  </div>
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={currentImageIndex}

@@ -29,12 +29,26 @@ const ScrollWire = () => {
         <motion.path
           d="M 25 0 V 150 C 25 180, 5 190, 5 220 V 400 C 5 430, 45 440, 45 470 V 700 C 45 730, 25 740, 25 770 V 1000"
           stroke="hsl(var(--primary))"
-          strokeWidth="3"
+          strokeWidth="4"
           strokeLinecap="round"
           strokeLinejoin="round"
           style={{ pathLength }}
           vectorEffect="non-scaling-stroke"
-          className="drop-shadow-[0_0_12px_hsl(var(--primary))] animate-pulse"
+          className="drop-shadow-[0_0_12px_hsl(var(--primary))]"
+        />
+        {/* Flowing electrons */}
+        <motion.path
+          d="M 25 0 V 150 C 25 180, 5 190, 5 220 V 400 C 5 430, 45 440, 45 470 V 700 C 45 730, 25 740, 25 770 V 1000"
+          stroke="hsl(var(--background))"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray="4 24"
+          style={{ pathLength }}
+          animate={{ strokeDashoffset: [0, -28] }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          vectorEffect="non-scaling-stroke"
+          className="opacity-80"
         />
       </svg>
       {/* Moving Spark/Dot on the end of the wire */}

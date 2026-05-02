@@ -1,99 +1,131 @@
-import { Camera, CheckCircle2, ClipboardCheck, FileText, Gauge, ShieldCheck } from "lucide-react";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { Terminal, ShieldCheck } from "lucide-react";
 
-const passportCards = [
-  {
-    icon: FileText,
-    title: "Смета до старта",
-    text: "Фиксируем объём работ, материалы и этапы до выхода на объект.",
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Маркировка линий",
-    text: "Подписываем группы, автоматы и ключевые точки для понятного обслуживания.",
-  },
-  {
-    icon: Gauge,
-    title: "Проверка защиты",
-    text: "После монтажа проверяем нагрузку, подключение и работу защитной автоматики.",
-  },
-  {
-    icon: Camera,
-    title: "Фотоотчёт",
-    text: "Показываем результат и скрытые этапы, если на объекте важен контроль каждой стадии.",
-  },
-];
-
-const checklist = [
-  "Понятная схема работ",
-  "Аккуратный монтаж без хаоса в щите",
-  "Гарантия и ответственность по договорённости",
-  "Контакт с мастером на каждом этапе",
+const diagnosticLogs = [
+  "> Инициализация системы проверки сети... OK",
+  "> Калибровка измерительного оборудования... OK",
+  "> Проверка сопротивления изоляции (R > 500 МОм)... ПРОЙДЕНО",
+  "> Тест срабатывания УЗО... 30мА / 24мс... OK",
+  "> Нагрузочный тест выделенных линий (25A)... СТАБИЛЬНО",
+  "> Проверка контура заземления... R < 4 Ом... OK",
+  "> Маркировка распределительного щита... ВЫПОЛНЕНА",
+  "> Формирование паспорта качества... ГОТОВО",
+  " ",
+  "СИСТЕМА ДОПУЩЕНА К ЭКСПЛУАТАЦИИ. [SYS_STATUS: SECURE]"
 ];
 
 export default function QualityPassportSection() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-20% 0px" });
+  const [logs, setLogs] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isInView) return;
+
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex < diagnosticLogs.length) {
+        setLogs(prev => [...prev, diagnosticLogs[currentIndex]]);
+        currentIndex++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 800); // 800ms delay between logs
+
+    return () => clearInterval(interval);
+  }, [isInView]);
 
   return (
     <section ref={sectionRef} className="section-padding bg-secondary/35">
       <div className="container-main">
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-          <motion.div
-            initial={{ opacity: 0, x: -26 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -26 }}
-            transition={{ duration: 0.75, delay: 0.1 }}
-          >
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+          <div>
             <span className="technical-label">Паспорт качества</span>
             <h2 className="mt-5 font-display text-3xl font-bold leading-tight md:text-4xl">
               В итоге видно не только как красиво, но и как правильно
             </h2>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+            <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg mb-8">
               Показываем не только финал, но и порядок внутри системы: как разведены линии, как подписан щит,
-              как проверена защита и кто отвечает за результат.
+              как проверена защита и кто отвечает за результат. Мы выдаем паспорт качества на каждый объект.
             </p>
+            
+            <div className="grid grid-cols-2 gap-4">
+               <div className="hud-corner relative p-4 bg-card border border-border shadow-sm">
+                 <div className="text-primary font-mono text-xl font-bold mb-1">100%</div>
+                 <div className="text-xs text-muted-foreground">Соответствие ПУЭ</div>
+               </div>
+               <div className="hud-corner relative p-4 bg-card border border-border shadow-sm">
+                 <div className="text-primary font-mono text-xl font-bold mb-1">5 лет</div>
+                 <div className="text-xs text-muted-foreground">Официальной гарантии</div>
+               </div>
+            </div>
+          </div>
 
-            <div className="card-engineering mt-8 bg-card p-6 text-foreground md:p-7 shadow-lg border-border/60">
-              <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
-                  <ShieldCheck className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold">Контрольный лист объекта</div>
-                  <div className="text-xs text-muted-foreground">перед сдачей работ</div>
-                </div>
+          <div className="relative rounded-xl bg-[#0a0c10] border border-white/10 shadow-2xl overflow-hidden aspect-[4/3] max-h-[500px] flex flex-col font-mono text-sm">
+            {/* Terminal Header */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-white/[0.02]">
+              <div className="flex items-center gap-2 text-white/50 text-xs">
+                <Terminal className="w-4 h-4" />
+                <span>DIAGNOSTIC_TERMINAL_V2.4</span>
               </div>
-              <div className="grid gap-2.5">
-                {checklist.map((item) => (
-                  <div key={item} className="flex items-center gap-2.5 border-b border-border/80 pb-2.5 text-sm text-foreground/80 last:border-none last:pb-0">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
-                    <span>{item}</span>
-                  </div>
-                ))}
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                <div className="w-2.5 h-2.5 rounded-full bg-primary/80 animate-pulse" />
               </div>
             </div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 22 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
-            transition={{ duration: 0.75, delay: 0.22 }}
-            className="grid gap-4 sm:grid-cols-2"
-          >
-            {passportCards.map((card, index) => (
-              <div key={card.title} className="card-industrial p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-md bg-primary/10">
-                    <card.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">0{index + 1}</span>
+            {/* Oscilloscope Background */}
+            <div className="absolute inset-0 top-[40px] opacity-[0.15] pointer-events-none">
+              {/* Grid */}
+              <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+              
+              {/* Sine Wave */}
+              <svg className="w-full h-full" viewBox="0 0 800 400" preserveAspectRatio="none">
+                <path 
+                  d="M 0 200 Q 100 50, 200 200 T 400 200 T 600 200 T 800 200" 
+                  fill="none" 
+                  stroke="hsl(var(--primary))" 
+                  strokeWidth="2"
+                  strokeDasharray="800"
+                  strokeDashoffset="800"
+                  className="animate-[dash_3s_linear_infinite]"
+                >
+                  <animate attributeName="d" values="M 0 200 Q 100 50, 200 200 T 400 200 T 600 200 T 800 200; M 0 200 Q 100 350, 200 200 T 400 200 T 600 200 T 800 200; M 0 200 Q 100 50, 200 200 T 400 200 T 600 200 T 800 200" dur="4s" repeatCount="indefinite" />
+                </path>
+                <path d="M 0 200 L 800 200" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeDasharray="4 4" />
+                <path d="M 400 0 L 400 400" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeDasharray="4 4" />
+              </svg>
+            </div>
+
+            {/* Terminal Content */}
+            <div className="relative flex-1 p-5 overflow-y-auto text-primary/90 flex flex-col gap-2">
+              {logs.map((log, index) => (
+                <div key={index} className="opacity-0 animate-fade-in flex">
+                  {log.includes('OK') || log.includes('ПРОЙДЕНО') || log.includes('СТАБИЛЬНО') || log.includes('ВЫПОЛНЕНА') || log.includes('ГОТОВО') ? (
+                    <span dangerouslySetInnerHTML={{ __html: log.replace(/OK|ПРОЙДЕНО|СТАБИЛЬНО|ВЫПОЛНЕНА|ГОТОВО/, '<span class="text-success">$&</span>') }} />
+                  ) : log.includes('SECURE') ? (
+                    <span className="text-white font-bold bg-success/20 px-2 py-0.5 rounded flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-success" />
+                      {log}
+                    </span>
+                  ) : (
+                    <span>{log}</span>
+                  )}
                 </div>
-                <h3 className="mt-5 font-display text-xl font-semibold text-foreground">{card.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{card.text}</p>
-              </div>
-            ))}
-          </motion.div>
+              ))}
+              
+              {/* Blinking Cursor */}
+              {logs.length < diagnosticLogs.length && (
+                <div className="w-2.5 h-4 bg-primary animate-pulse mt-1" />
+              )}
+            </div>
+            
+            {/* HUD Overlays */}
+            <div className="absolute bottom-2 right-2 text-[10px] text-white/30">SCAN_FREQ: 50Hz</div>
+            <div className="absolute bottom-2 left-2 text-[10px] text-white/30">MEM: 0x8F2A</div>
+          </div>
         </div>
       </div>
     </section>

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useAnimation, useScroll } from "framer-motion";
+import { motion, useInView, useAnimation } from "framer-motion";
 import { Shield, Award, Clock, CheckCircle2 } from "lucide-react";
 import aboutPanelImage from "@/assets/about-electrical-96panel.png";
-import CableReveal from "./CableReveal";
 
 interface CounterProps {
   end: number;
@@ -95,11 +94,6 @@ const AboutSection = () => {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-
   useEffect(() => {
     if (isInView) {
       controls.start("visible");
@@ -112,17 +106,6 @@ const AboutSection = () => {
       id="about"
       className="relative py-20 lg:py-28 bg-gradient-to-b from-background to-secondary/20 overflow-hidden"
     >
-      {/* Background Cable Reveal Animation */}
-      <div 
-        className="absolute right-[-60px] sm:right-[-20px] lg:right-[10px] xl:right-[5%] top-[-50px] bottom-[-50px] w-32 md:w-40 pointer-events-none z-0 opacity-15 lg:opacity-100"
-        style={{
-          maskImage: "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)"
-        }}
-      >
-        <CableReveal progress={scrollYProgress} />
-      </div>
-
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.02]">
         <div className="absolute inset-0" style={{

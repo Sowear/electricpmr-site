@@ -18,19 +18,19 @@ const Header = () => {
   const [quizOpen, setQuizOpen] = useState(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id);
-          }, 0);
-        } else {
-          setHasWorkspaceAccess(false);
-          setHasAdminAccess(false);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        setTimeout(() => {
+          checkAdminRole(session.user.id);
+        }, 0);
+      } else {
+        setHasWorkspaceAccess(false);
+        setHasAdminAccess(false);
       }
-    );
+    });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -44,19 +44,19 @@ const Header = () => {
 
   const checkAdminRole = async (userId: string) => {
     const { data } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .in('role', ['admin', 'super_admin', 'manager', 'technician']);
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .in("role", ["admin", "super_admin", "manager", "technician"]);
 
     const roles = (data || []).map((r) => r.role);
     setHasWorkspaceAccess(roles.length > 0);
-    setHasAdminAccess(roles.includes('admin') || roles.includes('super_admin'));
+    setHasAdminAccess(roles.includes("admin") || roles.includes("super_admin"));
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/');
+    navigate("/");
   };
 
   const openQuiz = () => {
@@ -80,47 +80,54 @@ const Header = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const servicesActive =
+    location.pathname.startsWith("/zamena-") ||
+    location.pathname.startsWith("/sborka-") ||
+    location.pathname.startsWith("/elektro") ||
+    location.pathname.startsWith("/avariy") ||
+    isActive("/uslugi");
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/90 shadow-[0_10px_40px_-34px_rgba(15,23,42,0.55)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/75">
+      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/88 shadow-[0_18px_48px_-42px_rgba(15,23,42,0.28)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/72">
         <div className="container-main">
-          <div className="flex h-16 items-center justify-between">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2.5 font-display text-xl font-bold shrink-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-[0_10px_22px_rgba(234,179,8,0.24)]">
+          <div className="flex h-[72px] items-center justify-between gap-4">
+            <Link to="/" className="flex shrink-0 items-center gap-3 font-display font-bold">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-[0_16px_30px_-18px_rgba(234,179,8,0.9)]">
                 <Zap className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-lg sm:text-xl">ЭлектроМастер</span>
+              <div className="flex flex-col">
+                <span className="text-lg leading-none sm:text-xl">ЭлектроМастер</span>
+                <span className="hidden text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:block">
+                  Проект и монтаж
+                </span>
+              </div>
             </Link>
 
-            {/* Desktop Navigation - Centered */}
-            <nav className="hidden md:flex items-center justify-center flex-1 px-8">
-              <div className="flex items-center gap-8">
+            <nav className="hidden flex-1 items-center justify-center px-6 md:flex">
+              <div className="flex items-center gap-6 rounded-full border border-border/70 bg-card/80 px-6 py-3 shadow-[0_18px_45px_-38px_rgba(15,23,42,0.25)]">
                 {navLinks.map((link) => {
                   if (link.href === "/uslugi") {
                     return (
-                      <div key={link.href} className="relative group py-2">
+                      <div key={link.href} className="group relative py-1">
                         <Link
                           to={link.href}
-                          className={`link-underline text-sm font-medium transition-colors whitespace-nowrap ${
-                            isActive(link.href) || location.pathname.startsWith("/zamena-") || location.pathname.startsWith("/sborka-") || location.pathname.startsWith("/elektro") || location.pathname.startsWith("/avariy")
-                              ? "text-foreground"
-                              : "text-muted-foreground hover:text-foreground"
+                          className={`link-underline whitespace-nowrap text-sm font-medium transition-colors ${
+                            servicesActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           {link.label}
                         </Link>
-                        <div className="absolute left-1/2 -translate-x-1/2 top-full hidden w-56 flex-col gap-1 rounded-xl border border-border/70 bg-card p-2 shadow-lg group-hover:flex animate-fade-in">
-                          {serviceLinks.map((s) => (
+                        <div className="absolute left-1/2 top-full hidden w-60 -translate-x-1/2 flex-col gap-1 rounded-lg border border-border/80 bg-card/95 p-2 shadow-[0_24px_55px_-34px_rgba(15,23,42,0.35)] group-hover:flex animate-fade-in">
+                          {serviceLinks.map((service) => (
                             <Link
-                              key={s.href}
-                              to={s.href}
-                              className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/50 ${
-                                isActive(s.href) ? "bg-muted/30 text-foreground" : "text-muted-foreground hover:text-foreground"
+                              key={service.href}
+                              to={service.href}
+                              className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/50 ${
+                                isActive(service.href) ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:text-foreground"
                               }`}
                             >
-                              {s.label}
+                              {service.label}
                             </Link>
                           ))}
                         </div>
@@ -132,10 +139,8 @@ const Header = () => {
                     <Link
                       key={link.href}
                       to={link.href}
-                      className={`link-underline text-sm font-medium transition-colors whitespace-nowrap ${
-                        isActive(link.href)
-                          ? "text-foreground"
-                          : "text-muted-foreground hover:text-foreground"
+                      className={`link-underline whitespace-nowrap text-sm font-medium transition-colors ${
+                        isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {link.label}
@@ -145,60 +150,50 @@ const Header = () => {
               </div>
             </nav>
 
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-2 shrink-0">
+            <div className="hidden shrink-0 items-center gap-2 md:flex">
               {user ? (
                 <>
                   {hasWorkspaceAccess && (
-                    <>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to="/projects">
-                          <FolderOpen className="h-4 w-4 mr-1" />
-                          Проекты
-                        </Link>
-                      </Button>
-                    </>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link to="/projects">
+                        <FolderOpen className="mr-1 h-4 w-4" />
+                        Проекты
+                      </Link>
+                    </Button>
                   )}
                   {hasAdminAccess && (
-                    <>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to="/admin/users">Админ</Link>
-                      </Button>
-                    </>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link to="/admin/users">Админ</Link>
+                    </Button>
                   )}
                   {hasWorkspaceAccess && <NotificationBell />}
                   <Button variant="outline" size="sm" asChild>
                     <Link to="/dashboard">Мои заявки</Link>
                   </Button>
                   <Button variant="ghost" size="sm" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="mr-2 h-4 w-4" />
                     Выйти
                   </Button>
                 </>
               ) : (
-                <>
+                <div className="flex items-center gap-2 rounded-full border border-border/70 bg-card/85 p-1.5 shadow-[0_18px_45px_-38px_rgba(15,23,42,0.25)]">
                   <Button variant="ghost" size="sm" asChild>
                     <Link to="/auth">Войти</Link>
                   </Button>
                   <Button size="sm" onClick={openQuiz}>
-                    <Calculator className="h-4 w-4 mr-2" />
-                    Расчёт бесплатно
+                    <Calculator className="mr-2 h-4 w-4" />
+                    Расчёт
                   </Button>
-                  <Button 
-                    size="sm" 
-                    variant="destructive"
-                    onClick={() => setEmergencyOpen(true)}
-                  >
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    Аварийный
+                  <Button size="sm" variant="destructive" onClick={() => setEmergencyOpen(true)}>
+                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    Срочно
                   </Button>
-                </>
+                </div>
               )}
             </div>
 
-            {/* Mobile Menu Button */}
             <button
-              className="md:hidden rounded-xl border border-border/70 bg-card p-2 shadow-sm"
+              className="rounded-lg border border-border/70 bg-card/90 p-2.5 shadow-sm md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -206,19 +201,23 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="md:hidden border-t border-border/70 py-4 animate-fade-in">
+            <div className="animate-fade-in border-t border-border/70 py-4 md:hidden">
               <nav className="flex flex-col gap-4">
+                <div className="rounded-lg border border-border/70 bg-card/90 px-4 py-3 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Быстрый контакт
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-foreground">+373 777 46642</p>
+                </div>
+
                 <div className="grid grid-cols-2 gap-2">
                   {navLinks.map((link) => (
                     <Link
                       key={link.href}
                       to={link.href}
-                      className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-colors ${
-                        isActive(link.href)
-                          ? "border-primary/35 bg-primary/10 text-foreground"
-                          : "border-border/70 bg-card text-muted-foreground hover:text-foreground"
+                      className={`rounded-lg border px-4 py-3 text-sm font-semibold transition-colors ${
+                        isActive(link.href) ? "border-primary/35 bg-primary/10 text-foreground" : "border-border/70 bg-card text-muted-foreground hover:text-foreground"
                       }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -227,7 +226,7 @@ const Header = () => {
                   ))}
                 </div>
 
-                <div className="rounded-xl border border-border/70 bg-muted/35 p-3">
+                <div className="rounded-lg border border-border/70 bg-muted/35 p-3">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     Частые услуги
                   </p>
@@ -236,7 +235,7 @@ const Header = () => {
                       <Link
                         key={link.href}
                         to={link.href}
-                        className="rounded-lg bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm"
+                        className="rounded-md bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.label}
@@ -245,27 +244,23 @@ const Header = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                <div className="flex flex-col gap-2 border-t border-border pt-4">
                   {user ? (
                     <>
                       {hasWorkspaceAccess && (
-                        <>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to="/projects" onClick={() => setIsMenuOpen(false)}>
-                              <FolderOpen className="h-4 w-4 mr-1" />
-                              Проекты
-                            </Link>
-                          </Button>
-                        </>
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link to="/projects" onClick={() => setIsMenuOpen(false)}>
+                            <FolderOpen className="mr-1 h-4 w-4" />
+                            Проекты
+                          </Link>
+                        </Button>
                       )}
                       {hasAdminAccess && (
-                        <>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to="/admin/users" onClick={() => setIsMenuOpen(false)}>
-                              Админ-панель
-                            </Link>
-                          </Button>
-                        </>
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link to="/admin/users" onClick={() => setIsMenuOpen(false)}>
+                            Админ-панель
+                          </Link>
+                        </Button>
                       )}
                       <Button variant="outline" size="sm" asChild>
                         <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
@@ -284,18 +279,18 @@ const Header = () => {
                         </Link>
                       </Button>
                       <Button size="sm" onClick={openQuiz}>
-                        <Calculator className="h-4 w-4 mr-2" />
-                        Получить расчёт бесплатно
+                        <Calculator className="mr-2 h-4 w-4" />
+                        Получить расчёт
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="destructive"
                         onClick={() => {
                           setEmergencyOpen(true);
                           setIsMenuOpen(false);
                         }}
                       >
-                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        <AlertTriangle className="mr-2 h-4 w-4" />
                         Аварийный вызов
                       </Button>
                     </>

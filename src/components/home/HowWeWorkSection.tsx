@@ -48,14 +48,14 @@ const HowWeWorkSection = () => {
   return (
     <section className="section-padding bg-background relative overflow-hidden">
       {/* Subtle schematic background pattern (Glassmorphism base) */}
-      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay">
+      <div className="absolute inset-0 opacity-[0.08] dark:opacity-[0.12] pointer-events-none text-foreground">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="schematic-hw" width="100" height="100" patternUnits="userSpaceOnUse">
               <path d="M 100 0 L 0 0 0 100" fill="none" stroke="currentColor" strokeWidth="0.5" />
-              <circle cx="50" cy="50" r="2" fill="currentColor" />
-              <path d="M 45 50 h 10 M 50 45 v 10" fill="none" stroke="currentColor" strokeWidth="1" />
-              <path d="M 0 100 L 20 80 L 80 80 L 100 60" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 4" />
+              <circle cx="50" cy="50" r="2.5" fill="none" stroke="currentColor" strokeWidth="1" />
+              <path d="M 45 50 h 10 M 50 45 v 10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M 0 100 L 20 80 L 80 80 L 100 60" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#schematic-hw)" />

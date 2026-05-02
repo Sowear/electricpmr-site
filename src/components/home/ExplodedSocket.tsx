@@ -8,96 +8,127 @@ const ExplodedSocket = () => {
     offset: ["start end", "center center"]
   });
 
-  // Layer 1: Back Box (Подрозетник)
-  // Moves back and fades slightly
-  const layer1Z = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const layer1X = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const layer1Y = useTransform(scrollYProgress, [0, 1], [0, -40]);
-  const layer1Opacity = useTransform(scrollYProgress, [0, 1], [1, 0.4]);
+  // Rotate the entire assembly to give a strong 3D isometric perspective
+  const rotateX = 35;
+  const rotateY = -35;
 
-  // Layer 2: Mechanism (Механизм)
-  // Stays roughly in the center
-  const layer2Z = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const layer2X = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const layer2Y = useTransform(scrollYProgress, [0, 1], [0, 0]);
+  // Layer 1: Back Box (Подрозетник) - Moves deep backwards
+  const layer1Z = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const layer1Opacity = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
 
-  // Layer 3: Front Frame (Рамка)
-  // Moves forward
+  // Layer 2: Mechanism (Суппорт) - Stays relatively central
+  const layer2Z = useTransform(scrollYProgress, [0, 1], [0, -20]);
+
+  // Layer 3: Front Frame (Лицевая панель) - Moves forward significantly
   const layer3Z = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const layer3X = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const layer3Y = useTransform(scrollYProgress, [0, 1], [0, 50]);
-
-  // Connection lines (appear when separated)
-  const lineOpacity = useTransform(scrollYProgress, [0.5, 1], [0, 0.5]);
+  
+  // Connection lines to show how parts align
+  const lineOpacity = useTransform(scrollYProgress, [0.4, 1], [0, 0.6]);
 
   return (
     <div 
       ref={containerRef} 
-      className="relative w-full aspect-square max-w-[400px] mx-auto flex items-center justify-center hud-corner"
-      style={{ perspective: "1000px" }}
+      className="relative w-full aspect-square max-w-[450px] mx-auto flex items-center justify-center hud-corner"
+      style={{ perspective: "1200px" }}
     >
-      <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl" />
-
-      {/* Connection Lines (Simulated with absolute SVG lines) */}
-      <motion.svg 
-        className="absolute inset-0 w-full h-full pointer-events-none z-10" 
-        style={{ opacity: lineOpacity }}
-      >
-        {/* Top-left screw line */}
-        <line x1="30%" y1="35%" x2="70%" y2="65%" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" className="text-primary/50" />
-        {/* Bottom-right screw line */}
-        <line x1="30%" y1="65%" x2="70%" y2="35%" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" className="text-primary/50" />
-      </motion.svg>
+      <div className="absolute inset-0 bg-primary/5 rounded-full blur-[80px]" />
 
       <motion.div 
-        className="relative w-[60%] h-[60%] transform-gpu"
-        style={{ transformStyle: "preserve-3d" }}
+        className="relative w-[70%] h-[70%] transform-gpu"
+        style={{ transformStyle: "preserve-3d", rotateX, rotateY }}
       >
-        {/* Layer 1: Back Box */}
+        {/* Dynamic Connecting Lines (Between centers of layers) */}
+        <motion.div className="absolute inset-0 pointer-events-none flex justify-center items-center z-10" style={{ opacity: lineOpacity, transformStyle: "preserve-3d" }}>
+          {/* Main central axis line */}
+          <motion.div 
+            className="absolute w-0.5 bg-primary/40 rounded-full"
+            style={{ 
+              height: "220px",
+              transform: "translateZ(-110px) rotateX(90deg)", 
+              transformOrigin: "top center"
+            }}
+          />
+        </motion.div>
+
+        {/* LAYER 1: Back Box (Подрозетник) */}
         <motion.div
           className="absolute inset-0 flex justify-center items-center pointer-events-none"
-          style={{ x: layer1X, y: layer1Y, z: layer1Z, opacity: layer1Opacity }}
+          style={{ z: layer1Z, opacity: layer1Opacity, transformStyle: "preserve-3d" }}
         >
-          <div className="w-[70%] h-[70%] bg-blue-900/20 border border-blue-500/30 rounded-full shadow-inner flex items-center justify-center backdrop-blur-sm">
-            {/* Wires */}
-            <div className="absolute top-[20%] left-[20%] w-[10%] h-[30%] bg-amber-700 rounded-full rotate-45" />
-            <div className="absolute bottom-[20%] right-[20%] w-[10%] h-[30%] bg-blue-500 rounded-full rotate-45" />
-            <div className="absolute bottom-[20%] left-[20%] w-[10%] h-[30%] bg-yellow-400 rounded-full -rotate-45 border border-green-500" />
+          {/* Main blue cup */}
+          <div className="w-[65%] h-[65%] bg-gradient-to-br from-blue-700 to-blue-950 rounded-full shadow-[inset_-10px_-10px_20px_rgba(0,0,0,0.6),0_10px_20px_rgba(0,0,0,0.5)] border-2 border-blue-500/30 flex items-center justify-center relative">
+            {/* Cup depth inner shadow */}
+            <div className="absolute inset-3 rounded-full bg-black/40 shadow-[inset_4px_4px_10px_rgba(0,0,0,0.8)]" />
+            
+            {/* Wires coming from the wall */}
+            <div className="absolute top-[20%] left-[30%] w-[15%] h-[40%] transform-gpu" style={{ transform: "translateZ(10px) rotateX(-20deg)" }}>
+              {/* Phase */}
+              <div className="w-full h-full bg-amber-700 rounded-full border border-black shadow-lg relative">
+                <div className="absolute top-0 w-full h-[20%] bg-[#e5aa70] rounded-t-full shadow-[inset_0_-2px_4px_rgba(0,0,0,0.5)]" /> {/* Bare copper */}
+              </div>
+            </div>
+            <div className="absolute bottom-[20%] right-[30%] w-[15%] h-[40%] transform-gpu" style={{ transform: "translateZ(10px) rotateX(-10deg)" }}>
+              {/* Neutral */}
+              <div className="w-full h-full bg-blue-500 rounded-full border border-black shadow-lg relative">
+                <div className="absolute top-0 w-full h-[20%] bg-[#e5aa70] rounded-t-full shadow-[inset_0_-2px_4px_rgba(0,0,0,0.5)]" /> {/* Bare copper */}
+              </div>
+            </div>
+            <div className="absolute bottom-[20%] left-[30%] w-[15%] h-[40%] transform-gpu" style={{ transform: "translateZ(10px) rotateX(-15deg)" }}>
+              {/* Ground */}
+              <div className="w-full h-full bg-[repeating-linear-gradient(45deg,#facc15,#facc15_4px,#22c55e_4px,#22c55e_8px)] rounded-full border border-black shadow-lg relative">
+                <div className="absolute top-0 w-full h-[20%] bg-[#e5aa70] rounded-t-full shadow-[inset_0_-2px_4px_rgba(0,0,0,0.5)]" /> {/* Bare copper */}
+              </div>
+            </div>
           </div>
         </motion.div>
 
-        {/* Layer 2: Mechanism */}
+        {/* LAYER 2: Metal Mechanism (Суппорт) */}
         <motion.div
           className="absolute inset-0 flex justify-center items-center z-20 pointer-events-none"
-          style={{ x: layer2X, y: layer2Y, z: layer2Z }}
+          style={{ z: layer2Z, transformStyle: "preserve-3d" }}
         >
-          <div className="w-[80%] h-[80%] bg-slate-200 dark:bg-slate-800 rounded-sm shadow-xl border border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center relative">
-             {/* Metal frame of the mechanism */}
-             <div className="absolute inset-[-10%] border-2 border-slate-400/50 dark:border-slate-500/50 rounded-sm" />
-             {/* Screws */}
-             <div className="absolute top-[-5%] left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-slate-300 border border-slate-400" />
-             <div className="absolute bottom-[-5%] left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-slate-300 border border-slate-400" />
-             
-             {/* Grounding pins */}
-             <div className="absolute top-[10%] w-[8px] h-[20%] bg-gradient-to-b from-yellow-600 to-amber-700 rounded-sm" />
-             <div className="absolute bottom-[10%] w-[8px] h-[20%] bg-gradient-to-t from-yellow-600 to-amber-700 rounded-sm" />
+          <div className="w-[85%] h-[85%] relative flex justify-center items-center">
+             {/* Metal Plate */}
+             <div className="absolute inset-0 bg-gradient-to-br from-zinc-300 via-zinc-400 to-zinc-600 rounded-md shadow-[0_5px_15px_rgba(0,0,0,0.4),inset_1px_1px_1px_rgba(255,255,255,0.8)] border border-zinc-500 clip-metal-plate">
+                {/* Mounting holes */}
+                <div className="absolute top-2 left-2 w-3 h-8 border border-zinc-500 rounded-full bg-zinc-800 shadow-inner" />
+                <div className="absolute top-2 right-2 w-3 h-8 border border-zinc-500 rounded-full bg-zinc-800 shadow-inner" />
+                <div className="absolute bottom-2 left-2 w-3 h-8 border border-zinc-500 rounded-full bg-zinc-800 shadow-inner" />
+                <div className="absolute bottom-2 right-2 w-3 h-8 border border-zinc-500 rounded-full bg-zinc-800 shadow-inner" />
+             </div>
 
-             {/* Socket holes */}
-             <div className="flex gap-4">
-               <div className="w-3 h-3 rounded-full bg-slate-900 shadow-inner" />
-               <div className="w-3 h-3 rounded-full bg-slate-900 shadow-inner" />
+             {/* Central Plastic Housing */}
+             <div className="w-[55%] h-[55%] bg-gradient-to-b from-zinc-800 to-black rounded-full border-4 border-zinc-700 shadow-2xl relative flex items-center justify-center transform-gpu" style={{ transform: "translateZ(15px)" }}>
+                {/* Contact holes */}
+                <div className="flex gap-4">
+                  <div className="w-3.5 h-3.5 rounded-full bg-black shadow-[inset_2px_2px_4px_rgba(0,0,0,1)] flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-amber-600/50" /> {/* Copper inside */}
+                  </div>
+                  <div className="w-3.5 h-3.5 rounded-full bg-black shadow-[inset_2px_2px_4px_rgba(0,0,0,1)] flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-amber-600/50" /> {/* Copper inside */}
+                  </div>
+                </div>
+
+                {/* Grounding pins (Schuko) */}
+                <div className="absolute top-0 w-2 h-4 bg-gradient-to-b from-yellow-500 to-yellow-700 rounded-b-sm shadow-md border-b border-yellow-200" />
+                <div className="absolute bottom-0 w-2 h-4 bg-gradient-to-t from-yellow-500 to-yellow-700 rounded-t-sm shadow-md border-t border-yellow-200" />
              </div>
           </div>
         </motion.div>
 
-        {/* Layer 3: Glass/Plastic Frame */}
+        {/* LAYER 3: Glass/Plastic Front Frame */}
         <motion.div
           className="absolute inset-0 flex justify-center items-center z-30 pointer-events-none"
-          style={{ x: layer3X, y: layer3Y, z: layer3Z }}
+          style={{ z: layer3Z, transformStyle: "preserve-3d" }}
         >
-          <div className="w-full h-full bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-xl border border-white/50 dark:border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.2)] flex items-center justify-center">
-            {/* Center cutout */}
-            <div className="w-[70%] h-[70%] rounded-full border border-white/30 dark:border-white/10 shadow-inner" />
+          <div className="w-[100%] h-[100%] bg-white/10 dark:bg-black/10 backdrop-blur-xl rounded-2xl border border-white/40 dark:border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_2px_2px_5px_rgba(255,255,255,0.3)] flex items-center justify-center relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/20 before:to-transparent">
+            {/* Center cutout (hole for the mechanism) */}
+            <div className="w-[60%] h-[60%] rounded-full border border-white/30 dark:border-white/10 shadow-[inset_0_5px_10px_rgba(0,0,0,0.2)] bg-transparent backdrop-blur-none mix-blend-destination" />
+            
+            {/* Brand Logo / Text subtle */}
+            <div className="absolute bottom-4 text-[8px] font-mono text-foreground/30 font-bold tracking-widest">
+              ELECTRIC_PMR
+            </div>
           </div>
         </motion.div>
 

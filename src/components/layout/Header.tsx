@@ -65,6 +65,18 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
+  // Prevent background scrolling when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
   const navLinks = [
     { href: "/", label: "Главная" },
     { href: "/uslugi", label: "Услуги" },
@@ -202,7 +214,7 @@ const Header = () => {
           </div>
 
           {isMenuOpen && (
-            <div className="absolute top-[72px] left-0 right-0 animate-fade-in border-t border-border/70 bg-background/95 backdrop-blur-2xl md:hidden h-[calc(100dvh-72px)] overflow-y-auto shadow-[0_20px_40px_-20px_rgba(0,0,0,0.5)]">
+            <div className="fixed top-[72px] bottom-0 left-0 right-0 z-40 animate-fade-in border-t border-border/70 bg-background/95 backdrop-blur-2xl md:hidden overflow-y-auto overscroll-none shadow-[0_20px_40px_-20px_rgba(0,0,0,0.5)]">
               <nav className="flex flex-col gap-6 p-4 pb-24 container-main">
                 <div className="rounded-xl border border-border/70 bg-card/50 px-5 py-4 shadow-sm flex flex-col items-center justify-center text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary mb-1">

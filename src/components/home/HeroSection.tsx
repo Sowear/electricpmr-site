@@ -115,7 +115,7 @@ const HeroSection = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              Электромонтаж по всему ПМР
+              Электромонтаж по всему Приднестровью
             </motion.div>
 
             <motion.h1
@@ -190,12 +190,12 @@ const HeroSection = () => {
                 animate={{ y: [-12, 12, -12] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               >
+                <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full scale-[0.85]" />
                 <img
                   src={heroImage}
                   alt="Профессиональная электросистема"
-                  className="w-full object-contain drop-shadow-[0_20px_35px_rgba(15,23,42,0.12)]"
+                  className="relative z-10 w-full object-contain drop-shadow-[0_20px_35px_rgba(15,23,42,0.12)] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_90%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_90%)]"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(250,247,242,0)_60%,rgba(250,247,242,0.04)_74%,rgba(250,247,242,0.22)_88%,rgba(250,247,242,0.84)_100%)]" />
               </motion.div>
             </div>
           </motion.div>

@@ -69,25 +69,6 @@ const TextFlipper = ({ words }: { words: string[] }) => {
 const HeroSection = () => {
   const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [quizOpen, setQuizOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const showcaseImages = [
-    "/sitephoto/photo_1.jpg",
-    "/sitephoto/photo_2.jpg",
-    "/sitephoto/photo_3.jpg",
-    "/sitephoto/photo_4.jpg",
-    "/sitephoto/photo_5.jpg",
-    "/sitephoto/photo_6.jpg",
-    "/sitephoto/photo_7.jpg",
-    "/sitephoto/photo_8.jpg"
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % showcaseImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
   const trustBadges = [
     {
@@ -221,18 +202,14 @@ const HeroSection = () => {
                   <div className="absolute bottom-4 right-4 z-20 bg-background/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono text-muted-foreground border border-border/50">
                     ID: 4829
                   </div>
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={currentImageIndex}
-                      src={showcaseImages[currentImageIndex]}
-                      alt="Электромонтаж на объекте"
-                      initial={{ opacity: 0, scale: 1.05 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.8, ease: "easeInOut" }}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </AnimatePresence>
+                  <video
+                    src="/video/hero-video.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
                 </div>
               </motion.div>
             </div>

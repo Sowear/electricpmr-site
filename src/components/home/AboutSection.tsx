@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useAnimation } from "framer-motion";
+import { motion, useInView, useAnimation, AnimatePresence } from "framer-motion";
 import { Shield, Award, Clock, CheckCircle2 } from "lucide-react";
-import aboutPanelImage from "@/assets/about-electrical-panel.png";
+
 
 interface CounterProps {
   end: number;
@@ -100,6 +100,26 @@ const AboutSection = () => {
     }
   }, [isInView, controls]);
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const showcaseImages = [
+    "/sitephoto/photo_1.jpg",
+    "/sitephoto/photo_2.jpg",
+    "/sitephoto/photo_3.jpg",
+    "/sitephoto/photo_4.jpg",
+    "/sitephoto/photo_5.jpg",
+    "/sitephoto/photo_6.jpg",
+    "/sitephoto/photo_7.jpg",
+    "/sitephoto/photo_8.jpg"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % showcaseImages.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section 
       ref={ref}
@@ -150,12 +170,21 @@ const AboutSection = () => {
                   }} />
                 </div>
                 
-                {/* Image */}
-                <img 
-                  src={aboutPanelImage} 
-                  alt="Профессиональный электрощит" 
-                  className="w-full h-auto relative z-10"
-                />
+                {/* Image Slider */}
+                <div className="relative w-full aspect-square md:aspect-[4/5]">
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={currentImageIndex}
+                      src={showcaseImages[currentImageIndex]}
+                      alt="Наши работы"
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.8, ease: "easeInOut" }}
+                      className="absolute inset-0 h-full w-full object-cover z-10"
+                    />
+                  </AnimatePresence>
+                </div>
                 
                 {/* Technical markers */}
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 text-xs font-mono z-20">

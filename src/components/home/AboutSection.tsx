@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useAnimation } from "framer-motion";
 import { Shield, Award, Clock, CheckCircle2 } from "lucide-react";
-import aboutPanelImage from "@/assets/about-electrical-96panel.png";
+import ExplodedSocket from "./ExplodedSocket";
 
 interface CounterProps {
   end: number;
@@ -106,11 +106,22 @@ const AboutSection = () => {
       id="about"
       className="relative py-20 lg:py-28 bg-gradient-to-b from-background to-secondary/20 overflow-hidden"
     >
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.02]">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
+      {/* Subtle schematic background pattern (Glassmorphism base) */}
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="schematic" width="100" height="100" patternUnits="userSpaceOnUse">
+              {/* Grid */}
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="currentColor" strokeWidth="0.5" />
+              {/* Crosshairs & nodes */}
+              <circle cx="50" cy="50" r="2" fill="currentColor" />
+              <path d="M 45 50 h 10 M 50 45 v 10" fill="none" stroke="currentColor" strokeWidth="1" />
+              {/* Diagonal traces */}
+              <path d="M 0 100 L 20 80 L 80 80 L 100 60" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 4" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#schematic)" />
+        </svg>
       </div>
 
       <div className="container-main relative z-10">
@@ -139,12 +150,10 @@ const AboutSection = () => {
                   }} />
                 </div>
                 
-                {/* Image */}
-                <img 
-                  src={aboutPanelImage} 
-                  alt="Профессиональный электрощит" 
-                  className="w-full h-auto relative z-10"
-                />
+                {/* 3D Exploded Socket */}
+                <div className="w-full relative z-10 py-12 bg-gradient-to-tr from-transparent via-primary/5 to-transparent">
+                  <ExplodedSocket />
+                </div>
                 
                 {/* Technical markers */}
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-md px-2 py-1 text-[10px] font-mono border border-border/50 shadow-sm z-20">
@@ -165,8 +174,7 @@ const AboutSection = () => {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 0.8, duration: 0.5 }}
-                className="absolute -bottom-4 right-4 md:-bottom-6 md:-right-4 lg:-right-6 bg-card rounded-xl p-5 shadow-xl border border-border z-20"
+                className="absolute -bottom-4 right-4 md:-bottom-6 md:-right-4 lg:-right-6 card-glass p-5 z-20"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -219,7 +227,7 @@ const AboutSection = () => {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="group relative bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/50 hover:border-primary/30 transition-colors"
+                  className="group card-glass p-4 transition-colors"
                 >
                   {/* Subtle glow on hover */}
                   <div className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />

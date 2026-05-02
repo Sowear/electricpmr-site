@@ -46,8 +46,23 @@ const itemVariants = {
 
 const HowWeWorkSection = () => {
   return (
-    <section className="section-padding bg-background relative">
-      <div className="container-main">
+    <section className="section-padding bg-background relative overflow-hidden">
+      {/* Subtle schematic background pattern (Glassmorphism base) */}
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="schematic-hw" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="currentColor" strokeWidth="0.5" />
+              <circle cx="50" cy="50" r="2" fill="currentColor" />
+              <path d="M 45 50 h 10 M 50 45 v 10" fill="none" stroke="currentColor" strokeWidth="1" />
+              <path d="M 0 100 L 20 80 L 80 80 L 100 60" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 4" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#schematic-hw)" />
+        </svg>
+      </div>
+
+      <div className="container-main relative z-10">
         <motion.div
           className="mx-auto mb-12 max-w-2xl text-center relative z-10"
           initial={{ opacity: 0, y: 20 }}
@@ -70,52 +85,31 @@ const HowWeWorkSection = () => {
           viewport={{ once: true, margin: "-50px" }}
         >
           {steps.map((step, index) => (
-            <motion.div key={step.number} variants={itemVariants} className="relative z-10">
-              {index < steps.length - 1 && (
-                <div className="absolute right-[-24px] top-[44px] hidden w-12 h-10 md:block pointer-events-none z-0">
-                  <svg viewBox="0 0 48 40" className="w-full h-full overflow-visible">
-                    <motion.path
-                      d="M 0 20 L 12 20 L 24 10 L 36 10 L 48 20"
-                      fill="none"
-                      stroke="hsl(var(--primary))"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      whileInView={{ pathLength: 1, opacity: 1 }}
-                      viewport={{ once: true, margin: "-50px" }}
-                      transition={{ duration: 0.6, delay: 0.5 + index * 0.4 }}
-                      className="drop-shadow-[0_0_6px_hsl(var(--primary))]"
-                    />
-                  </svg>
-                </div>
-              )}
-
-              <div className="card-industrial h-full p-6 relative bg-card border border-border shadow-sm">
-                <div className="flex items-start justify-between gap-4 relative z-10">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-md bg-primary/10">
-                    <step.icon className="h-6 w-6 text-primary" />
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ delay: index * 0.2, duration: 0.6 }}
+              className="relative group"
+            >
+              <div className="card-glass h-full p-6 relative">
+                <div className="mb-6 flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+                    <step.icon className="h-6 w-6" />
                   </div>
                   
-                  {/* LED Step Number */}
-                  <motion.div
-                    initial={{ color: "hsl(var(--muted-foreground))", textShadow: "none" }}
-                    whileInView={{ color: "hsl(var(--primary))", textShadow: "0 0 14px hsl(var(--primary))" }}
-                    transition={{ delay: 0.8 + index * 0.4, duration: 0.3 }}
-                    viewport={{ once: true }}
-                    className="flex flex-col items-end"
+                  {/* Interactive Step Number (LED effect) */}
+                  <motion.div 
+                    initial={{ opacity: 0.3, color: "hsl(var(--muted-foreground))" }}
+                    whileInView={{ opacity: 1, color: "hsl(var(--primary))", textShadow: "0 0 10px hsl(var(--primary))" }}
+                    viewport={{ once: true, margin: "-150px" }}
+                    transition={{ delay: index * 0.3 + 0.5 }}
+                    className="text-4xl font-display font-bold"
                   >
-                    <span className="text-sm font-bold uppercase tracking-[0.16em]">{step.number}</span>
-                    <motion.div 
-                      className="w-1.5 h-1.5 rounded-full mt-1"
-                      initial={{ backgroundColor: "hsl(var(--muted))", boxShadow: "none" }}
-                      whileInView={{ backgroundColor: "hsl(var(--primary))", boxShadow: "0 0 8px hsl(var(--primary))" }}
-                      transition={{ delay: 0.8 + index * 0.4, duration: 0.3 }}
-                      viewport={{ once: true }}
-                    />
+                    {step.number}
                   </motion.div>
                 </div>
-
                 <h3 className="mt-6 font-display text-2xl font-semibold text-foreground relative z-10">{step.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground relative z-10">{step.description}</p>
               </div>

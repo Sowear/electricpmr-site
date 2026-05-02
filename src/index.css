@@ -147,6 +147,17 @@
     transform: translateY(-2px);
   }
 
+  .card-glass {
+    @apply rounded-2xl border border-white/20 dark:border-white/10 bg-background/30 backdrop-blur-2xl relative overflow-hidden;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .card-glass:hover {
+    @apply border-white/30 dark:border-white/20 bg-background/40;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.1), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
   .card-engineering {
     @apply relative overflow-hidden rounded-lg border border-border/80 bg-card;
     box-shadow: 0 26px 70px -42px hsl(220 24% 10% / 0.28);

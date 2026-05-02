@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useAnimation } from "framer-motion";
 import { Shield, Award, Clock, CheckCircle2 } from "lucide-react";
-import ExplodedSocket from "./ExplodedSocket";
+import aboutPanelImage from "@/assets/about-electrical-panel.png";
 
 interface CounterProps {
   end: number;
@@ -150,19 +150,17 @@ const AboutSection = () => {
                   }} />
                 </div>
                 
-                {/* 3D Exploded Socket */}
-                <div className="w-full relative z-10 py-12 bg-gradient-to-tr from-transparent via-primary/5 to-transparent">
-                  <ExplodedSocket />
-                </div>
+                {/* Image */}
+                <img 
+                  src={aboutPanelImage} 
+                  alt="Профессиональный электрощит" 
+                  className="w-full h-auto relative z-10"
+                />
                 
                 {/* Technical markers */}
-                <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-md px-2 py-1 text-[10px] font-mono border border-border/50 shadow-sm z-20">
-                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                  <span className="text-primary font-semibold">SYSTEM ACTIVE</span>
-                </div>
-                
-                <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm rounded-md px-2 py-1 text-[10px] font-mono text-muted-foreground border border-border/50 z-20">
-                  PWR: 14.2kW
+                <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 text-xs font-mono z-20">
+                  <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                  <span className="text-muted-foreground">SYSTEM ACTIVE</span>
                 </div>
                 
                 <div className="absolute bottom-4 right-4 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 text-xs font-mono text-muted-foreground">

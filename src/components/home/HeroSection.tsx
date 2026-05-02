@@ -50,7 +50,7 @@ const TextFlipper = ({ words }: { words: string[] }) => {
   }, [words.length]);
 
   return (
-    <span className="text-gradient relative inline-block h-[1.2em] w-[190px] align-text-bottom sm:w-[240px] md:w-[280px] lg:w-[330px]">
+    <span className="relative inline-block h-[1.2em] w-[190px] align-text-bottom sm:w-[240px] md:w-[280px] lg:w-[330px]">
       <AnimatePresence mode="wait">
         <motion.span
           key={index}
@@ -58,7 +58,7 @@ const TextFlipper = ({ words }: { words: string[] }) => {
           animate={{ y: 0, opacity: 1, rotateX: 0 }}
           exit={{ y: -34, opacity: 0, rotateX: 90 }}
           transition={{ duration: 0.45, type: "spring", bounce: 0.28 }}
-          className="absolute left-0 top-0 whitespace-nowrap"
+          className="text-gradient absolute left-0 top-0 inline-block whitespace-nowrap"
           style={{ transformOrigin: "50% 50% -20px" }}
         >
           {words[index]}
@@ -111,7 +111,10 @@ const HeroSection = () => {
         <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="max-w-[42rem]">
             <motion.div variants={itemVariants} className="technical-label mb-6">
-              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
               Электромонтаж по всему ПМР
             </motion.div>
 
@@ -140,7 +143,7 @@ const HeroSection = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button size="lg" onClick={() => setQuizOpen(true)} className="btn-hero group min-h-[56px] text-base">
+              <Button size="lg" onClick={() => setQuizOpen(true)} className="btn-hero btn-spark group min-h-[56px] text-base">
                 Узнать стоимость
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
@@ -164,34 +167,36 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
-          <motion.div variants={imageVariants} initial="hidden" animate="visible" className="w-full">
-            <div className="card-engineering bg-industrial-dark p-6 text-white md:p-8">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/55">
-                <span className="rounded-full border border-white/12 px-3 py-1">Проект</span>
-                <span className="rounded-full border border-white/12 px-3 py-1">Защита</span>
-                <span className="rounded-full border border-white/12 px-3 py-1">Сдача</span>
-              </div>
+          <motion.div
+            variants={imageVariants}
+            initial="hidden"
+            animate="visible"
+            className="relative mx-auto w-full max-w-[640px] lg:max-w-none"
+          >
+            <div className="relative flex min-h-[320px] items-center justify-end sm:min-h-[400px] lg:min-h-[520px]">
+              <motion.div 
+                animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                className="pointer-events-none absolute right-[8%] top-[14%] h-[56%] w-[60%] rounded-full bg-[rgba(255,190,60,0.18)] blur-[100px]" 
+              />
+              <motion.div 
+                animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="pointer-events-none absolute right-[14%] bottom-[14%] h-[24%] w-[34%] rounded-full bg-[rgba(59,130,246,0.15)] blur-[80px]" 
+              />
 
-              <div className="relative mt-6 overflow-hidden rounded-md border border-white/10 bg-white/[0.03]">
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/18 via-transparent to-primary/10" />
-                <div className="tech-grid absolute inset-0 text-white/[0.06]" />
+              <motion.div 
+                className="relative z-10 ml-auto w-full max-w-[620px] lg:max-w-[660px]"
+                animate={{ y: [-12, 12, -12] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              >
                 <img
                   src={heroImage}
                   alt="Профессиональная электросистема"
-                  className="relative z-10 w-full object-cover object-center"
+                  className="w-full object-contain drop-shadow-[0_20px_35px_rgba(15,23,42,0.12)]"
                 />
-              </div>
-
-              <div className="mt-6 grid gap-5 border-t border-white/10 pt-6 sm:grid-cols-2">
-                <div>
-                  <div className="text-3xl font-display font-bold text-primary">01</div>
-                  <p className="mt-1 text-sm text-white/65">Собираем понятную смету и фиксируем объём работ до старта.</p>
-                </div>
-                <div>
-                  <div className="text-3xl font-display font-bold text-primary">02</div>
-                  <p className="mt-1 text-sm text-white/65">Показываем логику групп, маркировку и порядок сдачи результата.</p>
-                </div>
-              </div>
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(250,247,242,0)_60%,rgba(250,247,242,0.04)_74%,rgba(250,247,242,0.22)_88%,rgba(250,247,242,0.84)_100%)]" />
+              </motion.div>
             </div>
           </motion.div>
         </div>

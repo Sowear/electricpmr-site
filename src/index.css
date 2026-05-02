@@ -129,6 +129,16 @@
       linear-gradient(90deg, currentColor 1px, transparent 1px);
     background-size: 42px 42px;
     mask-image: linear-gradient(to bottom, black, transparent 85%);
+    animation: gridMove 25s linear infinite;
+  }
+
+  @keyframes gridMove {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 42px 42px;
+    }
   }
 
   @keyframes marquee {

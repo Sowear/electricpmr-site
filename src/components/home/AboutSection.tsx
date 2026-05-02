@@ -113,7 +113,13 @@ const AboutSection = () => {
       className="relative py-20 lg:py-28 bg-gradient-to-b from-background to-secondary/20 overflow-hidden"
     >
       {/* Background Cable Reveal Animation */}
-      <div className="absolute right-0 top-0 bottom-0 opacity-30 xl:opacity-100 xl:right-[5%] 2xl:right-[10%] w-32 pointer-events-none z-0">
+      <div 
+        className="absolute right-[-60px] sm:right-[-20px] lg:right-[10px] xl:right-[5%] top-[-50px] bottom-[-50px] w-32 md:w-40 pointer-events-none z-0 opacity-15 lg:opacity-100"
+        style={{
+          maskImage: "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)"
+        }}
+      >
         <CableReveal progress={scrollYProgress} />
       </div>
 

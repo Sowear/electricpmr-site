@@ -38,18 +38,21 @@ const CableReveal = ({ progress }: CableRevealProps) => {
         <div className="w-3 md:w-4 h-full bg-[repeating-linear-gradient(90deg,#b87333,#b87333_1px,#8a3324_1px,#8a3324_2px)] shadow-[inset_2px_0_4px_rgba(255,255,255,0.4),inset_-2px_0_4px_rgba(0,0,0,0.6)] rounded-t-[2px]" />
       </div>
 
+      {/* LAYER 2 CAPS (Cross-sections of colored insulation) */}
+      <motion.div 
+        className="absolute w-full flex justify-center gap-1.5 md:gap-2 px-2 h-0 z-20 pointer-events-none"
+        style={{ top: strip2Y }}
+      >
+        <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-amber-600 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.8)]" />
+        <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-yellow-400 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.8)] border border-green-500/30" />
+        <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-blue-400 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.8)]" />
+      </motion.div>
+
       {/* Layer 2: Colored Insulation */}
       <motion.div 
         className="absolute inset-0 flex justify-center gap-1.5 md:gap-2 px-2 pt-4"
         style={{ clipPath: useTransform(strip2Y, y => `inset(${y} 0 0 0)`) }}
       >
-        {/* Cut Caps for Insulation (Cross-sections) */}
-        <div className="absolute top-0 left-0 w-full flex justify-center gap-1.5 md:gap-2 px-2 h-0">
-          <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-amber-600 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5)] z-10" />
-          <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-yellow-400 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5)] z-10 border border-green-500/30" />
-          <div className="w-3 md:w-4 h-1.5 -mt-[3px] bg-blue-400 rounded-[50%] shadow-[inset_0_-1px_2px_rgba(0,0,0,0.5)] z-10" />
-        </div>
-
         {/* Brown (Phase) */}
         <div className="w-3 md:w-4 h-full bg-gradient-to-r from-amber-900 via-amber-700 to-amber-950 shadow-[inset_2px_0_4px_rgba(255,255,255,0.2),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-sm" />
         {/* Yellow-Green (Ground) */}
@@ -58,17 +61,20 @@ const CableReveal = ({ progress }: CableRevealProps) => {
         <div className="w-3 md:w-4 h-full bg-gradient-to-r from-blue-700 via-blue-500 to-blue-900 shadow-[inset_2px_0_4px_rgba(255,255,255,0.2),inset_-2px_0_6px_rgba(0,0,0,0.8)] rounded-t-sm" />
       </motion.div>
 
+      {/* LAYER 3 CAP (Cross-section of black jacket) */}
+      <motion.div 
+        className="absolute w-full h-3 -mt-1.5 bg-[#333] border border-[#555] rounded-[50%] z-30 shadow-[0_6px_12px_rgba(0,0,0,0.9)] flex justify-center items-center pointer-events-none"
+        style={{ top: strip1Y }}
+      >
+        {/* Inner hole for wires */}
+        <div className="w-[75%] h-[55%] bg-[#111] rounded-[50%] shadow-inner" />
+      </motion.div>
+
       {/* Layer 3: Outer Black PVC Jacket */}
       <motion.div 
-        className="absolute inset-0 flex justify-center"
+        className="absolute inset-0 flex justify-center z-10"
         style={{ clipPath: useTransform(strip1Y, y => `inset(${y} 0 0 0)`) }}
       >
-        {/* Outer Cut Cap (Cross-section) */}
-        <div className="absolute top-0 w-full h-3 -mt-1.5 bg-[#333] border border-[#555] rounded-[50%] z-20 shadow-[0_4px_10px_rgba(0,0,0,0.8)] flex justify-center items-center">
-          {/* Inner hole for wires */}
-          <div className="w-[80%] h-[60%] bg-[#111] rounded-[50%] shadow-inner" />
-        </div>
-
         <div className="w-full h-full bg-gradient-to-r from-[#111] via-[#2a2a2a] to-[#0a0a0a] shadow-[inset_3px_0_8px_rgba(255,255,255,0.15),inset_-4px_0_12px_rgba(0,0,0,0.9)] rounded-t-lg flex justify-center items-center relative overflow-hidden">
            
            {/* Surface texture/grain */}

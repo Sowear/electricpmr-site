@@ -172,7 +172,7 @@ const AboutSection = () => {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
-                className="absolute -bottom-4 right-4 md:-bottom-6 md:-right-4 lg:-right-6 card-glass p-5 z-20"
+                className="absolute -bottom-4 right-2 sm:right-4 md:-bottom-6 md:-right-4 lg:-right-6 card-glass p-5 z-20"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -219,7 +219,7 @@ const AboutSection = () => {
             {/* Stats Grid */}
             <motion.div 
               variants={containerVariants}
-              className="grid grid-cols-2 gap-4 mb-8"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8"
             >
               {stats.map((stat, index) => (
                 <motion.div

@@ -48,7 +48,7 @@ const TextFlipper = ({ words }: { words: string[] }) => {
   }, [words.length]);
 
   return (
-    <span className="relative inline-block h-[1.2em] w-[190px] align-text-bottom sm:w-[240px] md:w-[280px] lg:w-[330px]">
+    <span className="relative inline-block h-[1.2em] w-[160px] align-text-bottom sm:w-[240px] md:w-[280px] lg:w-[330px]">
       <AnimatePresence mode="wait">
         <motion.span
           key={index}
@@ -137,7 +137,7 @@ const HeroSection = () => {
 
             <motion.h1
               variants={itemVariants}
-              className="font-display text-4xl font-bold leading-[1.08] text-foreground sm:text-5xl lg:text-6xl"
+              className="font-display text-3xl font-bold leading-[1.08] text-foreground sm:text-5xl lg:text-6xl"
             >
               Проектируем и монтируем электрику для{" "}
               <TextFlipper words={["квартир", "домов", "бизнеса", "новостроек"]} />
@@ -203,7 +203,7 @@ const HeroSection = () => {
               />
 
               <motion.div 
-                className="relative z-10 ml-auto w-full max-w-[480px] lg:max-w-[520px] aspect-[4/5] sm:aspect-square"
+                className="relative z-10 ml-auto w-full max-w-[340px] sm:max-w-[480px] lg:max-w-[520px] aspect-[4/5] sm:aspect-square"
                 animate={{ y: [-12, 12, -12] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               >

@@ -70,8 +70,7 @@ const ServicesSection = () => {
                 setIsHovered(false);
                 mouseX.set(cardRef.current ? cardRef.current.offsetWidth - 120 : 0);
                 mouseY.set(-60);
-              }}
-              className="card-industrial p-8 min-h-[400px] flex flex-col relative overflow-hidden"
+              className="card-industrial p-6 sm:p-8 min-h-[320px] md:min-h-[400px] flex flex-col relative overflow-hidden"
             >
               {/* Magnetic Background glow */}
               <motion.div 

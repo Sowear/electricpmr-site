@@ -137,8 +137,7 @@ const HeroSection = () => {
 
             <motion.h1
               variants={itemVariants}
-              className="font-display text-4xl font-bold leading-[1.08] text-foreground sm:text-5xl lg:text-6xl glitch-text"
-              data-text="Проектируем и монтируем электрику для"
+              className="font-display text-4xl font-bold leading-[1.08] text-foreground sm:text-5xl lg:text-6xl"
             >
               Проектируем и монтируем электрику для{" "}
               <TextFlipper words={["квартир", "домов", "бизнеса", "новостроек"]} />

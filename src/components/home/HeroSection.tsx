@@ -120,7 +120,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden border-b border-border/60 bg-[linear-gradient(180deg,hsl(40_44%_96%)_0%,hsl(42_30%_98%)_58%,hsl(0_0%_100%)_100%)]">
+    <section className="relative overflow-hidden border-b border-border/60 bg-background/40">
       <div className="tech-grid absolute inset-0 text-foreground/[0.04]" />
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
 

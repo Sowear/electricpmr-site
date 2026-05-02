@@ -130,7 +130,7 @@ const AboutSection = () => {
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-3xl blur-2xl opacity-60" />
               
               {/* Main image container */}
-              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl">
+              <div className="relative rounded-2xl overflow-hidden bg-card border border-border/50 shadow-2xl">
                 {/* Technical overlay grid */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="h-full w-full" style={{

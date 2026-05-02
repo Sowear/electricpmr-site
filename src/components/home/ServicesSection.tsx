@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import SmartBlueprintSVG, { zonesData, ZoneId } from "./SmartBlueprintSVG";
 
 const ServicesSection = () => {
   const [activeZone, setActiveZone] = useState<ZoneId | null>("hallway");
+  const cardRef = useRef<HTMLDivElement>(null);
+  
+  // Magnetic hover state
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 300, damping: 30 });
+  const springY = useSpring(mouseY, { stiffness: 300, damping: 30 });
+  const [isHovered, setIsHovered] = useState(false);
 
-  // If no zone hovered, default to hallway to keep panel populated
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    mouseX.set(x - 120); // 120 is half of the 240px width to center it
+    mouseY.set(y - 120);
+  };
+
   const currentData = activeZone ? zonesData[activeZone] : zonesData["hallway"];
 
   return (
@@ -22,7 +38,7 @@ const ServicesSection = () => {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:whitespace-nowrap">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:whitespace-nowrap glitch-text">
             Проектируем электрику <span className="text-primary">с умом</span>
           </h2>
           <p className="text-muted-foreground text-lg">
@@ -46,9 +62,25 @@ const ServicesSection = () => {
 
           {/* Right Column: Dynamic Info Panel */}
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col h-full justify-center w-full">
-            <div className="card-industrial p-8 min-h-[400px] flex flex-col relative overflow-hidden">
-              {/* Background glow matching primary color */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -z-10" />
+            <div 
+              ref={cardRef}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => {
+                setIsHovered(false);
+                mouseX.set(cardRef.current ? cardRef.current.offsetWidth - 120 : 0);
+                mouseY.set(-60);
+              }}
+              className="card-industrial p-8 min-h-[400px] flex flex-col relative overflow-hidden"
+            >
+              {/* Magnetic Background glow */}
+              <motion.div 
+                className="absolute w-[240px] h-[240px] bg-primary/15 rounded-full blur-[60px] pointer-events-none -z-10"
+                style={{ x: springX, y: springY }}
+                animate={{ opacity: isHovered ? 1 : 0.4 }}
+                transition={{ duration: 0.3 }}
+                initial={{ x: 200, y: -60 }} // Default position top right
+              />
               
               <AnimatePresence mode="wait">
                 <motion.div
@@ -57,7 +89,7 @@ const ServicesSection = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.3 }}
-                  className="flex-1 flex flex-col"
+                  className="flex-1 flex flex-col relative z-10"
                 >
                   <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-6 w-fit">
                     Зона: {currentData.id === 'hallway' ? 'Входная группа' : 
@@ -85,7 +117,7 @@ const ServicesSection = () => {
                 </motion.div>
               </AnimatePresence>
 
-              <Button className="w-full group" asChild>
+              <Button className="w-full group relative z-10" asChild>
                 <Link to="/contact">
                   Рассчитать проект
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

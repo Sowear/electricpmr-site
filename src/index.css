@@ -71,6 +71,41 @@
     --industrial-dark: 220 24% 14%;
     --industrial-steel: 220 12% 32%;
   }
+
+  .dark {
+    --background: 220 24% 10%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 24% 14%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 24% 14%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 45 96% 54%;
+    --primary-foreground: 220 24% 10%;
+
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 33 92% 58%;
+    --accent-foreground: 220 24% 10%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 45 96% 54%;
+
+    --hero-gradient: linear-gradient(135deg, hsl(45 96% 54%) 0%, hsl(33 92% 58%) 100%);
+    --card-shadow: 0 18px 50px -34px hsl(0 0% 0% / 0.5);
+    --card-shadow-hover: 0 28px 65px -34px hsl(0 0% 0% / 0.7);
+    --page-gradient: linear-gradient(180deg, hsl(220 24% 12%) 0%, hsl(220 24% 10%) 26%, hsl(220 24% 8%) 100%);
+  }
 }
 
 @layer base {
@@ -82,7 +117,7 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
     min-height: 100vh;
-    background-image: linear-gradient(180deg, hsl(42 45% 97%) 0%, hsl(42 28% 98%) 26%, hsl(0 0% 100%) 100%);
+    background-image: var(--page-gradient, linear-gradient(180deg, hsl(42 45% 97%) 0%, hsl(42 28% 98%) 26%, hsl(0 0% 100%) 100%));
   }
 
   h1, h2, h3, h4, h5, h6 {

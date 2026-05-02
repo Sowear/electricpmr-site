@@ -6,6 +6,7 @@ import { supabase, type User } from "@/integrations/supabase/client";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
 import NotificationBell from "./NotificationBell";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Header = () => {
   const location = useLocation();
@@ -174,6 +175,8 @@ const Header = () => {
                 </>
               ) : (
                 <div className="flex items-center gap-2 rounded-full border border-border/70 bg-card/85 p-1.5 shadow-[0_18px_45px_-38px_rgba(15,23,42,0.25)]">
+                  <ThemeToggle />
+                  <div className="h-4 w-px bg-border/60 mx-1" />
                   <Button variant="ghost" size="sm" asChild>
                     <Link to="/auth">Войти</Link>
                   </Button>
@@ -270,6 +273,10 @@ const Header = () => {
                     </>
                   ) : (
                     <>
+                      <div className="flex justify-between items-center px-2 py-1">
+                        <span className="text-sm font-medium">Оформление</span>
+                        <ThemeToggle />
+                      </div>
                       <Button variant="outline" size="sm" asChild>
                         <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                           Войти

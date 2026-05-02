@@ -54,19 +54,19 @@ export default function QualityPassportSection() {
               как проверена защита и кто отвечает за результат.
             </p>
 
-            <div className="card-engineering mt-8 bg-industrial-dark p-6 text-white md:p-7">
+            <div className="card-engineering mt-8 bg-card p-6 text-foreground md:p-7 shadow-lg border-border/60">
               <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div>
                   <div className="text-sm font-semibold">Контрольный лист объекта</div>
-                  <div className="text-xs text-white/50">перед сдачей работ</div>
+                  <div className="text-xs text-muted-foreground">перед сдачей работ</div>
                 </div>
               </div>
               <div className="grid gap-2.5">
                 {checklist.map((item) => (
-                  <div key={item} className="flex items-center gap-2.5 border-b border-white/8 pb-2.5 text-sm text-white/76 last:border-none last:pb-0">
+                  <div key={item} className="flex items-center gap-2.5 border-b border-border/80 pb-2.5 text-sm text-foreground/80 last:border-none last:pb-0">
                     <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                     <span>{item}</span>
                   </div>

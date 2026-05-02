@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
 import SeoRouterMeta from "./components/SeoRouterMeta";
 import { LazyComponent } from "./components/LazyPage";
+import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 
 const ElectricianTiraspol = lazy(() => import("./pages/ElectricianTiraspol"));
@@ -38,8 +39,9 @@ const Contact = lazy(() => import("./pages/Contact"));
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+  <ThemeProvider defaultTheme="light" storageKey="electricpmr-theme" attribute="class">
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
       <Toaster />
       <Sonner />
       <HelmetProvider>
@@ -75,8 +77,9 @@ const App = () => (
         </Routes>
         </BrowserRouter>
       </HelmetProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;

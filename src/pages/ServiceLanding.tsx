@@ -235,22 +235,22 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
             {/* Right Column (Cards) */}
             <div className="space-y-6">
               {/* Pricing Card */}
-              <div className="relative overflow-hidden rounded-xl border border-white/10 bg-industrial-dark p-6 text-white shadow-[0_26px_80px_-42px_rgba(0,0,0,0.75)] md:p-8">
-                <div className="tech-grid absolute inset-0 text-white/[0.08] [background-size:34px_34px]" />
-                <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-primary/25 blur-3xl" />
+              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card p-6 text-foreground shadow-lg md:p-8">
+                <div className="tech-grid absolute inset-0 text-foreground/[0.04] [background-size:34px_34px]" />
+                <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-primary/15 blur-3xl" />
                 <h3 className="relative font-display text-xl font-semibold mb-4 flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-primary" />
                   Цена и расчет
                 </h3>
-                <div className="relative text-4xl font-bold text-white mb-3">
+                <div className="relative text-4xl font-bold text-foreground mb-3">
                   {content.priceStart}
                 </div>
-                <p className="relative text-white/70 text-sm leading-relaxed">
+                <p className="relative text-muted-foreground text-sm leading-relaxed">
                   {content.priceLogic}
                 </p>
-                <div className="relative mt-6 grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+                <div className="relative mt-6 grid grid-cols-3 gap-2 border-t border-border/60 pt-4">
                   {["Прозрачно", "По этапам", "Без сюрпризов"].map((label) => (
-                    <div key={label} className="rounded-lg border border-white/10 bg-white/[0.06] px-2 py-2 text-center text-[11px] font-semibold text-white/75">
+                    <div key={label} className="rounded-lg border border-border/60 bg-muted/30 px-2 py-2 text-center text-[11px] font-semibold text-muted-foreground">
                       {label}
                     </div>
                   ))}

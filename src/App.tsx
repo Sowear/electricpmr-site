@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
 import SeoRouterMeta from "./components/SeoRouterMeta";
-import { LazyComponent } from "./components/LazyPage";
+import { LazyComponent, LazyPage } from "./components/LazyPage";
 import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 
@@ -48,7 +48,7 @@ const App = () => (
         <BrowserRouter>
         <SeoRouterMeta />
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<LazyPage><Index /></LazyPage>} />
           <Route path="/features" element={<LazyComponent Component={Features} />} />
           <Route path="/pricing" element={<LazyComponent Component={Pricing} />} />
           <Route path="/elektrik-v-tiraspole" element={<LazyComponent Component={ElectricianTiraspol} />} />

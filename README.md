@@ -1,73 +1,191 @@
-# Welcome to your Lovable project
+# ElectricPMR Site
 
-## Project info
+Сайт и рабочий кабинет для проекта `ElectricPMR`.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+В репозитории живут:
+- публичный сайт на `React + Vite`
+- внутренний кабинет со сметами, проектами, финансами и ролями
+- кастомный API на `Cloudflare Workers + D1 + R2`
+- `Supabase` edge functions для email- и notification-сценариев
 
-## How can I edit this code?
+## Stack
 
-There are several ways of editing your application.
+- `Vite`
+- `React 18`
+- `TypeScript`
+- `Tailwind CSS`
+- `shadcn/ui`
+- `React Query`
+- `Supabase`
+- `Cloudflare Workers`
+- `D1`
+- `R2`
+- `Vitest`
 
-**Use Lovable**
+## Structure
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- `src/` — фронтенд, страницы, компоненты, хуки, клиентская логика
+- `cloudflare/worker.ts` — API для auth, БД, storage и webhook-уведомлений
+- `cloudflare/schema.sql` — схема D1
+- `supabase/functions/` — edge functions Supabase
+- `supabase/migrations/` — SQL-миграции Supabase
+- `public/` — статические ассеты, sitemap, robots, фото, видео
 
-Changes made via Lovable will be committed automatically to this repo.
+## Scripts
 
-**Use your preferred IDE**
+```bash
+npm run dev
+npm run build
+npm run preview
+npm run test
+npm run lint
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Frontend local run
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Установите зависимости:
 
-Follow these steps:
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. Создайте `.env` и заполните нужные переменные.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. Запустите фронтенд:
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Обычно Vite поднимается на `http://127.0.0.1:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Environment variables
 
-**Use GitHub Codespaces**
+Фронтенд использует:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+VITE_API_BASE_URL=
+```
 
-## What technologies are used for this project?
+Пояснения:
+- `VITE_SUPABASE_URL` — URL проекта Supabase
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — publishable key Supabase
+- `VITE_API_BASE_URL` — базовый URL Cloudflare API, например `http://127.0.0.1:8787`
 
-This project is built with:
+Если `VITE_API_BASE_URL` не задан, часть запросов идёт через прямой клиент Supabase.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Cloudflare worker
 
-## How can I deploy this project?
+`wrangler.toml` уже содержит:
+- `DB` — D1 database binding
+- `WORK_EXAMPLES_BUCKET` — R2 bucket binding
+- `APP_BASE_URL`
+- `SESSION_TTL_DAYS`
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Локальный запуск worker:
 
-## Can I connect a custom domain to my Lovable project?
+1. Подготовьте D1 и R2.
+2. Примените схему:
 
-Yes, you can!
+```bash
+npx wrangler d1 execute electricpmr --local --file=cloudflare/schema.sql
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+3. Запустите worker:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```bash
+npx wrangler dev
+```
+
+По умолчанию worker доступен на `http://127.0.0.1:8787`.
+
+4. Для работы фронтенда через worker добавьте в `.env`:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8787
+```
+
+## Optional worker env vars
+
+Эти переменные читает `cloudflare/worker.ts`:
+
+```env
+SUPER_ADMIN_EMAIL=
+REQUEST_EMAIL_WEBHOOK_URL=
+REQUEST_EMAIL_WEBHOOK_TOKEN=
+ESTIMATE_EMAIL_WEBHOOK_URL=
+ESTIMATE_EMAIL_WEBHOOK_TOKEN=
+```
+
+Они нужны для:
+- bootstrap супер-админа
+- webhook/email-уведомлений по заявкам
+- webhook/email-уведомлений по сметам
+
+## Supabase
+
+В проекте используются:
+- auth и клиентские запросы
+- edge functions в `supabase/functions/`
+- миграции в `supabase/migrations/`
+
+`supabase/config.toml` содержит настройки функций:
+- `send-request-notification`
+- `send-estimate-email`
+- `validate-status-transition`
+
+## Typical local workflow
+
+1. Поднять Cloudflare worker на `127.0.0.1:8787`
+2. Прописать `VITE_API_BASE_URL=http://127.0.0.1:8787`
+3. Поднять фронтенд через `npm run dev`
+4. Проверить публичный сайт, формы, кабинет и сметы
+
+## Quality checks
+
+Сборка:
+
+```bash
+npm run build
+```
+
+Тесты:
+
+```bash
+npm run test
+```
+
+Линтер:
+
+```bash
+npm run lint
+```
+
+Сейчас `build` и `test` должны проходить. `lint` может ругаться на исторические проблемы типизации и `any` в части кабинета.
+
+## Deploy
+
+Публичная часть собирается через:
+
+```bash
+npm run build
+```
+
+В проекте также есть:
+- `vercel.json` для SPA-роутинга
+- `vite-plugin-pwa` для PWA
+- prerender production-маршрутов в `vite.config.ts`
+
+Перед деплоем полезно проверить:
+
+```bash
+npm run build
+npm run test
+```
+
+И отдельно убедиться, что:
+- канонический домен актуален
+- `sitemap.xml` и `robots.txt` соответствуют боевому домену
+- нужные env vars выставлены в окружении

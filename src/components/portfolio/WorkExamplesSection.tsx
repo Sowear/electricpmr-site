@@ -156,7 +156,7 @@ const WorkExamplesSection = () => {
             transition={{ delay: 0.8 }}
           >
             <a
-              href="#request"
+              href="#request-form"
               className="inline-flex items-center gap-2 text-primary font-medium hover:underline underline-offset-4"
             >
               Хотите так же? Оставьте заявку

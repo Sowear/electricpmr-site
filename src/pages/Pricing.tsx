@@ -27,77 +27,76 @@ const pricingFormats = [
 
 const whyNoPrices = [
   "Стоимость зависит от объёма и сложности работ",
-  "Цена материалов варьируется",
-  "Индивидуальный подход к каждому объекту",
-  "Честное ценообразование без скрытых наценок",
+  "Цена материалов может отличаться от объекта к объекту",
+  "Каждый объект требует индивидуального расчёта",
+  'Смета составляется заранее, без формата "потом доплатите"',
 ];
 
 const Pricing = () => {
   return (
     <Layout
       title="Стоимость электромонтажа — ЭлектроМастер"
-      description="Цены на электромонтаж в Приднестровье. Прозрачный расчет, без скрытых работ. Бесплатный выезд на осмотр и составление сметы."
+      description="Цены на электромонтаж в Приднестровье. Прозрачный расчёт, понятная смета и согласование работ до начала монтажа."
     >
-      {/* Hero */}
       <section className="section-padding bg-secondary/30">
         <div className="container-main">
           <div className="max-w-3xl">
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">
-              Стоимость работ
-            </h1>
+            <h1 className="mb-6 font-display text-4xl font-bold md:text-5xl">Стоимость работ</h1>
             <p className="text-lg text-muted-foreground">
-              Мы рассчитываем стоимость индивидуально для каждого проекта, 
-              чтобы вы платили только за то, что вам действительно нужно.
+              Мы рассчитываем стоимость индивидуально для каждого проекта, чтобы вы платили только за то,
+              что действительно нужно вашему объекту.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Why no fixed prices */}
       <section className="section-padding">
         <div className="container-main">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             <div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-6">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
                 <Calculator className="h-7 w-7 text-primary" />
               </div>
-              <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-                Почему нет фиксированных цен?
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Каждый объект уникален. Стоимость зависит от метража, состояния стен, 
-                сложности разводки и выбранных материалов. Мы составляем точную смету 
-                после осмотра объекта — без сюрпризов и скрытых доплат.
+              <h2 className="mb-4 font-display text-2xl font-bold md:text-3xl">Почему нет фиксированных цен?</h2>
+              <p className="mb-6 text-muted-foreground">
+                Каждый объект отличается по площади, состоянию стен, количеству линий, нагрузке и выбранным
+                материалам. Поэтому мы не даём случайную цифру "на глаз", а считаем реальную смету по вашей задаче.
               </p>
               <ul className="space-y-3">
                 {whyNoPrices.map((item, index) => (
                   <li key={index} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="card-industrial p-8 bg-foreground text-background">
-              <FileText className="h-8 w-8 text-primary mb-4" />
-              <h3 className="font-display text-xl font-semibold mb-3">
-                Как узнать стоимость?
-              </h3>
+
+            <div className="card-industrial bg-foreground p-8 text-background">
+              <FileText className="mb-4 h-8 w-8 text-primary" />
+              <h3 className="mb-3 font-display text-xl font-semibold">Как узнать стоимость?</h3>
               <ol className="space-y-4 text-background/80">
                 <li className="flex gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold flex-shrink-0">1</span>
-                  <span>Оставьте заявку или позвоните нам</span>
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    1
+                  </span>
+                  <span>Оставляете заявку или звоните нам</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold flex-shrink-0">2</span>
-                  <span>Мастер выезжает на осмотр (бесплатно)</span>
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    2
+                  </span>
+                  <span>Мастер выезжает на осмотр, стоимость выезда зависит от удалённости объекта</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold flex-shrink-0">3</span>
-                  <span>Получаете подробную смету</span>
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    3
+                  </span>
+                  <span>Получаете подробную смету и согласовываете объём работ</span>
                 </li>
               </ol>
-              <div className="mt-6 pt-6 border-t border-background/20">
+
+              <div className="mt-6 border-t border-background/20 pt-6">
                 <Button size="lg" className="w-full" asChild>
                   <Link to="/#request-form">
                     <Phone className="mr-2 h-5 w-5" />
@@ -110,38 +109,29 @@ const Pricing = () => {
         </div>
       </section>
 
-      {/* Pricing Formats */}
       <section className="section-padding bg-secondary/30">
         <div className="container-main">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-              Форматы работ
-            </h2>
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <h2 className="mb-4 font-display text-2xl font-bold md:text-3xl">Форматы работ</h2>
             <p className="text-muted-foreground">
-              Мы работаем в разных форматах в зависимости от ваших задач
+              Работаем в разных форматах: от одной точки до полного электромонтажа под ключ.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {pricingFormats.map((format, index) => (
               <div key={index} className="card-industrial p-6">
-                <h3 className="font-display text-lg font-semibold mb-2">
-                  {format.title}
-                </h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  {format.description}
-                </p>
-                <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+                <h3 className="mb-2 font-display text-lg font-semibold">{format.title}</h3>
+                <p className="mb-4 text-sm text-muted-foreground">{format.description}</p>
+                <div className="mb-4 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                   {format.note}
                 </div>
-                <div className="pt-4 border-t border-border">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
-                    Примеры:
-                  </p>
+                <div className="border-t border-border pt-4">
+                  <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Примеры:</p>
                   <ul className="space-y-1">
                     {format.examples.map((example, idx) => (
-                      <li key={idx} className="text-sm flex items-center gap-2">
-                        <span className="w-1 h-1 rounded-full bg-muted-foreground" />
+                      <li key={idx} className="flex items-center gap-2 text-sm">
+                        <span className="h-1 w-1 rounded-full bg-muted-foreground" />
                         {example}
                       </li>
                     ))}
@@ -153,51 +143,55 @@ const Pricing = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="section-padding bg-secondary/30">
         <div className="container-main">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
-              Вопросы о стоимости
-            </h2>
-            
-            <FaqAccordion 
+          <div className="mx-auto max-w-3xl space-y-6">
+            <h2 className="mb-8 text-center font-display text-2xl font-bold md:text-3xl">Вопросы о стоимости</h2>
+
+            <FaqAccordion
               items={[
                 {
                   question: "Как формируется стоимость работ?",
-                  answer: "Стоимость зависит от объёма работ, состояния проводки и сложности проекта. Мы не называем \"примерно\", а сначала уточняем задачу и даём понятный расчёт без скрытых доплат."
+                  answer:
+                    "Стоимость зависит от объёма работ, состояния проводки, сложности проекта и выбранных материалов. Мы сначала уточняем задачу, а затем даём понятный расчёт без скрытых доплат.",
                 },
                 {
-                  question: "Выезд на осмотр — платный?",
-                  answer: "Выезд инженера платный и зависит от удаленности объекта. Онлайн-консультация по фото/видео — бесплатна."
+                  question: "Выезд на осмотр платный?",
+                  answer:
+                    "Да, выезд инженера платный и зависит от удалённости объекта. Если нужно, можно начать с бесплатной онлайн-консультации по фото или видео.",
                 },
                 {
                   question: "Есть ли фиксированные цены?",
-                  answer: "Мы не используем фиксированные цены, так как каждый объект уникален. Каждый расчёт делается индивидуально после осмотра."
+                  answer:
+                    "Нет, мы не используем фиксированные цены для всех случаев подряд. Каждый расчёт делается индивидуально после оценки объёма и условий на объекте.",
                 },
                 {
                   question: "Бывают ли скрытые доплаты?",
-                  answer: "Нет, мы против скрытых доплат. Все работы согласовываются заранее, и стоимость фиксируется в смете до начала работ."
+                  answer:
+                    "Нет. Все работы и стоимость согласовываются заранее, а смета составляется до начала монтажа.",
                 },
                 {
                   question: "Как оплачивается работа?",
-                  answer: "Мы работаем по предоплате и поэтапным оплатам. Размер предоплаты и график оплат оговаривается индивидуально по каждому проекту."
+                  answer:
+                    "Обычно мы работаем по предоплате и поэтапным оплатам. Конкретный график зависит от объёма и длительности проекта.",
                 },
                 {
                   question: "Можно ли оплатить по факту?",
-                  answer: "Для новых клиентов мы обычно требуем небольшую предоплату. При длительном сотрудничестве возможен расчёт по факту выполнения работ."
+                  answer:
+                    "Для новых клиентов чаще всего нужна небольшая предоплата. Для постоянных клиентов и отдельных форматов работ условия можем согласовать отдельно.",
                 },
                 {
                   question: "Делаете ли вы скидки?",
-                  answer: "Да, при объемных работах возможна индивидуальная система скидок. Подробности обсуждаются в каждом случае отдельно."
-                }
+                  answer:
+                    "Да, при объёмных работах возможны индивидуальные условия. Это обсуждается после оценки проекта.",
+                },
               ]}
-              className="max-w-2xl mx-auto"
+              className="mx-auto max-w-2xl"
               itemClassName="bg-background"
             />
-            
-            <div className="text-center pt-6">
-              <p className="text-sm text-muted-foreground mb-4">Не нашли свой вопрос? Напишите нам</p>
+
+            <div className="pt-6 text-center">
+              <p className="mb-4 text-sm text-muted-foreground">Не нашли свой вопрос? Напишите нам</p>
               <Button asChild>
                 <Link to="/#request-form">Задать вопрос</Link>
               </Button>
@@ -206,14 +200,11 @@ const Pricing = () => {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="section-padding">
         <div className="container-main text-center">
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-            Готовы обсудить ваш проект?
-          </h2>
-          <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-            Оставьте заявку, и мы бесплатно приедем на осмотр и составим смету
+          <h2 className="mb-4 font-display text-2xl font-bold md:text-3xl">Готовы обсудить ваш проект?</h2>
+          <p className="mx-auto mb-6 max-w-xl text-muted-foreground">
+            Оставьте заявку, и мы сориентируем по стоимости, срокам и формату работ под ваш объект.
           </p>
           <Button size="lg" asChild>
             <Link to="/#request-form">Оставить заявку</Link>

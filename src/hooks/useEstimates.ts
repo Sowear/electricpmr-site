@@ -193,21 +193,14 @@ export function useEstimate(id: string | undefined) {
   });
 }
 
+import { defaultCatalogItems } from "@/data/catalog";
+
 export function useLineItemPresets() {
   return useQuery({
     queryKey: ["line-item-presets"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("catalog_items")
-        .select(
-          "id,name,description,unit,base_price,market_min,market_max,category,tags,synonyms,complexity,popularity_score,is_hidden,calc_default,special_type",
-        )
-        .eq("is_hidden", false)
-        .order("category", { ascending: true })
-        .order("popularity_score", { ascending: false });
-
-      if (error) throw error;
-      return (data || []).map((row) => mapCatalogRowToPreset(row as CatalogItemRow));
+      // Имитируем сетевую задержку для плавности UI, если необходимо
+      return defaultCatalogItems;
     },
   });
 }
@@ -216,17 +209,7 @@ export function useHiddenLineItemPresets() {
   return useQuery({
     queryKey: ["line-item-presets", "hidden"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("catalog_items")
-        .select(
-          "id,name,description,unit,base_price,market_min,market_max,category,tags,synonyms,complexity,popularity_score,is_hidden,calc_default,special_type",
-        )
-        .eq("is_hidden", true)
-        .order("category", { ascending: true })
-        .order("popularity_score", { ascending: false });
-
-      if (error) throw error;
-      return (data || []).map((row) => mapCatalogRowToPreset(row as CatalogItemRow));
+      return [];
     },
   });
 }

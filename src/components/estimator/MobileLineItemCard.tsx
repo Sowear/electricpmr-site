@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, Copy, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Copy, ChevronDown, ChevronUp, Edit2 } from "lucide-react";
 import { LineItem, LINE_ITEM_TYPES } from "@/types/estimator";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 import FieldWithTooltip from "./FieldWithTooltip";
@@ -30,12 +30,13 @@ interface MobileLineItemCardProps {
   onUpdate: (id: string, field: keyof LineItem, value: any) => void;
   onDelete: (id: string) => void;
   onDuplicate: (item: LineItem) => void;
+  onEdit: (item: LineItem) => void;
   readOnly?: boolean;
   hidePrices?: boolean;
 }
 
 const MobileLineItemCard = memo(({
-  item, index, onUpdate, onDelete, onDuplicate, readOnly, hidePrices,
+  item, index, onUpdate, onDelete, onDuplicate, onEdit, readOnly, hidePrices,
 }: MobileLineItemCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [localDescription, setLocalDescription] = useState(item.description);
@@ -152,11 +153,15 @@ const MobileLineItemCard = memo(({
           {!readOnly && (
             <div className="flex gap-2 pt-2">
               <Button variant="outline" size="sm" className="flex-1 h-10"
+                onClick={() => onEdit(item)}>
+                <Edit2 className="h-4 w-4 mr-1.5" /> Изменить
+              </Button>
+              <Button variant="outline" size="sm" className="flex-1 h-10"
                 onClick={() => onDuplicate(item)}>
-                <Copy className="h-4 w-4 mr-1.5" /> Дублировать
+                <Copy className="h-4 w-4 mr-1.5" /> Копия
               </Button>
               <Button variant="outline" size="sm"
-                className="h-10 text-destructive hover:text-destructive"
+                className="h-10 text-destructive hover:text-destructive shrink-0 px-3"
                 onClick={() => onDelete(item.id)}>
                 <Trash2 className="h-4 w-4" />
               </Button>

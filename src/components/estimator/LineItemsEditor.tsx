@@ -32,7 +32,8 @@ import {
   Copy, 
   GripVertical,
   Package,
-  Search
+  Search,
+  Edit2
 } from "lucide-react";
 import { 
   LineItem, 
@@ -120,6 +121,7 @@ interface LineItemRowProps {
   onUpdate: (id: string, field: keyof LineItem, value: LineItem[keyof LineItem]) => void;
   onDelete: (id: string) => void;
   onDuplicate: (item: LineItem) => void;
+  onEdit: (item: LineItem) => void;
   readOnly?: boolean;
   hidePrices?: boolean;
 }
@@ -129,6 +131,7 @@ const LineItemRow = memo(({
   onUpdate, 
   onDelete, 
   onDuplicate,
+  onEdit,
   readOnly,
   hidePrices,
 }: LineItemRowProps) => {
@@ -266,6 +269,10 @@ const LineItemRow = memo(({
         {!readOnly && (
           <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button variant="ghost" size="icon" className="h-7 w-7"
+              onClick={() => onEdit(item)} title="Редактировать">
+              <Edit2 className="h-3.5 w-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7"
               onClick={() => onDuplicate(item)} title="Дублировать">
               <Copy className="h-3.5 w-3.5" />
             </Button>
@@ -292,6 +299,17 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   const [presetUnitPrice, setPresetUnitPrice] = useState("0");
   const [estimationType, setEstimationType] = useState("piece");
   const [presetComment, setPresetComment] = useState("");
+  
+  // State for Edit Item Dialog
+  const [editingItem, setEditingItem] = useState<LineItem | null>(null);
+  const [editItemOpen, setEditItemOpen] = useState(false);
+  const [editDescription, setEditDescription] = useState("");
+  const [editQuantity, setEditQuantity] = useState("1");
+  const [editUnitPrice, setEditUnitPrice] = useState("0");
+  const [editType, setEditType] = useState("service");
+  const [editUnit, setEditUnit] = useState("шт");
+  const [editComment, setEditComment] = useState("");
+
   const isMobile = useIsMobile();
   
   const {
@@ -370,6 +388,33 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
     });
   }, [estimateId, addLineItem]);
 
+  const handleEditItem = useCallback((item: LineItem) => {
+    setEditingItem(item);
+    setEditDescription(item.description || "");
+    setEditQuantity(String(item.quantity || 0));
+    setEditUnitPrice(String(item.unit_price || 0));
+    setEditType(item.item_type || "service");
+    setEditUnit(item.unit || "шт");
+    setEditComment(item.comment || "");
+    setEditItemOpen(true);
+  }, []);
+
+  const handleSaveEditedItem = useCallback(() => {
+    if (!editingItem) return;
+    updateLineItem.mutate({
+      id: editingItem.id,
+      estimateId,
+      description: editDescription,
+      quantity: parseFloat(editQuantity) || 0,
+      unit_price: parseFloat(editUnitPrice) || 0,
+      item_type: editType,
+      unit: editUnit,
+      comment: editComment,
+    });
+    setEditItemOpen(false);
+    setEditingItem(null);
+  }, [editingItem, updateLineItem, estimateId, editDescription, editQuantity, editUnitPrice, editType, editUnit, editComment]);
+
   const itemCount = useMemo(() => lineItems.length, [lineItems.length]);
 
   return (
@@ -406,7 +451,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
             {lineItems.map((item, index) => (
               <MobileLineItemCard
                 key={item.id} item={item} index={index}
-                onUpdate={handleUpdateField} onDelete={handleDelete} onDuplicate={handleDuplicate}
+                onUpdate={handleUpdateField} onDelete={handleDelete} onDuplicate={handleDuplicate} onEdit={handleEditItem}
                 readOnly={readOnly} hidePrices={hidePrices}
               />
             ))}
@@ -435,7 +480,7 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
                   {lineItems.map((item) => (
                     <LineItemRow
                       key={item.id} item={item}
-                      onUpdate={handleUpdateField} onDelete={handleDelete} onDuplicate={handleDuplicate}
+                      onUpdate={handleUpdateField} onDelete={handleDelete} onDuplicate={handleDuplicate} onEdit={handleEditItem}
                       readOnly={readOnly} hidePrices={hidePrices}
                     />
                   ))}
@@ -635,6 +680,107 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
       </Dialog>
 
       <PresetManager open={presetManagerOpen} onOpenChange={setPresetManagerOpen} />
+
+      {/* Edit Line Item Dialog */}
+      <Dialog open={editItemOpen} onOpenChange={setEditItemOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Редактирование позиции</DialogTitle>
+          </DialogHeader>
+
+          {editingItem && (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <Label htmlFor="edit-desc">Описание *</Label>
+                <Input
+                  id="edit-desc"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="edit-type">Тип</Label>
+                  <Select value={editType} onValueChange={setEditType}>
+                    <SelectTrigger id="edit-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LINE_ITEM_TYPES.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="edit-unit">Ед. изм.</Label>
+                  <Select value={editUnit} onValueChange={setEditUnit}>
+                    <SelectTrigger id="edit-unit">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {UNITS.map((unit) => (
+                        <SelectItem key={unit.value} value={unit.value}>
+                          {unit.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="edit-quantity">Количество *</Label>
+                  <Input
+                    id="edit-quantity"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={editQuantity}
+                    onChange={(e) => setEditQuantity(e.target.value)}
+                  />
+                </div>
+                {!hidePrices && (
+                  <div className="space-y-1">
+                    <Label htmlFor="edit-price">Цена за единицу *</Label>
+                    <Input
+                      id="edit-price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={editUnitPrice}
+                      onChange={(e) => setEditUnitPrice(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="edit-comment">Комментарий</Label>
+                <Input
+                  id="edit-comment"
+                  value={editComment}
+                  onChange={(e) => setEditComment(e.target.value)}
+                  placeholder="Дополнительные условия..."
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditItemOpen(false)}>
+              Отмена
+            </Button>
+            <Button onClick={handleSaveEditedItem} disabled={!editDescription.trim() || updateLineItem.isPending}>
+              {updateLineItem.isPending ? "Сохранение..." : "Сохранить"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 });

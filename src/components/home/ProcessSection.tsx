@@ -1,4 +1,4 @@
-import { Phone, Search, Calculator, Wrench, BookOpen, Users, Broom, ArrowRight } from "lucide-react";
+import { Phone, Search, Calculator, Wrench, BookOpen, Users, Sparkles, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const steps = [
@@ -144,7 +144,7 @@ const ProcessSection = () => {
             </div>
             <div className="flex items-start gap-3">
               <div className="mt-1 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Broom className="h-4 w-4 text-primary" strokeWidth={2} aria-label="Аккуратная работа" />
+                <Sparkles className="h-4 w-4 text-primary" strokeWidth={2} aria-label="Аккуратная работа" />
               </div>
               <div>
                 <h4 className="font-semibold mb-1">Аккуратная работа</h4>

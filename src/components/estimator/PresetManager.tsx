@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -67,11 +66,8 @@ const splitCSV = (value: string) =>
 
 const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: PresetManagerProps) => {
   const { toast } = useToast();
-  const { data: catalogItems } = useLineItemPresets();
-  const { data: hiddenItems } = useHiddenLineItemPresets();
   const createCatalogItem = useCreateCatalogItem();
   const updateCatalogItem = useUpdateCatalogItem();
-  const hideCatalogItem = useHideCatalogItem();
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -201,53 +197,18 @@ const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: Preset
     onOpenChange(newOpen);
   };
 
-  const hideItem = (item: LineItemPreset) => {
-    hideCatalogItem.mutate(
-      { id: item.id, hidden: true },
-      {
-        onSuccess: () => {
-          toast({ title: `Позиция "${item.name}" скрыта` });
-        },
-        onError: (error) => {
-          toast({ title: "Ошибка", description: error.message, variant: "destructive" });
-        },
-      },
-    );
-  };
-
-  const restoreItem = (item: LineItemPreset) => {
-    hideCatalogItem.mutate(
-      { id: item.id, hidden: false },
-      {
-        onSuccess: () => {
-          toast({ title: `Позиция "${item.name}" восстановлена` });
-        },
-        onError: (error) => {
-          toast({ title: "Ошибка", description: error.message, variant: "destructive" });
-        },
-      },
-    );
-  };
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editingId ? "Редактирование позиции" : "Новая позиция каталога"}</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="active" className="space-y-4">
-          <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="active">Каталог</TabsTrigger>
-            <TabsTrigger value="hidden">Скрытые</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="active" className="space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label>Название *</Label>
-                <Input
-                  value={formData.name}
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+          <div>
+            <Label>Название *</Label>
+            <Input
+              value={formData.name}
                   onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder="Установка розетки"
                 />
@@ -388,66 +349,23 @@ const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: Preset
                 </Select>
               </div>
 
-              <div className="max-h-52 overflow-auto border rounded-md p-2 space-y-2">
-                {(catalogItems || []).slice(0, 30).map((item) => (
-                  <div key={item.id} className="flex items-center justify-between gap-2 rounded border p-2">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {CATEGORY_LABELS[item.category_key || item.category] || item.category} · {item.base_price ?? item.unit_price} руб
-                      </p>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button type="button" variant="outline" size="sm" onClick={() => startEdit(item)}>
-                        Изм.
-                      </Button>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => hideItem(item)}>
-                        Скрыть
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
-                  Отмена
-                </Button>
-                {editingId && (
-                  <Button type="button" variant="outline" onClick={resetForm}>
-                    Сбросить
-                  </Button>
-                )}
-                <Button type="submit" disabled={createCatalogItem.isPending || updateCatalogItem.isPending}>
-                  {(createCatalogItem.isPending || updateCatalogItem.isPending) && (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  )}
-                  {editingId ? "Сохранить" : "Создать"}
-                </Button>
-              </div>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="hidden" className="space-y-2">
-            <div className="max-h-[360px] overflow-auto border rounded-md p-2 space-y-2">
-              {(hiddenItems || []).length === 0 ? (
-                <p className="text-sm text-muted-foreground">Скрытых позиций нет</p>
-              ) : (
-                hiddenItems?.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between gap-2 rounded border p-2">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{CATEGORY_LABELS[item.category_key || item.category] || item.category}</p>
-                    </div>
-                    <Button type="button" variant="outline" size="sm" onClick={() => restoreItem(item)}>
-                      Восстановить
-                    </Button>
-                  </div>
-                ))
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+              Отмена
+            </Button>
+            {editingId && (
+              <Button type="button" variant="outline" onClick={resetForm}>
+                Сбросить
+              </Button>
+            )}
+            <Button type="submit" disabled={createCatalogItem.isPending || updateCatalogItem.isPending}>
+              {(createCatalogItem.isPending || updateCatalogItem.isPending) && (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               )}
-            </div>
-          </TabsContent>
-        </Tabs>
+              {editingId ? "Сохранить" : "Создать"}
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

@@ -1,4 +1,4 @@
-import { MessageSquare, ClipboardCheck, Wrench, BadgeCheck } from "lucide-react";
+import { MessageSquare, ClipboardCheck, FileText, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const containerVariants = {
@@ -26,7 +26,7 @@ const itemVariants = {
 const ProcessSection = () => {
   return (
     <section className="section-padding bg-background">
-      <div className="container-main max-w-4xl">
+      <div className="container-main max-w-5xl">
         <motion.div 
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
@@ -35,10 +35,10 @@ const ProcessSection = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-            Процесс работы без хаоса и сложностей
+            Как мы работаем: чёткий процесс без лишнего хаоса
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Понятная последовательность от первой заявки до гарантии. Строго контролируем каждый этап, делаем всё аккуратно и по нормам.
+            От заявки до сдачи — фиксируем объём, согласуем стоимость и держим всё под контролем. Без «сюрпризов» по ходу работ.
           </p>
         </motion.div>
         
@@ -49,92 +49,90 @@ const ProcessSection = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <MessageSquare className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Заявка</h3>
+            <h3 className="font-semibold mb-2">1. Заявка</h3>
             <p className="text-sm text-muted-foreground">
-              Вы оставляете заявку или связываетесь с нами. 
-              Уточняем задачу и ваши пожелания.
+              Связь с клиентом, уточнение задачи и первичная консультация.
             </p>
           </motion.div>
           
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <ClipboardCheck className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Диагностика</h3>
+            <h3 className="font-semibold mb-2">2. Осмотр и диагностика</h3>
             <p className="text-sm text-muted-foreground">
-              При необходимости выезжаем на осмотр. 
-              Даём чёткое техническое заключение.
+              Выезд на объект, детальная оценка состояния и подбор решения.
             </p>
           </motion.div>
           
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Wrench className="h-6 w-6 text-primary" />
+              <FileText className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Смета</h3>
+            <h3 className="font-semibold mb-2">3. Смета</h3>
             <p className="text-sm text-muted-foreground">
-              Составляем понятную смету без скрытых работ. 
-              Вы согласовываете стоимость.
+              Чёткий расчёт цены. Никаких скрытых работ и неожиданных доплат.
             </p>
           </motion.div>
           
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card">
+          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
             <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <BadgeCheck className="h-6 w-6 text-primary" />
+              <CheckCircle className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Гарантия</h3>
+            <h3 className="font-semibold mb-2">4. Выполнение и сдача</h3>
             <p className="text-sm text-muted-foreground">
-              Выполняем работу и предоставляем гарантию. 
-              Поддержка после сдачи проекта.
+              Проверка работоспособности, объяснение результатов и выдача гарантии.
             </p>
           </motion.div>
         </motion.div>
         
         <motion.div 
-          className="mt-12 bg-muted/30 rounded-xl p-6 border"
+          className="mt-12 bg-muted/30 rounded-xl p-6 md:p-8 border shadow-sm"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-sm">
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+              <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
               <div>
-                <h4 className="font-medium mb-1">Работаем по ПУЭ</h4>
-                <p className="text-muted-foreground">Все работы выполняются согласно правилам устройства электроустановок</p>
+                <h4 className="font-semibold mb-1">Работаем по ПУЭ</h4>
+                <p className="text-muted-foreground leading-relaxed">Всё делается строго по правилам устройства электроустановок, безопасность превыше всего.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+              <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
               <div>
-                <h4 className="font-medium mb-1">Без посредников</h4>
-                <p className="text-muted-foreground">Напрямую с вами, без передачи третьим лицам</p>
+                <h4 className="font-semibold mb-1">Без посредников</h4>
+                <p className="text-muted-foreground leading-relaxed">Личная ответственность за результат. Мы не передаём задачи третьим лицам.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+              <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
               <div>
-                <h4 className="font-medium mb-1">Аккуратная работа</h4>
-                <p className="text-muted-foreground">Чистота и порядок на объекте — наш приоритет</p>
+                <h4 className="font-semibold mb-1">Аккуратная работа</h4>
+                <p className="text-muted-foreground leading-relaxed">Чистота на объекте — наш приоритет. Бережно относимся к имуществу и убираем за собой.</p>
               </div>
             </div>
           </div>
           
-          <div className="mt-6 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="font-semibold text-lg">Работаем в Тирасполе, Слободзее, Бендерах, Днестровске, Григориополе</h3>
-              <p className="text-muted-foreground mt-1">
-                Если у вас задача по электрике — напишите нам, подскажем решение и сориентируем по стоимости
+          <div className="pt-8 border-t border-border flex flex-col lg:flex-row items-center justify-between gap-6 text-center lg:text-left">
+            <div className="max-w-3xl">
+              <h3 className="font-bold text-lg md:text-xl text-foreground">
+                Работаем в Тирасполе, Бендерах, Слободзее и по другим городам Приднестровья.
+              </h3>
+              <p className="text-muted-foreground mt-2 text-base">
+                Если есть задача по электрике — скажите, что нужно сделать, мы сразу сориентируем по решению и стоимости.
               </p>
             </div>
             <button 
               onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="h-12 px-6 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
+              className="h-12 px-8 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-all hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-md"
             >
               Оставить заявку
             </button>

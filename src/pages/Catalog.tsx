@@ -2,14 +2,16 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import PresetSearch from "@/components/estimator/PresetSearch";
 import PresetManager from "@/components/estimator/PresetManager";
 import { useLineItemPresets, useDeleteCatalogItem } from "@/hooks/useEstimates";
+import { useQueryClient } from "@tanstack/react-query";
 import { LineItemPreset } from "@/types/estimator";
 
 export default function Catalog() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [presetManagerOpen, setPresetManagerOpen] = useState(false);
   const [presetToEdit, setPresetToEdit] = useState<LineItemPreset | null>(null);
 
@@ -28,6 +30,14 @@ export default function Catalog() {
     }
   };
 
+  const handleResetCatalog = () => {
+    if (confirm("Вы уверены, что хотите сбросить каталог до заводских настроек? Все ваши ручные изменения и добавленные позиции будут удалены, а цены обновятся из базы.")) {
+      localStorage.removeItem("estimate_catalog_items");
+      queryClient.invalidateQueries({ queryKey: ["catalog_items"] });
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
@@ -43,6 +53,10 @@ export default function Catalog() {
             </Button>
             <h1 className="text-xl font-semibold">Управление каталогом</h1>
           </div>
+          <Button variant="outline" size="sm" onClick={handleResetCatalog} className="text-muted-foreground hover:text-foreground">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Сбросить цены
+          </Button>
         </div>
       </header>
 

@@ -8,4 +8,4 @@ Disallow: /projects
 Disallow: /estimator
 Disallow: /admin
 
-Sitemap: https://electricpmr.vercel.app/sitemap.xml
+Sitemap: https://electricpmr.vercel.app/sitemap_v2.xml

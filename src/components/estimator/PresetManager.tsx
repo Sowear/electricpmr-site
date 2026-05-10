@@ -35,8 +35,29 @@ interface PresetManagerProps {
   onCloseEdit?: () => void;
 }
 
-const CATEGORIES = ["sockets", "lighting", "cable", "panels", "outdoor", "additional", "other"];
+const CATEGORY_LABELS: Record<string, string> = {
+  sockets: "Розетки",
+  lighting: "Освещение",
+  cable: "Кабель",
+  panels: "Щиты",
+  outdoor: "Улица",
+  additional: "Дополнительно",
+  other: "Прочее",
+};
+const CATEGORIES = Object.keys(CATEGORY_LABELS);
+
 const UNITS = ["шт", "м", "м²", "точка", "линия", "объект", "комплект", "%", "договорная", "услуга"];
+
+const ESTIMATION_TYPES = [
+  { value: "piece", label: "Штука" },
+  { value: "meter", label: "Метр" },
+  { value: "point", label: "Точка" },
+  { value: "line", label: "Линия" },
+  { value: "object", label: "Объект" },
+  { value: "set", label: "Комплект" },
+  { value: "percent", label: "Процент" },
+  { value: "contract", label: "Договорная" },
+];
 
 const splitCSV = (value: string) =>
   value
@@ -252,7 +273,7 @@ const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: Preset
                     <SelectContent>
                       {CATEGORIES.map((cat) => (
                         <SelectItem key={cat} value={cat}>
-                          {cat}
+                          {CATEGORY_LABELS[cat] || cat}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -285,9 +306,9 @@ const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: Preset
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="low">low</SelectItem>
-                      <SelectItem value="medium">medium</SelectItem>
-                      <SelectItem value="high">high</SelectItem>
+                      <SelectItem value="low">Низкая</SelectItem>
+                      <SelectItem value="medium">Средняя</SelectItem>
+                      <SelectItem value="high">Высокая</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -353,10 +374,18 @@ const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: Preset
 
               <div>
                 <Label>Тип расчета</Label>
-                <Input
-                  value={formData.calc_default}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, calc_default: e.target.value }))}
-                />
+                <Select value={formData.calc_default} onValueChange={(v) => setFormData((prev) => ({ ...prev, calc_default: v }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ESTIMATION_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="max-h-52 overflow-auto border rounded-md p-2 space-y-2">
@@ -365,7 +394,7 @@ const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: Preset
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{item.name}</p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {item.category} · {item.base_price ?? item.unit_price} руб
+                        {CATEGORY_LABELS[item.category_key || item.category] || item.category} · {item.base_price ?? item.unit_price} руб
                       </p>
                     </div>
                     <div className="flex gap-1">
@@ -408,7 +437,7 @@ const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: Preset
                   <div key={item.id} className="flex items-center justify-between gap-2 rounded border p-2">
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{item.category}</p>
+                      <p className="text-xs text-muted-foreground truncate">{CATEGORY_LABELS[item.category_key || item.category] || item.category}</p>
                     </div>
                     <Button type="button" variant="outline" size="sm" onClick={() => restoreItem(item)}>
                       Восстановить

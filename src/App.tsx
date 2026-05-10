@@ -35,6 +35,7 @@ const AdminFinanceSettings = lazy(() => import("./pages/AdminFinanceSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CityLanding = lazy(() => import("./pages/CityLanding"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Catalog = lazy(() => import("./pages/Catalog"));
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/projects/:projectId/finance/payouts" element={<LazyComponent Component={ProjectPayouts} />} />
           <Route path="/estimator" element={<LazyComponent Component={Estimator} />} />
           <Route path="/estimator/:id" element={<LazyComponent Component={EstimatorEdit} />} />
+          <Route path="/catalog" element={<LazyComponent Component={Catalog} />} />
           <Route path="/admin/finance-settings" element={<LazyComponent Component={AdminFinanceSettings} />} />
           <Route path="/uslugi" element={<LazyComponent Component={Features} />} />
           <Route path="/stoimost" element={<LazyComponent Component={Pricing} />} />

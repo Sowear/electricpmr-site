@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   FolderOpen, Phone, Globe, MessageSquare,
   Instagram, Users, MoreHorizontal, Loader2, Info,
-  Plus, FileText, Search,
+  Plus, FileText, Search, Package,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -128,6 +128,12 @@ const Projects = () => {
                 <FileText className="h-4 w-4 mr-2" />
                 Все сметы
               </Button>
+              {canManageEstimates && (
+                <Button variant="outline" onClick={() => navigate('/catalog')} className="w-full sm:w-auto border-dashed hover:border-primary">
+                  <Package className="h-4 w-4 mr-2" />
+                  Каталог
+                </Button>
+              )}
             </div>
           </div>
 

@@ -363,6 +363,28 @@ export function useHideCatalogItem() {
   });
 }
 
+export function useDeleteCatalogItem() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const catalog = getLocalCatalog();
+      const updatedCatalog = catalog.filter(i => i.id !== id);
+      saveLocalCatalog(updatedCatalog);
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["line-item-presets"] });
+      queryClient.invalidateQueries({ queryKey: ["line-item-presets", "hidden"] });
+      toast({ title: "Позиция удалена из каталога" });
+    },
+    onError: (error) => {
+      toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    },
+  });
+}
+
 export function useCreateEstimate() {
   const queryClient = useQueryClient();
   const { toast } = useToast();

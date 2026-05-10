@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus, Package, Star, History, Zap, Wrench, Loader2, Edit2 } from "lucide-react";
+import { Search, Plus, Package, Star, History, Zap, Wrench, Loader2, Edit2, Trash2 } from "lucide-react";
 import { LineItemPreset } from "@/types/estimator";
 
 const LS_FAVORITES_KEY = "estimate_catalog_favorites";
@@ -17,7 +17,18 @@ interface PresetSearchProps {
   onSelect: (preset: LineItemPreset) => void;
   onAddNew?: () => void;
   onEditPreset?: (preset: LineItemPreset) => void;
+  onDeletePreset?: (id: string) => void;
 }
+
+const CATEGORY_LABELS: Record<string, string> = {
+  sockets: "Розетки",
+  lighting: "Освещение",
+  cable: "Кабель",
+  panels: "Щиты",
+  outdoor: "Улица",
+  additional: "Дополнительно",
+  other: "Прочее",
+};
 
 const FILTERS = [
   { key: "all", label: "Все" },
@@ -153,7 +164,7 @@ const highlightMatch = (text: string, query: string) => {
   );
 };
 
-const PresetSearch = ({ presets, isLoading, isError, errorMessage, onSelect, onAddNew, onEditPreset }: PresetSearchProps) => {
+const PresetSearch = ({ presets, isLoading, isError, errorMessage, onSelect, onAddNew, onEditPreset, onDeletePreset }: PresetSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const [favorites, setFavorites] = useState<string[]>(() => readFromLS(LS_FAVORITES_KEY));
@@ -331,6 +342,19 @@ const PresetSearch = ({ presets, isLoading, isError, errorMessage, onSelect, onA
                                 <Edit2 className="h-4 w-4" />
                               </button>
                             )}
+                            {onDeletePreset && (
+                              <button
+                                type="button"
+                                className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onDeletePreset(preset.id);
+                                }}
+                                title="Удалить позицию"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
                             <button
                               type="button"
                               className="p-1.5 rounded hover:bg-muted transition-colors"
@@ -382,7 +406,7 @@ const PresetSearch = ({ presets, isLoading, isError, errorMessage, onSelect, onA
 
                         <div className="flex justify-between items-center pt-2">
                           <Badge variant="outline" className="text-[11px]">
-                            {preset.category}
+                            {CATEGORY_LABELS[preset.category_key || preset.category] || preset.category}
                           </Badge>
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Zap className="h-3.5 w-3.5" /> {preset.popularity_score || 0}

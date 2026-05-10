@@ -1,6 +1,33 @@
 import { MessageSquare, ClipboardCheck, FileText, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
+const steps = [
+  {
+    number: "01",
+    icon: MessageSquare,
+    title: "Заявка",
+    description: "Связь с клиентом, уточнение задачи.",
+  },
+  {
+    number: "02",
+    icon: ClipboardCheck,
+    title: "Осмотр / диагностика",
+    description: "Оцениваем объём и предлагаем решение.",
+  },
+  {
+    number: "03",
+    icon: FileText,
+    title: "Смета",
+    description: "Чёткая цена без скрытых работ.",
+  },
+  {
+    number: "04",
+    icon: CheckCircle,
+    title: "Выполнение и сдача",
+    description: "Проверка, объяснение и выдача гарантии.",
+  },
+];
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -11,33 +38,36 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-    },
-  },
-};
-
 const ProcessSection = () => {
   return (
-    <section className="section-padding bg-background">
-      <div className="container-main max-w-5xl">
+    <section className="section-padding bg-background relative overflow-hidden">
+      {/* Schematic background pattern from the old block */}
+      <div className="absolute inset-0 opacity-[0.08] dark:opacity-[0.12] pointer-events-none text-foreground">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="schematic-hw" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="currentColor" strokeWidth="0.5" />
+              <circle cx="50" cy="50" r="2.5" fill="none" stroke="currentColor" strokeWidth="1" />
+              <path d="M 45 50 h 10 M 50 45 v 10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M 0 100 L 20 80 L 80 80 L 100 60" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#schematic-hw)" />
+        </svg>
+      </div>
+
+      <div className="container-main max-w-5xl relative z-10">
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 glitch-text">
             Как мы работаем: чёткий процесс без лишнего хаоса
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             От заявки до сдачи — фиксируем объём, согласуем стоимость и держим всё под контролем. Без «сюрпризов» по ходу работ.
           </p>
         </motion.div>
@@ -49,49 +79,41 @@ const ProcessSection = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <MessageSquare className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold mb-2">1. Заявка</h3>
-            <p className="text-sm text-muted-foreground">
-              Связь с клиентом, уточнение задачи и первичная консультация.
-            </p>
-          </motion.div>
-          
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <ClipboardCheck className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold mb-2">2. Осмотр и диагностика</h3>
-            <p className="text-sm text-muted-foreground">
-              Выезд на объект, детальная оценка состояния и подбор решения.
-            </p>
-          </motion.div>
-          
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <FileText className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold mb-2">3. Смета</h3>
-            <p className="text-sm text-muted-foreground">
-              Чёткий расчёт цены. Никаких скрытых работ и неожиданных доплат.
-            </p>
-          </motion.div>
-          
-          <motion.div variants={itemVariants} className="flex flex-col items-center text-center p-5 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <CheckCircle className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold mb-2">4. Выполнение и сдача</h3>
-            <p className="text-sm text-muted-foreground">
-              Проверка работоспособности, объяснение результатов и выдача гарантии.
-            </p>
-          </motion.div>
+          {steps.map((step, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ delay: index * 0.15, duration: 0.6 }}
+              className="relative group"
+            >
+              <div className="card-glass h-full p-6 relative">
+                <div className="mb-6 flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+                    <step.icon className="h-6 w-6" />
+                  </div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0.3, color: "hsl(var(--muted-foreground))" }}
+                    whileInView={{ opacity: 1, color: "hsl(var(--primary))", textShadow: "0 0 10px hsl(var(--primary))" }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ delay: index * 0.2 + 0.4 }}
+                    className="text-4xl font-display font-bold"
+                  >
+                    {step.number}
+                  </motion.div>
+                </div>
+                <h3 className="font-semibold text-lg mb-2 relative z-10">{step.title}</h3>
+                <p className="text-sm text-muted-foreground relative z-10">{step.description}</p>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
         
+        {/* Trust block & CTA integrated */}
         <motion.div 
-          className="mt-12 bg-muted/30 rounded-xl p-6 md:p-8 border shadow-sm"
+          className="mt-12 bg-muted/30 rounded-xl p-6 md:p-8 border shadow-sm relative z-10"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
@@ -122,17 +144,17 @@ const ProcessSection = () => {
           </div>
           
           <div className="pt-8 border-t border-border flex flex-col lg:flex-row items-center justify-between gap-6 text-center lg:text-left">
-            <div className="max-w-3xl">
+            <div className="max-w-2xl">
               <h3 className="font-bold text-lg md:text-xl text-foreground">
-                Работаем в Тирасполе, Бендерах, Слободзее и по другим городам Приднестровья.
+                Работаем в Тирасполе, Бендерах, Слободзее и по всему Приднестровью.
               </h3>
               <p className="text-muted-foreground mt-2 text-base">
-                Если есть задача по электрике — скажите, что нужно сделать, мы сразу сориентируем по решению и стоимости.
+                Расскажите, что нужно сделать — мы бесплатно проконсультируем, оценим объём и сразу сориентируем по точной стоимости.
               </p>
             </div>
             <button 
               onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="h-12 px-8 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-all hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-md"
+              className="h-14 px-8 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-md"
             >
               Оставить заявку
             </button>

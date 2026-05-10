@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,8 @@ import { LineItemPreset } from "@/types/estimator";
 interface PresetManagerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  presetToEdit?: LineItemPreset | null;
+  onCloseEdit?: () => void;
 }
 
 const CATEGORIES = ["sockets", "lighting", "cable", "panels", "outdoor", "additional", "other"];
@@ -42,7 +44,7 @@ const splitCSV = (value: string) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-const PresetManager = ({ open, onOpenChange }: PresetManagerProps) => {
+const PresetManager = ({ open, onOpenChange, presetToEdit, onCloseEdit }: PresetManagerProps) => {
   const { toast } = useToast();
   const { data: catalogItems } = useLineItemPresets();
   const { data: hiddenItems } = useHiddenLineItemPresets();
@@ -164,6 +166,20 @@ const PresetManager = ({ open, onOpenChange }: PresetManagerProps) => {
     });
   };
 
+  useEffect(() => {
+    if (presetToEdit && open) {
+      startEdit(presetToEdit);
+    }
+  }, [presetToEdit, open]);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      resetForm();
+      if (onCloseEdit) onCloseEdit();
+    }
+    onOpenChange(newOpen);
+  };
+
   const hideItem = (item: LineItemPreset) => {
     hideCatalogItem.mutate(
       { id: item.id, hidden: true },
@@ -193,7 +209,7 @@ const PresetManager = ({ open, onOpenChange }: PresetManagerProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{editingId ? "Редактирование позиции" : "Новая позиция каталога"}</DialogTitle>
@@ -365,7 +381,7 @@ const PresetManager = ({ open, onOpenChange }: PresetManagerProps) => {
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
                   Отмена
                 </Button>
                 {editingId && (

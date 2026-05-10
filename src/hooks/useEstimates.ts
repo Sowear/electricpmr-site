@@ -195,12 +195,31 @@ export function useEstimate(id: string | undefined) {
 
 import { defaultCatalogItems } from "@/data/catalog";
 
+const LS_CATALOG_KEY = "estimate_catalog_items";
+
+const getLocalCatalog = (): LineItemPreset[] => {
+  if (typeof window === "undefined") return defaultCatalogItems;
+  try {
+    const raw = window.localStorage.getItem(LS_CATALOG_KEY);
+    if (!raw) return defaultCatalogItems;
+    return JSON.parse(raw);
+  } catch {
+    return defaultCatalogItems;
+  }
+};
+
+const saveLocalCatalog = (items: LineItemPreset[]) => {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(LS_CATALOG_KEY, JSON.stringify(items));
+  }
+};
+
 export function useLineItemPresets() {
   return useQuery({
     queryKey: ["line-item-presets"],
     queryFn: async () => {
-      // Имитируем сетевую задержку для плавности UI, если необходимо
-      return defaultCatalogItems;
+      const items = getLocalCatalog();
+      return items.filter(item => item.is_active !== false);
     },
   });
 }
@@ -209,7 +228,8 @@ export function useHiddenLineItemPresets() {
   return useQuery({
     queryKey: ["line-item-presets", "hidden"],
     queryFn: async () => {
-      return [];
+      const items = getLocalCatalog();
+      return items.filter(item => item.is_active === false);
     },
   });
 }
@@ -225,27 +245,39 @@ export function useCreateCatalogItem() {
 
       const marketMin = item.market_min ?? Math.round(item.base_price * 0.7);
       const marketMax = item.market_max ?? Math.round(item.base_price * 1.3);
-      if (marketMin > marketMax) throw new Error("Минимальная рыночная цена не может быть больше максимальной");
 
-      const payload: CatalogItemInsert = {
+      const newItem: LineItemPreset = {
+        id: "cat-item-" + Date.now(),
         name: item.name.trim(),
         description: item.description,
+        item_type: "service",
         unit: item.unit,
+        quantity: 1,
+        unit_price: item.base_price,
         base_price: item.base_price,
+        labor_hours: 0,
+        labor_rate: 0,
+        cost_price: 0,
+        markup_pct: 0,
         market_min: marketMin,
         market_max: marketMax,
         category: item.category,
+        category_key: normalizeCategoryKey(item.category),
         tags: item.tags || [],
         synonyms: item.synonyms || [],
+        keywords: [...(item.tags || []), ...(item.synonyms || [])],
         complexity: item.complexity || "low",
         popularity_score: item.popularity_score || 0,
-        calc_default: item.calc_default || null,
-        special_type: item.special_type || null,
+        popular: (item.popularity_score || 0) >= 8,
+        calc_default: item.calc_default || "piece",
+        special_type: item.special_type || undefined,
+        source: "custom",
+        is_active: true
       };
 
-      const { data, error } = await supabase.from("catalog_items").insert(payload).select("id").single();
-      if (error) throw error;
-      return data;
+      const catalog = getLocalCatalog();
+      saveLocalCatalog([newItem, ...catalog]);
+      return newItem.id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["line-item-presets"] });
@@ -267,37 +299,32 @@ export function useUpdateCatalogItem() {
       if (updates.name !== undefined && !updates.name.trim()) {
         throw new Error("Название позиции обязательно");
       }
-      if (updates.base_price !== undefined && updates.base_price < 0) {
-        throw new Error("Цена не может быть отрицательной");
-      }
-      if (
-        updates.market_min !== undefined &&
-        updates.market_max !== undefined &&
-        updates.market_min !== null &&
-        updates.market_max !== null &&
-        updates.market_min > updates.market_max
-      ) {
-        throw new Error("Минимальная рыночная цена не может быть больше максимальной");
-      }
 
-      const payload: CatalogItemUpdate = {
-        name: updates.name?.trim(),
-        description: updates.description,
-        unit: updates.unit,
-        base_price: updates.base_price,
-        market_min: updates.market_min,
-        market_max: updates.market_max,
-        category: updates.category,
-        tags: updates.tags,
-        synonyms: updates.synonyms,
-        complexity: updates.complexity,
-        popularity_score: updates.popularity_score,
-        calc_default: updates.calc_default,
-        special_type: updates.special_type,
+      const catalog = getLocalCatalog();
+      const index = catalog.findIndex(i => i.id === id);
+      if (index === -1) throw new Error("Позиция не найдена");
+
+      const item = catalog[index];
+      catalog[index] = {
+        ...item,
+        name: updates.name?.trim() ?? item.name,
+        description: updates.description ?? item.description,
+        unit: updates.unit ?? item.unit,
+        base_price: updates.base_price ?? item.base_price,
+        unit_price: updates.base_price ?? item.unit_price,
+        market_min: updates.market_min ?? item.market_min,
+        market_max: updates.market_max ?? item.market_max,
+        category: updates.category ?? item.category,
+        category_key: updates.category ? normalizeCategoryKey(updates.category) : item.category_key,
+        tags: updates.tags ?? item.tags,
+        synonyms: updates.synonyms ?? item.synonyms,
+        complexity: updates.complexity ?? item.complexity,
+        popularity_score: updates.popularity_score ?? item.popularity_score,
+        calc_default: updates.calc_default ?? item.calc_default,
+        special_type: updates.special_type ?? item.special_type,
       };
 
-      const { error } = await supabase.from("catalog_items").update(payload).eq("id", id);
-      if (error) throw error;
+      saveLocalCatalog(catalog);
       return id;
     },
     onSuccess: () => {
@@ -317,14 +344,18 @@ export function useHideCatalogItem() {
 
   return useMutation({
     mutationFn: async ({ id, hidden }: { id: string; hidden: boolean }) => {
-      const { error } = await supabase.from("catalog_items").update({ is_hidden: hidden }).eq("id", id);
-      if (error) throw error;
+      const catalog = getLocalCatalog();
+      const index = catalog.findIndex(i => i.id === id);
+      if (index !== -1) {
+        catalog[index].is_active = !hidden;
+        saveLocalCatalog(catalog);
+      }
       return id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["line-item-presets"] });
       queryClient.invalidateQueries({ queryKey: ["line-item-presets", "hidden"] });
-      toast({ title: "Позиция обновлена" });
+      toast({ title: "Статус позиции обновлен" });
     },
     onError: (error) => {
       toast({ title: "Ошибка", description: error.message, variant: "destructive" });

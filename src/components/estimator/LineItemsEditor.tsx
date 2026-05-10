@@ -310,6 +310,8 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
   const [editUnit, setEditUnit] = useState("шт");
   const [editComment, setEditComment] = useState("");
 
+  const [presetToEdit, setPresetToEdit] = useState<LineItemPreset | null>(null);
+
   const isMobile = useIsMobile();
   
   const {
@@ -541,6 +543,10 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
                   errorMessage={presetsErrorObject instanceof Error ? presetsErrorObject.message : undefined}
                   onSelect={handleAddPreset}
                   onAddNew={() => setPresetManagerOpen(true)}
+                  onEditPreset={(preset) => {
+                    setPresetToEdit(preset);
+                    setPresetManagerOpen(true);
+                  }}
                 />
               </div>
             </TabsContent>
@@ -679,7 +685,12 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
         </DialogContent>
       </Dialog>
 
-      <PresetManager open={presetManagerOpen} onOpenChange={setPresetManagerOpen} />
+      <PresetManager 
+        open={presetManagerOpen} 
+        onOpenChange={setPresetManagerOpen} 
+        presetToEdit={presetToEdit}
+        onCloseEdit={() => setPresetToEdit(null)}
+      />
 
       {/* Edit Line Item Dialog */}
       <Dialog open={editItemOpen} onOpenChange={setEditItemOpen}>

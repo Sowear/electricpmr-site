@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus, Package, Star, History, Zap, Wrench, Loader2 } from "lucide-react";
+import { Search, Plus, Package, Star, History, Zap, Wrench, Loader2, Edit2 } from "lucide-react";
 import { LineItemPreset } from "@/types/estimator";
 
 const LS_FAVORITES_KEY = "estimate_catalog_favorites";
@@ -16,6 +16,7 @@ interface PresetSearchProps {
   errorMessage?: string;
   onSelect: (preset: LineItemPreset) => void;
   onAddNew?: () => void;
+  onEditPreset?: (preset: LineItemPreset) => void;
 }
 
 const FILTERS = [
@@ -152,7 +153,7 @@ const highlightMatch = (text: string, query: string) => {
   );
 };
 
-const PresetSearch = ({ presets, isLoading, isError, errorMessage, onSelect, onAddNew }: PresetSearchProps) => {
+const PresetSearch = ({ presets, isLoading, isError, errorMessage, onSelect, onAddNew, onEditPreset }: PresetSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const [favorites, setFavorites] = useState<string[]>(() => readFromLS(LS_FAVORITES_KEY));
@@ -306,26 +307,42 @@ const PresetSearch = ({ presets, isLoading, isError, errorMessage, onSelect, onA
                     <button
                       key={preset.id}
                       type="button"
-                      className={`h-full min-h-[210px] text-left p-4 rounded-lg border transition-colors ${
+                      className={`h-full min-h-[210px] text-left p-4 rounded-xl border transition-all duration-300 shadow-sm hover:shadow-md relative group/card overflow-hidden ${
                         isSpecial
-                          ? "border-amber-400/50 bg-amber-500/5 hover:border-amber-500"
-                          : "border-border hover:border-primary hover:bg-primary/5"
+                          ? "border-amber-400/50 bg-gradient-to-br from-amber-500/5 to-amber-500/10 hover:border-amber-500"
+                          : "border-border hover:border-primary/50 bg-gradient-to-br from-background to-muted/20 hover:to-primary/5"
                       }`}
                       onClick={() => selectPreset(preset)}
                     >
-                      <div className="flex h-full flex-col gap-2">
+                      <div className="flex h-full flex-col gap-2 relative z-10">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="font-medium text-base leading-6">{highlightMatch(preset.name, searchQuery)}</p>
-                          <button
-                            type="button"
-                            className="shrink-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleFavorite(preset.id);
-                            }}
-                          >
-                            <Star className={`h-4 w-4 ${isFavorite ? "fill-current text-yellow-500" : "text-muted-foreground"}`} />
-                          </button>
+                          <p className="font-semibold text-[15px] leading-snug">{highlightMatch(preset.name, searchQuery)}</p>
+                          <div className="flex items-center gap-1 shrink-0 bg-background/50 backdrop-blur rounded-md p-0.5">
+                            {onEditPreset && (
+                              <button
+                                type="button"
+                                className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onEditPreset(preset);
+                                }}
+                                title="Редактировать позицию"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              className="p-1.5 rounded hover:bg-muted transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(preset.id);
+                              }}
+                              title={isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                            >
+                              <Star className={`h-4 w-4 ${isFavorite ? "fill-current text-yellow-500" : "text-muted-foreground hover:text-foreground"}`} />
+                            </button>
+                          </div>
                         </div>
 
                         <p className="text-sm text-muted-foreground leading-5">{highlightMatch(preset.description || "", searchQuery)}</p>

@@ -192,12 +192,12 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
 
               <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
                 {[
-                  { icon: Calculator, label: "Расчёт", value: "до начала" },
-                  { icon: ShieldCheck, label: "Гарантия", value: "на работы" },
-                  { icon: CheckCircle2, label: "Проверка", value: "после монтажа" },
+                  { icon: Calculator, label: "Расчёт", value: "до начала", ariaLabel: "Расчёт" },
+                  { icon: ShieldCheck, label: "Гарантия", value: "на работы", ariaLabel: "Гарантия" },
+                  { icon: CheckCircle2, label: "Проверка", value: "после монтажа", ariaLabel: "Проверка" },
                 ].map((item) => (
                   <div key={item.label} className="card-engineering bg-card/80 p-3 sm:p-4">
-                    <item.icon className="mb-2 sm:mb-3 h-5 w-5 text-primary" />
+                    <item.icon className="mb-2 sm:mb-3 h-5 w-5 text-primary" strokeWidth={2} aria-label={item.ariaLabel} />
                     <div className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">{item.label}</div>
                     <div className="font-display text-sm sm:text-lg font-bold leading-tight text-foreground">{item.value}</div>
                   </div>
@@ -211,13 +211,13 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
                 {content.isEmergency ? (
                   <Button size="lg" variant="destructive" asChild className="h-14 px-8 text-base">
                     <a href="tel:+37377746642">
-                      <AlertTriangle className="h-5 w-5 mr-2" /> Срочный выезд
+                      <AlertTriangle className="h-5 w-5 mr-2" strokeWidth={2} aria-hidden="true" /> Срочный выезд
                     </a>
                   </Button>
                 ) : (
                   <Button size="lg" variant="outline" asChild className="h-14 px-8 text-base border-primary/20 hover:bg-primary/5">
                     <a href="tel:+37377746642">
-                      <Phone className="h-5 w-5 mr-2 text-primary" /> Позвонить
+                      <Phone className="h-5 w-5 mr-2 text-primary" strokeWidth={2} aria-hidden="true" /> Позвонить
                     </a>
                   </Button>
                 )}
@@ -226,7 +226,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
               {/* Work Areas */}
               <div className="card-engineering bg-card/85 p-5">
                 <div className="flex items-center gap-3 text-sm text-foreground/80 font-medium">
-                  <MapPin className="h-5 w-5 text-primary shrink-0" />
+                  <MapPin className="h-5 w-5 text-primary shrink-0" strokeWidth={2} aria-hidden="true" />
                   <span>Работаем: Тирасполь, Бендеры, Слободзея и районы.</span>
                 </div>
               </div>
@@ -239,7 +239,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
                 <div className="tech-grid absolute inset-0 text-foreground/[0.04] [background-size:34px_34px]" />
                 <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-primary/15 blur-3xl" />
                 <h3 className="relative font-display text-xl font-semibold mb-4 flex items-center gap-2">
-                  <Calculator className="h-5 w-5 text-primary" />
+                  <Calculator className="h-5 w-5 text-primary" strokeWidth={2} aria-hidden="true" />
                   Цена и расчет
                 </h3>
                 <div className="relative text-4xl font-bold text-foreground mb-3">
@@ -260,13 +260,13 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
               {/* What's Included */}
               <div className="card-engineering p-6 md:p-8">
                 <h3 className="font-display text-xl font-semibold mb-5 flex items-center gap-2">
-                  <Wrench className="h-5 w-5 text-primary" />
+                  <Wrench className="h-5 w-5 text-primary" strokeWidth={2} aria-hidden="true" />
                   Что входит в услугу
                 </h3>
                 <ul className="space-y-3">
                   {content.includes.map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" strokeWidth={2} aria-hidden="true" />
                       <span className="text-foreground/90">{item}</span>
                     </li>
                   ))}
@@ -280,7 +280,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
              {/* Timeline Card */}
              <div className="card-engineering p-6">
                 <h3 className="font-display text-lg font-semibold mb-3 flex items-center gap-2">
-                  <Clock3 className="h-5 w-5 text-primary" />
+                  <Clock3 className="h-5 w-5 text-primary" strokeWidth={2} aria-hidden="true" />
                   Сроки работы
                 </h3>
                 <p className="text-muted-foreground">{content.timeline}</p>
@@ -289,7 +289,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
               {/* Common Faults */}
               <div className="card-engineering p-6 border-destructive/20 bg-destructive/5">
                 <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-2 text-destructive">
-                  <AlertTriangle className="h-5 w-5" />
+                  <AlertTriangle className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
                   Частые проблемы (когда вызывать)
                 </h3>
                 <ul className="space-y-2">

@@ -1,30 +1,34 @@
-import { MessageSquare, ClipboardCheck, FileText, CheckCircle } from "lucide-react";
+import { Phone, Search, Calculator, Wrench, BookOpen, Users, Broom, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const steps = [
   {
     number: "01",
-    icon: MessageSquare,
+    icon: Phone,
     title: "Заявка",
     description: "Связь с клиентом, уточнение задачи.",
+    ariaLabel: "Заявка",
   },
   {
     number: "02",
-    icon: ClipboardCheck,
+    icon: Search,
     title: "Осмотр / диагностика",
     description: "Оцениваем объём и предлагаем решение.",
+    ariaLabel: "Диагностика",
   },
   {
     number: "03",
-    icon: FileText,
+    icon: Calculator,
     title: "Смета",
     description: "Чёткая цена без скрытых работ.",
+    ariaLabel: "Смета",
   },
   {
     number: "04",
-    icon: CheckCircle,
+    icon: Wrench,
     title: "Выполнение и сдача",
     description: "Проверка, объяснение и выдача гарантии.",
+    ariaLabel: "Выполнение",
   },
 ];
 
@@ -41,7 +45,7 @@ const containerVariants = {
 const ProcessSection = () => {
   return (
     <section className="section-padding bg-background relative overflow-hidden">
-      {/* Schematic background pattern from the old block */}
+      {/* Schematic background pattern */}
       <div className="absolute inset-0 opacity-[0.08] dark:opacity-[0.12] pointer-events-none text-foreground">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -91,7 +95,7 @@ const ProcessSection = () => {
               <div className="card-glass h-full p-6 relative">
                 <div className="mb-6 flex items-center justify-between">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
-                    <step.icon className="h-6 w-6" />
+                    <step.icon className="h-6 w-6" strokeWidth={2} aria-label={step.ariaLabel} />
                   </div>
                   
                   <motion.div 
@@ -121,21 +125,27 @@ const ProcessSection = () => {
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-sm">
             <div className="flex items-start gap-3">
-              <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+              <div className="mt-1 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <BookOpen className="h-4 w-4 text-primary" strokeWidth={2} aria-label="Работа по ПУЭ" />
+              </div>
               <div>
                 <h4 className="font-semibold mb-1">Работаем по ПУЭ</h4>
                 <p className="text-muted-foreground leading-relaxed">Всё делается строго по правилам устройства электроустановок, безопасность превыше всего.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+              <div className="mt-1 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Users className="h-4 w-4 text-primary" strokeWidth={2} aria-label="Без посредников" />
+              </div>
               <div>
                 <h4 className="font-semibold mb-1">Без посредников</h4>
                 <p className="text-muted-foreground leading-relaxed">Личная ответственность за результат. Мы не передаём задачи третьим лицам.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+              <div className="mt-1 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Broom className="h-4 w-4 text-primary" strokeWidth={2} aria-label="Аккуратная работа" />
+              </div>
               <div>
                 <h4 className="font-semibold mb-1">Аккуратная работа</h4>
                 <p className="text-muted-foreground leading-relaxed">Чистота на объекте — наш приоритет. Бережно относимся к имуществу и убираем за собой.</p>
@@ -154,9 +164,10 @@ const ProcessSection = () => {
             </div>
             <button 
               onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="h-14 px-8 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-md"
+              className="group h-14 px-8 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-md flex items-center gap-2 mx-auto lg:mx-0"
             >
               Оставить заявку
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} aria-hidden="true" />
             </button>
           </div>
         </motion.div>

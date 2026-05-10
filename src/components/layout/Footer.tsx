@@ -28,7 +28,7 @@ const Footer = () => {
           <div className="md:col-span-2">
             <Link to="/" className="mb-4 flex items-center gap-3 font-display text-xl font-bold">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <Zap className="h-5 w-5 text-primary-foreground" />
+                <Zap className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
               </div>
               <span>ЭлектроМастер</span>
             </Link>
@@ -103,15 +103,15 @@ const Footer = () => {
             <h4 className="mb-4 font-display font-semibold">Контакты</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary" />
+                <Phone className="h-4 w-4 text-primary" strokeWidth={2} aria-label="Телефон" />
                 <span>+373 777 46642</span>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-primary" />
+                <Mail className="h-4 w-4 text-primary" strokeWidth={2} aria-label="Email" />
                 <span>mmxxnon@gmail.com</span>
               </li>
               <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 text-primary" />
+                <MapPin className="mt-0.5 h-4 w-4 text-primary" strokeWidth={2} aria-label="Адрес" />
                 <span>г. Тирасполь, Приднестровье</span>
               </li>
             </ul>

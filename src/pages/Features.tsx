@@ -1,5 +1,5 @@
 import Layout from "@/components/layout/Layout";
-import { Home, Building, Construction, Cable, Zap, Plug, Lightbulb, Settings, ShieldCheck } from "lucide-react";
+import { Home, Building, Construction, Plug, Sliders, Zap, Lightbulb, ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import FaqAccordion from "@/components/common/FaqAccordion";
@@ -10,54 +10,56 @@ const SERVICES = [
     title: "Электромонтаж в квартирах",
     description: "Полный комплекс электромонтажных работ в квартирах любой планировки. Включает разводку проводки, установку розеток, выключателей, осветительных приборов и электрощитов.",
     features: ["Разводка проводки", "Установка розеток и выключателей", "Монтаж освещения", "Сборка щитов"],
+    ariaLabel: "Электромонтаж в квартирах",
   },
   {
     icon: Building,
     title: "Электромонтаж в частных домах",
     description: "Комплексная электрификация частных домов и коттеджей под ключ. От проекта до сдачи объекта с полной документацией.",
     features: ["Проектирование", "Ввод электричества", "Внутренняя разводка", "Заземление и молниезащита"],
+    ariaLabel: "Электромонтаж в частных домах",
   },
   {
     icon: Construction,
     title: "Монтаж в новостройках",
     description: "Профессиональная разводка электрики с нуля в новых зданиях. Работаем по проекту или разрабатываем индивидуальное решение.",
     features: ["Работа с проектом", "Скрытая проводка", "Современные материалы", "Соответствие нормам"],
-  },
-  {
-    icon: Cable,
-    title: "Замена проводки",
-    description: "Полная или частичная замена устаревшей алюминиевой проводки на современную медную. Безопасность вашего дома.",
-    features: ["Демонтаж старой проводки", "Прокладка новых линий", "Замена автоматов", "Проверка изоляции"],
-  },
-  {
-    icon: Zap,
-    title: "Установка электрощитов",
-    description: "Монтаж и сборка электрощитов любой сложности. Правильно собранный щит — основа безопасной электросети.",
-    features: ["Сборка щитов", "Установка автоматов", "Подключение УЗО", "Маркировка линий"],
+    ariaLabel: "Монтаж в новостройках",
   },
   {
     icon: Plug,
-    title: "Подключение бытовой техники",
-    description: "Установка и подключение розеток, выключателей, а также подключение мощной бытовой техники.",
-    features: ["Силовые розетки", "Подключение плит", "Бойлеры и кондиционеры", "Стиральные машины"],
+    title: "Замена проводки",
+    description: "Полная или частичная замена устаревшей алюминиевой проводки на современную медную. Безопасность вашего дома.",
+    features: ["Демонтаж старой проводки", "Прокладка новых линий", "Замена автоматов", "Проверка изоляции"],
+    ariaLabel: "Замена проводки",
+  },
+  {
+    icon: Sliders,
+    title: "Установка электрощитов",
+    description: "Монтаж и сборка электрощитов любой сложности. Правильно собранный щит — основа безопасной электросети.",
+    features: ["Сборка щитов", "Установка автоматов", "Подключение УЗО", "Маркировка линий"],
+    ariaLabel: "Сборка электрощита",
+  },
+  {
+    icon: Zap,
+    title: "Аварийный электрик и ремонт",
+    description: "Диагностика и устранение неисправностей в электросети. Быстрый выезд в аварийных ситуациях.",
+    features: ["Поиск обрыва", "Замена автоматов", "Ремонт проводки", "Аварийный выезд"],
+    ariaLabel: "Аварийный электрик",
   },
   {
     icon: Lightbulb,
     title: "Монтаж освещения",
     description: "Установка всех типов освещения: люстры, точечные светильники, светодиодные ленты, уличное освещение.",
     features: ["Люстры и бра", "Точечное освещение", "LED-подсветка", "Наружное освещение"],
-  },
-  {
-    icon: Settings,
-    title: "Ремонт электрики",
-    description: "Диагностика и устранение неисправностей в электросети. Быстрый выезд в аварийных ситуациях.",
-    features: ["Поиск обрыва", "Замена автоматов", "Ремонт проводки", "Аварийный выезд"],
+    ariaLabel: "Монтаж освещения",
   },
   {
     icon: ShieldCheck,
     title: "Проверка и диагностика",
     description: "Комплексная проверка состояния электросети, измерение сопротивления изоляции, проверка заземления.",
-    features: ["Проверка изоляции", "Тест заземления", "Тепливизия", "Заключение"],
+    features: ["Проверка изоляции", "Тест заземления", "Тепловизия", "Заключение"],
+    ariaLabel: "Проверка и диагностика",
   },
 ];
 
@@ -90,8 +92,8 @@ const Features = () => {
               return (
                 <div key={index} className="card-industrial p-6 space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
-                      <Icon className="h-6 w-6 text-primary" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+                      <Icon className="h-6 w-6 text-primary" strokeWidth={2} aria-label={service.ariaLabel} />
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-semibold mb-2">
@@ -188,8 +190,11 @@ const Features = () => {
           <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
             Оставьте заявку, и мы бесплатно приедем на осмотр и составим смету
           </p>
-          <Button size="lg" asChild>
-            <Link to="/#request-form">Оставить заявку</Link>
+          <Button size="lg" asChild className="group h-14 px-8 text-base shadow-lg">
+            <Link to="/#request-form" className="flex items-center gap-2">
+              Оставить заявку
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} aria-hidden="true" />
+            </Link>
           </Button>
         </div>
       </section>

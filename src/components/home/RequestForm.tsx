@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Send, CheckCircle2 } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
 
 const requestSchema = z.object({
@@ -307,8 +307,8 @@ const RequestForm = ({ preselectedService }: RequestFormProps) => {
                     </>
                   ) : (
                     <>
-                      <Send className="mr-2 h-5 w-5" />
                       Отправить заявку
+                      <ArrowRight className="ml-2 h-5 w-5" strokeWidth={2} aria-hidden="true" />
                     </>
                   )}
                 </Button>

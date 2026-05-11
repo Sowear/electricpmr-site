@@ -213,7 +213,11 @@ const Header = () => {
             </button>
           </div>
 
-          {isMenuOpen && (
+          
+        </div>
+      </header>
+
+      {isMenuOpen && (
             <div className="fixed top-[72px] bottom-0 left-0 right-0 z-40 animate-fade-in border-t border-border/70 bg-background/95 backdrop-blur-2xl md:hidden overflow-y-auto overscroll-none shadow-[0_20px_40px_-20px_rgba(0,0,0,0.5)]">
               <nav className="flex flex-col gap-6 p-4 pb-24 container-main">
                 <div className="rounded-xl border border-border/70 bg-card/50 px-5 py-4 shadow-sm flex flex-col items-center justify-center text-center">
@@ -315,8 +319,7 @@ const Header = () => {
               </nav>
             </div>
           )}
-        </div>
-      </header>
+
 
       <EmergencyCallDialog open={emergencyOpen} onOpenChange={setEmergencyOpen} />
       <QuizDialog open={quizOpen} onOpenChange={setQuizOpen} />

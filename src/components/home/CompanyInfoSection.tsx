@@ -1,143 +1,128 @@
-import { Building2, Zap, MapPin, ShieldCheck } from "lucide-react";
+import { Building2, Zap, MapPin, ShieldCheck, ArrowRight, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
+const cards = [
+  {
+    icon: Zap,
+    title: "Что мы делаем",
+    text: "Разводка и замена проводки, сборка электрощитов, подключение техники и освещения, диагностика электросетей.",
+    accent: "10+ лет опыта",
+    link: { label: "Все услуги", to: "/uslugi" },
+    delay: 0,
   },
-};
+  {
+    icon: Building2,
+    title: "Типы объектов",
+    text: "Квартиры, частные дома, новостройки, коммерческие помещения. От однушки до многоэтажного офиса.",
+    accent: "Любой масштаб",
+    link: { label: "Примеры работ", to: "/#work-examples" },
+    delay: 0.1,
+  },
+  {
+    icon: MapPin,
+    title: "Где работаем",
+    text: "Тирасполь, Слободзея, Бендеры, Днестровск, Григориополь и все населённые пункты ПМР.",
+    accent: "Весь регион",
+    link: { label: "Зоны выезда", to: "/#request-form" },
+    delay: 0.2,
+  },
+  {
+    icon: ShieldCheck,
+    title: "Наши принципы",
+    text: "Работаем по ПУЭ. Только после согласования сметы. Всё по договору, с актом и гарантией.",
+    accent: "5 лет гарантии",
+    link: { label: "Получить расчёт", to: "/#request-form" },
+    delay: 0.3,
+  },
+];
 
-const itemVariants = {
-  hidden: { opacity: 0, x: -30 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-    },
-  },
-};
-
-const rightItemVariants = {
-  hidden: { opacity: 0, x: 30 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-    },
-  },
-};
+const stats = [
+  { value: "150+", label: "объектов сдано" },
+  { value: "5 лет", label: "гарантия" },
+  { value: "24ч", label: "время ответа" },
+];
 
 const CompanyInfoSection = () => {
   return (
-    <section className="section-padding bg-muted/20">
-      <div className="container-main max-w-4xl">
-        <motion.div 
-          className="text-center mb-12"
+    <section className="section-padding bg-muted/20 relative overflow-hidden">
+      {/* Subtle background grid */}
+      <div className="tech-grid absolute inset-0 text-foreground/[0.025]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+
+      <div className="container-main relative">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-14"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-            Профессиональный электромонтаж в Приднестровье
+          <span className="technical-label mb-4 inline-flex">О компании</span>
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+            Профессиональный электромонтаж{" "}
+            <span className="text-primary">в Приднестровье</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            ЭлектроМастер — команда специалистов по электромонтажу. 
-            Мы выполняем работы по всему Приднестровью: от квартир и частных домов до коммерческих объектов.
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            ЭлектроМастер — команда специалистов. Работаем по всему ПМР: квартиры, дома, коммерция.
           </p>
+
+          {/* Stats row */}
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            {stats.map((s) => (
+              <div
+                key={s.label}
+                className="flex items-center gap-3 rounded-full border border-border/70 bg-card/80 px-5 py-2.5 shadow-sm backdrop-blur-sm"
+              >
+                <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+                <span className="font-display text-lg font-bold text-foreground">{s.value}</span>
+                <span className="text-sm text-muted-foreground">{s.label}</span>
+              </div>
+            ))}
+          </div>
         </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 overflow-hidden">
-          <motion.div 
-            className="space-y-6"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            <motion.div variants={itemVariants} className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 flex-shrink-0">
-                <Zap className="h-6 w-6 text-primary" />
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {cards.map((card) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: card.delay }}
+              className="group relative flex flex-col rounded-2xl border border-border/70 bg-card/80 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_-8px_rgba(234,179,8,0.25)] hover:-translate-y-1"
+            >
+              {/* Top accent line on hover */}
+              <div className="absolute inset-x-0 top-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-primary/0 to-transparent transition-all duration-300 group-hover:via-primary/70" />
+
+              {/* Icon */}
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors duration-300 group-hover:bg-primary/20">
+                <card.icon className="h-7 w-7 text-primary" strokeWidth={1.75} />
               </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Что мы делаем</h3>
-                <p className="text-muted-foreground">
-                  Занимаемся разводкой и заменой проводки, сборкой электрощитов, подключением техники и освещения, 
-                  а также диагностикой электросетей. Работаем аккуратно, соблюдаем нормы безопасности и даём гарантию.
-                </p>
+
+              {/* Content */}
+              <h3 className="font-display text-lg font-semibold text-foreground mb-3">{card.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground flex-1">{card.text}</p>
+
+              {/* Accent badge */}
+              <div className="mt-4 mb-4 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary self-start">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                {card.accent}
               </div>
+
+              {/* Link */}
+              <Link
+                to={card.link.to}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary group/link"
+              >
+                {card.link.label}
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-1" />
+              </Link>
             </motion.div>
-            
-            <motion.div variants={itemVariants} className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 flex-shrink-0">
-                <MapPin className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Где работаем</h3>
-                <p className="text-muted-foreground">
-                  Основные города: Тирасполь и Слободзея. 
-                  Также выезд в Бендеры, Днестровск, Григориополь и другие населённые пункты Приднестровья.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-          
-          <motion.div 
-            className="space-y-6"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            <motion.div variants={rightItemVariants} className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 flex-shrink-0">
-                <Building2 className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Типы объектов</h3>
-                <p className="text-muted-foreground">
-                  Работаем в квартирах, частных домах, новостройках и коммерческих помещениях. 
-                  Опыт работы с различными проектами — от простых квартир до сложных систем в новых домах.
-                </p>
-              </div>
-            </motion.div>
-            
-            <motion.div variants={rightItemVariants} className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 flex-shrink-0">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Наши принципы</h3>
-                <p className="text-muted-foreground">
-                  Мы не делаем «на глаз». Сначала понимаем задачу, затем предлагаем решение и 
-                  только после согласования приступаем к работе. Всё делаем по ПУЭ и с гарантией.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
+          ))}
         </div>
-        
-        <motion.div 
-          className="mt-8 p-6 bg-primary/5 rounded-lg border border-border"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <p className="text-center text-muted-foreground">
-            Специализируемся на <strong>электромонтаже квартир и домов</strong>, <strong>замене проводки</strong>, 
-            <strong>сборке электрощитов</strong>, <strong>диагностике электросети</strong>. 
-            Все работы проводим с <strong>гарантией на работы</strong>.
-          </p>
-        </motion.div>
       </div>
     </section>
   );

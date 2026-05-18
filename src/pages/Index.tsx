@@ -14,30 +14,27 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
-      <Layout
-        title="ЭлектроМастер — электромонтаж в Тирасполе и Слободзее"
-        description="ЭлектроМастер — профессиональный электромонтаж в Тирасполе и Слободзее. Квартиры и частные дома, аварийный выезд и гарантия. Также работаем в Бендерах."
-      >
-      <HeroSection />
-      <QualityPassportSection />
-      <ServicesSection />
-      <AboutSection />
-      <CompanyInfoSection />
-      <WorkExamplesSection />
-      <ProcessSection />
-      <RequestForm />
-      <ContactSection />
-      <FloatingContactBar />
-      
-      {/* FAQ Section */}
+    <Layout
+      title="ЭлектроМастер — электромонтаж в Тирасполе и Слободзее"
+      description="ЭлектроМастер — профессиональный электромонтаж в Тирасполе и Слободзее. Квартиры и частные дома, аварийный выезд и гарантия. Также работаем в Бендерах."
+    >
+      {/* 1 */} <HeroSection />
+      {/* 2 */} <ServicesSection />
+      {/* 3 */} <QualityPassportSection />
+      {/* 4 */} <AboutSection />
+      {/* 5 */} <CompanyInfoSection />
+      {/* 6 */} <WorkExamplesSection />
+      {/* 7 */} <ProcessSection />
+
+      {/* 8 — FAQ перед формой */}
       <section className="section-padding bg-secondary/30">
         <div className="container-main">
           <div className="max-w-3xl mx-auto space-y-6">
             <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
               Частые вопросы
             </h2>
-            
-            <FaqAccordion 
+
+            <FaqAccordion
               items={[
                 {
                   question: "Сколько стоит электромонтаж?",
@@ -71,61 +68,51 @@ const Index = () => {
               className="max-w-2xl mx-auto"
               itemClassName="bg-background"
             />
-            
+
             <div className="text-center pt-6">
               <p className="text-sm text-muted-foreground mb-4">Не нашли свой вопрос?</p>
-              <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                <button 
-                  onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="inline-flex items-center justify-center h-10 px-4 bg-primary text-primary-foreground rounded-md font-medium hover:opacity-90 transition-opacity"
-                >
-                  Написать нам
-                </button>
-              </div>
-             </div>
-           </div>
-         </div>
-       </section>
-       
-       {/* Cities Coverage */}
-       <section className="section-padding bg-secondary/30">
-         <div className="container-main text-center">
-           <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-             Работаем по Приднестровью
-           </h2>
-           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-             Мы выполняем электромонтажные работы в Тирасполе, Бендерах и Слободзее.
-           </p>
-           
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-             <Link 
-               to="/elektrik-v-tiraspole" 
-               className="card-industrial p-6 text-center hover:shadow-lg transition-shadow"
-             >
-               <h3 className="font-semibold text-lg mb-2">Тирасполь</h3>
-               <p className="text-sm text-muted-foreground">Электромонтаж, замена проводки, установка оборудования</p>
-             </Link>
-             
-             <Link 
-               to="/elektrik-v-benderah" 
-               className="card-industrial p-6 text-center hover:shadow-lg transition-shadow"
-             >
-               <h3 className="font-semibold text-lg mb-2">Бендеры</h3>
-               <p className="text-sm text-muted-foreground">Ремонт, диагностика, подключение техники</p>
-             </Link>
-             
-             <Link 
-               to="/elektrik-v-slobodzee" 
-               className="card-industrial p-6 text-center hover:shadow-lg transition-shadow"
-             >
-               <h3 className="font-semibold text-lg mb-2">Слободзея</h3>
-               <p className="text-sm text-muted-foreground">Комплексные работы, сборка щитов, автоматизация</p>
-             </Link>
-           </div>
-         </div>
-       </section>
-     </Layout>
-   );
- };
- 
- export default Index;
+              <button
+                onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
+                className="inline-flex items-center justify-center h-10 px-4 bg-primary text-primary-foreground rounded-md font-medium hover:opacity-90 transition-opacity"
+              >
+                Написать нам
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9 */} <RequestForm />
+      {/* 10 */} <ContactSection />
+      <FloatingContactBar />
+
+      {/* Cities Coverage */}
+      <section className="section-padding bg-secondary/30">
+        <div className="container-main text-center">
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
+            Работаем по Приднестровью
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+            Мы выполняем электромонтажные работы в Тирасполе, Бендерах и Слободзее.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            <Link to="/elektrik-v-tiraspole" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Тирасполь</h3>
+              <p className="text-sm text-muted-foreground">Электромонтаж, замена проводки, установка оборудования</p>
+            </Link>
+            <Link to="/elektrik-v-benderah" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Бендеры</h3>
+              <p className="text-sm text-muted-foreground">Ремонт, диагностика, подключение техники</p>
+            </Link>
+            <Link to="/elektrik-v-slobodzee" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Слободзея</h3>
+              <p className="text-sm text-muted-foreground">Комплексные работы, сборка щитов, автоматизация</p>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </Layout>
+  );
+};
+
+export default Index;

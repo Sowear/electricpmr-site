@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
         globPatterns: ['**/*.{js,css,html,ico,png,webp,svg,woff,woff2}'],
-        globIgnores: ['**/sitephoto/**', '**/video/**'],
+        globIgnores: ['**/sitephoto/**', '**/video/**', '**/hero-video.webp'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB safety net
       },
       manifest: {

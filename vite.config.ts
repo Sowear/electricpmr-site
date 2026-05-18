@@ -76,7 +76,8 @@ export default defineConfig(({ mode }) => ({
         '/sborka-elektroshchita',
         '/avariynyy-elektrik',
         '/elektromontazh-v-kvartire',
-        '/elektromontazh-v-dome'
+        '/elektromontazh-v-dome',
+        '/contact'
       ],
       renderer: new JSDOMRenderer({
         renderAfterTime: 5000,

@@ -111,6 +111,20 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     changefreq: "monthly",
     priority: 0.8,
   },
+  "/contact": {
+    title: "Контакты электрика в ПМР | ЭлектроМастер",
+    description: "Свяжитесь с нами: телефон, WhatsApp, Telegram. Оперативный выезд электрика в Тирасполе, Бендерах и Слободзее.",
+    index: true,
+    changefreq: "monthly",
+    priority: 0.8,
+  },
+  "/catalog": {
+    title: "Каталог электротоваров ПМР | ЭлектроМастер",
+    description: "Каталог электроматериалов: кабель, автоматы, розетки, щиты. Актуальные цены и наличие в Тирасполе.",
+    index: true,
+    changefreq: "weekly",
+    priority: 0.7,
+  },
   "/auth": {
     title: "Вход в личный кабинет | ЭлектроМастер",
     description: "Авторизация в системе ЭлектроМастер для работы со сметами, проектами и заявками.",

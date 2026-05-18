@@ -65,7 +65,7 @@ const ProcessSection = () => {
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 glitch-text">
@@ -88,7 +88,7 @@ const ProcessSection = () => {
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.15, duration: 0.6 }}
               className="relative group"
             >
@@ -101,7 +101,7 @@ const ProcessSection = () => {
                   <motion.div 
                     initial={{ opacity: 0.3, color: "hsl(var(--muted-foreground))" }}
                     whileInView={{ opacity: 1, color: "hsl(var(--primary))", textShadow: "0 0 10px hsl(var(--primary))" }}
-                    viewport={{ once: true, margin: "-100px" }}
+                    viewport={{ once: true, margin: "-50px" }}
                     transition={{ delay: index * 0.2 + 0.4 }}
                     className="text-4xl font-display font-bold"
                   >

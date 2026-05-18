@@ -101,6 +101,14 @@ const SmartBlueprintSVG = ({ activeZone, onHover }: BlueprintProps) => {
               key={room.id}
               onMouseEnter={() => onHover(room.id)}
               onMouseLeave={() => onHover(null)}
+              onClick={(e) => {
+                e.preventDefault();
+                onHover(room.id);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                onHover(room.id);
+              }}
               className="cursor-pointer"
             >
               <motion.path
@@ -119,8 +127,8 @@ const SmartBlueprintSVG = ({ activeZone, onHover }: BlueprintProps) => {
                 y={room.labelY}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                fontSize="32"
-                className="font-display font-bold select-none pointer-events-none drop-shadow-md"
+                fontSize="28"
+                className="font-display font-bold select-none pointer-events-none drop-shadow-md sm:text-[32px]"
                 initial={{ fill: "rgba(255,255,255,0.7)" }}
                 animate={{ 
                   fill: isActive ? "rgba(234, 179, 8, 1)" : "rgba(255,255,255,0.7)",

@@ -43,7 +43,7 @@ const CompanyInfoSection = () => {
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">

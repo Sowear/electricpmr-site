@@ -67,7 +67,7 @@ const HowWeWorkSection = () => {
           className="mx-auto mb-12 max-w-2xl text-center relative z-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
           <span className="technical-label">Процесс работы</span>
@@ -89,7 +89,7 @@ const HowWeWorkSection = () => {
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.2, duration: 0.6 }}
               className="relative group"
             >

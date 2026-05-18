@@ -12,7 +12,7 @@ interface CounterProps {
 const Counter = ({ end, suffix = "", duration = 2 }: CounterProps) => {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
 
   useEffect(() => {
     if (!isInView) return;
@@ -92,7 +92,7 @@ const imageVariants = {
 const AboutSection = () => {
   const controls = useAnimation();
   const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   useEffect(() => {
     if (isInView) {

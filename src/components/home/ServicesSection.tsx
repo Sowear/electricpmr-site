@@ -35,14 +35,15 @@ const ServicesSection = () => {
           className="text-center max-w-4xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:whitespace-nowrap glitch-text">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 glitch-text">
             Проектируем электрику <span className="text-primary">с умом</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Наведите курсор на комнаты на плане, чтобы узнать особенности электромонтажа в каждой зоне.
+            <span className="hidden md:inline">Наведите курсор на комнаты на плане, чтобы узнать особенности электромонтажа в каждой зоне.</span>
+            <span className="md:hidden">Нажмите на комнаты на плане, чтобы узнать особенности электромонтажа в каждой зоне.</span>
           </p>
         </motion.div>
 

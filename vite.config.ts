@@ -45,7 +45,9 @@ export default defineConfig(({ mode }) => ({
       includeAssets: ['favicon.ico', 'logo-192x192.png', 'logo-512x512.png'],
       workbox: {
         navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,webp,svg,woff,woff2}'],
+        globIgnores: ['**/sitephoto/**', '**/video/**'],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB safety net
       },
       manifest: {
         name: 'ЭлектроМастер',

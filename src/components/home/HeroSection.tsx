@@ -7,10 +7,10 @@ import { QuizDialog } from "@/components/contact/QuizDialog";
 
 // ─── Единый источник данных: слово и фото идут в паре по одному индексу ───────
 const SLIDES = [
-  { word: "квартир",    image: "/hero-kvartira.png",    alt: "Электромонтаж в квартире — ЭлектроМастер ПМР" },
-  { word: "домов",      image: "/hero-dom.png",         alt: "Электромонтаж в частном доме — ЭлектроМастер ПМР" },
-  { word: "бизнеса",    image: "/hero-biznes.png",      alt: "Электрика для бизнеса — ЭлектроМастер ПМР" },
-  { word: "новостроек", image: "/hero-novostroika.png", alt: "Электромонтаж в новостройке — ЭлектроМастер ПМР" },
+  { word: "квартир",    image: "/hero-kvartira.webp",    alt: "Электромонтаж в квартире — ЭлектроМастер ПМР" },
+  { word: "домов",      image: "/hero-dom.webp",         alt: "Электромонтаж в частном доме — ЭлектроМастер ПМР" },
+  { word: "бизнеса",    image: "/hero-biznes.webp",      alt: "Электрика для бизнеса — ЭлектроМастер ПМР" },
+  { word: "новостроек", image: "/hero-novostroika.webp", alt: "Электромонтаж в новостройке — ЭлектроМастер ПМР" },
 ];
 const INTERVAL_MS = 2500;
 

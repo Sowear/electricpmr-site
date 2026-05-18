@@ -43,6 +43,10 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'logo-192x192.png', 'logo-512x512.png'],
+      workbox: {
+        navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}']
+      },
       manifest: {
         name: 'ЭлектроМастер',
         short_name: 'ЭлектроМастер',

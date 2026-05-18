@@ -12,8 +12,11 @@
     --background: 42 33% 98%;
     --foreground: 220 22% 12%;
 
-    --card: 0 0% 100%;
+    --card: 40 30% 99%;
     --card-foreground: 220 22% 12%;
+    --card-gradient: linear-gradient(145deg, hsl(40 40% 100%) 0%, hsl(38 25% 97%) 60%, hsl(35 20% 95%) 100%);
+    --card-shadow: 0 4px 6px -2px hsl(220 30% 8% / 0.04), 0 12px 40px -16px hsl(220 30% 8% / 0.10), inset 0 1px 0 hsl(0 0% 100% / 0.9);
+    --card-shadow-hover: 0 8px 16px -4px hsl(220 30% 8% / 0.06), 0 24px 60px -20px hsl(220 30% 8% / 0.15), 0 0 0 1px hsl(45 96% 54% / 0.15), inset 0 1px 0 hsl(0 0% 100% / 1);
 
     --popover: 0 0% 100%;
     --popover-foreground: 220 22% 12%;
@@ -66,8 +69,6 @@
 
     /* Custom tokens */
     --hero-gradient: linear-gradient(135deg, hsl(45 96% 54%) 0%, hsl(33 92% 58%) 100%);
-    --card-shadow: 0 18px 50px -34px hsl(220 30% 8% / 0.16);
-    --card-shadow-hover: 0 28px 65px -34px hsl(220 30% 8% / 0.22);
     --industrial-dark: 220 24% 14%;
     --industrial-steel: 220 12% 32%;
   }
@@ -78,6 +79,9 @@
 
     --card: 220 24% 14%;
     --card-foreground: 0 0% 98%;
+    --card-gradient: linear-gradient(145deg, hsl(220 28% 16%) 0%, hsl(220 24% 13%) 60%, hsl(220 22% 11%) 100%);
+    --card-shadow: 0 4px 6px -2px hsl(0 0% 0% / 0.15), 0 12px 40px -16px hsl(0 0% 0% / 0.35), inset 0 1px 0 hsl(220 30% 26% / 0.5);
+    --card-shadow-hover: 0 8px 16px -4px hsl(0 0% 0% / 0.25), 0 24px 60px -20px hsl(0 0% 0% / 0.50), 0 0 0 1px hsl(45 96% 54% / 0.2), inset 0 1px 0 hsl(220 30% 30% / 0.6);
 
     --popover: 220 24% 14%;
     --popover-foreground: 0 0% 98%;
@@ -102,8 +106,6 @@
     --ring: 45 96% 54%;
 
     --hero-gradient: linear-gradient(135deg, hsl(45 96% 54%) 0%, hsl(33 92% 58%) 100%);
-    --card-shadow: 0 18px 50px -34px hsl(0 0% 0% / 0.5);
-    --card-shadow-hover: 0 28px 65px -34px hsl(0 0% 0% / 0.7);
     --page-gradient: linear-gradient(180deg, hsl(220 24% 12%) 0%, hsl(220 24% 10%) 26%, hsl(220 24% 8%) 100%);
   }
 }
@@ -136,37 +138,68 @@
   }
 
   .card-industrial {
-    @apply rounded-lg border border-border/85 bg-card/95 backdrop-blur-sm;
+    @apply rounded-xl border border-border/70 backdrop-blur-sm relative overflow-hidden;
+    background: var(--card-gradient, hsl(var(--card)));
     box-shadow: var(--card-shadow);
-    transition: border-color 0.25s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.35s ease, transform 0.3s ease;
+  }
+
+  /* Subtle top-shine line */
+  .card-industrial::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.0) 20%, hsl(0 0% 100% / 0.18) 50%, hsl(var(--primary) / 0.0) 80%, transparent 100%);
+    transition: background 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
   }
 
   .card-industrial:hover {
-    @apply border-primary/25;
+    @apply border-primary/35;
     box-shadow: var(--card-shadow-hover);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+  }
+
+  /* On hover — top line glows yellow */
+  .card-industrial:hover::before {
+    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.6) 30%, hsl(var(--primary) / 0.9) 50%, hsl(var(--primary) / 0.6) 70%, transparent 100%);
   }
 
   .card-glass {
-    @apply rounded-2xl border border-border/50 bg-card/40 backdrop-blur-[12px] relative overflow-hidden;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+    @apply rounded-2xl border border-border/40 backdrop-blur-[16px] relative overflow-hidden;
+    background: linear-gradient(145deg, hsl(var(--card) / 0.55) 0%, hsl(var(--card) / 0.35) 100%);
+    box-shadow: 0 8px 32px 0 hsl(0 0% 0% / 0.10), inset 0 1px 0 hsl(0 0% 100% / 0.14), inset 0 -1px 0 hsl(0 0% 0% / 0.06);
     transition: all 0.3s ease;
   }
 
   .card-glass:hover {
-    @apply border-primary/30 bg-card/60;
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+    @apply border-primary/30;
+    background: linear-gradient(145deg, hsl(var(--card) / 0.70) 0%, hsl(var(--card) / 0.50) 100%);
+    box-shadow: 0 12px 48px 0 hsl(0 0% 0% / 0.14), inset 0 1px 0 hsl(0 0% 100% / 0.22), 0 0 0 1px hsl(var(--primary) / 0.12);
   }
 
   .card-engineering {
-    @apply relative overflow-hidden rounded-lg border border-border/80 bg-card;
-    box-shadow: 0 26px 70px -42px hsl(220 24% 10% / 0.28);
+    @apply relative overflow-hidden rounded-xl border border-border/70;
+    background: var(--card-gradient, hsl(var(--card)));
+    box-shadow: var(--card-shadow);
+    transition: border-color 0.3s ease, box-shadow 0.35s ease, transform 0.3s ease;
   }
 
   .card-engineering::before {
     content: '';
     @apply absolute inset-x-0 top-0 h-px;
-    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.75), transparent);
+    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.5) 30%, hsl(var(--primary) / 0.9) 50%, hsl(var(--primary) / 0.5) 70%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .card-engineering:hover {
+    @apply border-primary/40;
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
   }
 
   .tech-grid {

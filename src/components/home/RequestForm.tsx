@@ -199,9 +199,9 @@ const RequestForm = ({ preselectedService }: RequestFormProps) => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-3"
+                  className="flex items-center gap-3"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 mt-0.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                     <point.icon className="h-4 w-4 text-primary" strokeWidth={2} />
                   </div>
                   <span className="text-sm leading-relaxed text-foreground/80">{point.text}</span>

@@ -132,6 +132,7 @@ interface ServiceLandingProps {
 
 export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
   const content = SERVICE_CONTENT[serviceKey];
+  const isSborka = serviceKey === "sborka-elektroshchita";
 
   if (!content) return null;
 
@@ -274,6 +275,31 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
               </div>
             </div>
           </div>
+
+          {/* Видео — только для sborka-elektroshchita, загружается только на этой странице */}
+          {isSborka && (
+            <div className="mt-10">
+              <h2 className="font-display text-xl font-semibold mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse inline-block" />
+                Как мы собираем электрощит — видео
+              </h2>
+              <div className="relative w-full aspect-video overflow-hidden rounded-xl border border-border/60 bg-black shadow-2xl">
+                <div className="absolute top-3 left-3 z-10 flex gap-2 items-center bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono font-semibold text-primary border border-border/30">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                  REC
+                </div>
+                {/* src задаётся только в JSX этой ветки — браузер никогда не загрузит файл на других страницах */}
+                <video
+                  src="/video/hero-video.mp4"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full object-cover"
+                  aria-label="Видео: сборка электрощита"
+                />
+              </div>
+            </div>
+          )}
           
           {/* Bottom Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">

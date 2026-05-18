@@ -4,100 +4,56 @@ import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPi
 import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
+
+// ─── Единый источник данных: слово и фото идут в паре по одному индексу ───────
+const SLIDES = [
+  { word: "квартир",    image: "/hero-kvartira.png",    alt: "Электромонтаж в квартире — ЭлектроМастер ПМР" },
+  { word: "домов",      image: "/hero-dom.png",         alt: "Электромонтаж в частном доме — ЭлектроМастер ПМР" },
+  { word: "бизнеса",    image: "/hero-biznes.png",      alt: "Электрика для бизнеса — ЭлектроМастер ПМР" },
+  { word: "новостроек", image: "/hero-novostroika.png", alt: "Электромонтаж в новостройке — ЭлектроМастер ПМР" },
+];
+const INTERVAL_MS = 2500;
+
+// ─── Варианты анимаций ────────────────────────────────────────────────────────
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.14,
-      delayChildren: 0.08,
-    },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.14, delayChildren: 0.08 } },
 };
-
 const itemVariants = {
   hidden: { opacity: 0, y: 28 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: [0.25, 0.46, 0.45, 0.94],
-    },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const } },
 };
-
-const imageVariants = {
+const panelVariants = {
   hidden: { opacity: 0, x: 36, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    scale: 1,
-    transition: { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.22 },
-  },
+  visible: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] as const, delay: 0.22 } },
 };
 
-const TextFlipper = ({ words }: { words: string[] }) => {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((current) => (current + 1) % words.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, [words.length]);
-
-  return (
-    <span className="relative inline-block h-[1.2em] w-[160px] align-text-bottom sm:w-[240px] md:w-[280px] lg:w-[330px]">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={index}
-          initial={{ y: 34, opacity: 0, rotateX: -90 }}
-          animate={{ y: 0, opacity: 1, rotateX: 0 }}
-          exit={{ y: -34, opacity: 0, rotateX: 90 }}
-          transition={{ duration: 0.45, type: "spring", bounce: 0.28 }}
-          className="text-gradient absolute left-0 top-0 inline-block whitespace-nowrap"
-          style={{ transformOrigin: "50% 50% -20px" }}
-        >
-          {words[index]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-};
-
+// ─── Компонент ────────────────────────────────────────────────────────────────
 const HeroSection = () => {
+  // Единый индекс — и заголовок, и фото всегда смотрят на одну запись
+  const [slideIndex, setSlideIndex] = useState(0);
   const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [quizOpen, setQuizOpen] = useState(false);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSlideIndex((prev) => (prev + 1) % SLIDES.length);
+    }, INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, []);
+
   const trustBadges = [
-    {
-      icon: Users,
-      title: "Объекты любого масштаба",
-      subtitle: "Квартиры, дома и коммерческие проекты",
-    },
-    {
-      icon: FileText,
-      title: "Смета до старта",
-      subtitle: "Фиксируем объём, сроки и стоимость заранее",
-    },
-    {
-      icon: CheckCircle2,
-      title: "Монтаж по нормам",
-      subtitle: "Пошаговый контроль и понятная сдача работ",
-    },
-    {
-      icon: Shield,
-      title: "Гарантия на работы",
-      subtitle: "Закрепляем ответственность и остаёмся на связи",
-    },
+    { icon: Users,        title: "Объекты любого масштаба", subtitle: "Квартиры, дома и коммерческие проекты" },
+    { icon: FileText,     title: "Смета до старта",         subtitle: "Фиксируем объём, сроки и стоимость заранее" },
+    { icon: CheckCircle2, title: "Монтаж по нормам",        subtitle: "Пошаговый контроль и понятная сдача работ" },
+    { icon: Shield,       title: "Гарантия на работы",      subtitle: "Закрепляем ответственность и остаёмся на связи" },
   ];
 
   const proofItems = [
-    { icon: Shield, label: "5 лет гарантии" },
-    { icon: MapPin, label: "Выезд по ПМР" },
+    { icon: Shield,   label: "5 лет гарантии" },
+    { icon: MapPin,   label: "Выезд по ПМР" },
     { icon: FileText, label: "Смета до начала" },
-    { icon: Phone, label: "+373 777 46642" },
+    { icon: Phone,    label: "+373 777 46642" },
   ];
 
   return (
@@ -106,12 +62,47 @@ const HeroSection = () => {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
 
       <div className="container-main relative py-10 md:py-14 lg:py-20">
+
+        {/* ── Мобильная фотография (видна только до lg, располагается ДО текста) ── */}
+        <div className="lg:hidden mb-6 w-full">
+          <div className="relative w-full aspect-[16/9] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+            {/* HUD corners */}
+            <div className="absolute top-3 left-3 z-20 flex gap-2 items-center bg-background/70 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono font-semibold text-primary border border-border/50">
+              <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              SYS_ONLINE
+            </div>
+            <div className="absolute top-3 right-3 z-20 bg-background/70 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono text-muted-foreground border border-border/50">
+              230V / 50Hz
+            </div>
+
+            {/* Фото синхронизировано с slideIndex */}
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={slideIndex}
+                src={SLIDES[slideIndex].image}
+                alt={SLIDES[slideIndex].alt}
+                initial={{ opacity: 0, scale: 1.04 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.45, ease: "easeInOut" }}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </AnimatePresence>
+
+            {/* Затемняющий градиент снизу для читаемости */}
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background/60 to-transparent z-10" />
+          </div>
+        </div>
+
+        {/* ── Основная сетка ── */}
         <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
+
+          {/* Левая колонка: текст */}
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="max-w-[42rem]">
             <motion.div variants={itemVariants} className="technical-label mb-6">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
               Электромонтаж по всему Приднестровью
             </motion.div>
@@ -121,7 +112,22 @@ const HeroSection = () => {
               className="font-display text-3xl font-bold leading-[1.08] text-foreground sm:text-5xl lg:text-6xl"
             >
               Проектируем и монтируем электрику для{" "}
-              <TextFlipper words={["квартир", "домов", "бизнеса", "новостроек"]} />
+              {/* Слово берётся из того же slideIndex что и фото */}
+              <span className="relative inline-block h-[1.2em] w-[160px] align-text-bottom sm:w-[240px] md:w-[280px] lg:w-[330px]">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={slideIndex}
+                    initial={{ y: 34, opacity: 0, rotateX: -90 }}
+                    animate={{ y: 0, opacity: 1, rotateX: 0 }}
+                    exit={{ y: -34, opacity: 0, rotateX: 90 }}
+                    transition={{ duration: 0.45, type: "spring", bounce: 0.28 }}
+                    className="text-gradient absolute left-0 top-0 inline-block whitespace-nowrap"
+                    style={{ transformOrigin: "50% 50% -20px" }}
+                  >
+                    {SLIDES[slideIndex].word}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="mt-6 max-w-[38rem] text-lg leading-relaxed text-muted-foreground">
@@ -141,7 +147,11 @@ const HeroSection = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button size="lg" onClick={() => setQuizOpen(true)} className="btn-hero btn-spark group min-h-[56px] text-base">
+              <Button
+                size="lg"
+                onClick={() => setQuizOpen(true)}
+                className="btn-hero btn-spark group min-h-[56px] text-base shadow-[0_0_28px_rgba(234,179,8,0.35)] hover:shadow-[0_0_40px_rgba(234,179,8,0.55)] transition-shadow"
+              >
                 Узнать стоимость
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
@@ -165,33 +175,35 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
+          {/* Правая колонка: десктопная панель с фото (скрыта на мобильном) */}
           <motion.div
-            variants={imageVariants}
+            variants={panelVariants}
             initial="hidden"
             animate="visible"
-            className="relative mx-auto w-full max-w-[640px] lg:max-w-none"
+            className="relative hidden lg:flex mx-auto w-full max-w-[640px] lg:max-w-none"
           >
-            <div className="relative flex min-h-[320px] items-center justify-end sm:min-h-[400px] lg:min-h-[520px]">
-              <motion.div 
+            <div className="relative flex min-h-[520px] w-full items-center justify-end">
+              {/* Фоновые глоу-орбы */}
+              <motion.div
                 animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
                 transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                className="pointer-events-none absolute right-[8%] top-[14%] h-[56%] w-[60%] rounded-full bg-[rgba(255,190,60,0.18)] blur-[100px]" 
+                className="pointer-events-none absolute right-[8%] top-[14%] h-[56%] w-[60%] rounded-full bg-[rgba(255,190,60,0.18)] blur-[100px]"
               />
-              <motion.div 
+              <motion.div
                 animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
                 transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="pointer-events-none absolute right-[14%] bottom-[14%] h-[24%] w-[34%] rounded-full bg-[rgba(59,130,246,0.15)] blur-[80px]" 
+                className="pointer-events-none absolute right-[14%] bottom-[14%] h-[24%] w-[34%] rounded-full bg-[rgba(59,130,246,0.15)] blur-[80px]"
               />
 
-              <motion.div 
-                className="relative z-10 ml-auto w-full max-w-[340px] sm:max-w-[480px] lg:max-w-[520px] aspect-[4/5] sm:aspect-square"
+              <motion.div
+                className="relative z-10 ml-auto w-full max-w-[520px] aspect-square"
                 animate={{ y: [-12, 12, -12] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               >
                 <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full scale-[0.85]" />
-                
+
                 <div className="hud-corner relative h-full w-full overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_24px_50px_rgba(15,23,42,0.18)] ring-1 ring-border/50">
-                  {/* HUD Elements */}
+                  {/* HUD метки */}
                   <div className="absolute top-4 left-4 z-20 flex gap-2 items-center bg-background/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono font-semibold text-primary shadow-sm border border-border/50">
                     <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
                     SYS_ONLINE
@@ -200,22 +212,29 @@ const HeroSection = () => {
                     230V / 50Hz
                   </div>
                   <div className="absolute bottom-4 right-4 z-20 bg-background/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono text-muted-foreground border border-border/50">
-                    ID: 4829
+                    {SLIDES[slideIndex].word.toUpperCase()}
                   </div>
-                  <video
-                    src="/video/hero-video.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
+
+                  {/* Фото синхронизировано с slideIndex */}
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={slideIndex}
+                      src={SLIDES[slideIndex].image}
+                      alt={SLIDES[slideIndex].alt}
+                      initial={{ opacity: 0, scale: 1.04 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.45, ease: "easeInOut" }}
+                      className="absolute inset-0 h-full w-full object-cover z-10"
+                    />
+                  </AnimatePresence>
                 </div>
               </motion.div>
             </div>
           </motion.div>
         </div>
 
+        {/* Нижние карточки-бейджи */}
         <motion.div
           className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
           variants={containerVariants}

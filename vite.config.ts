@@ -4,19 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 import prerender from '@prerenderer/rollup-plugin';
-import JSDOMRenderer from '@prerenderer/renderer-jsdom';
-import { ResourceLoader } from 'jsdom';
-
-// Custom resource loader to prevent JSDOM from fetching and parsing Tailwind CSS,
-// which causes a fatal "Could not parse CSS stylesheet" error.
-class NoCssResourceLoader extends ResourceLoader {
-  fetch(url, options) {
-    if (url.endsWith('.css')) {
-      return Promise.resolve(Buffer.from(''));
-    }
-    return super.fetch(url, options);
-  }
-}
+import PuppeteerRenderer from '@prerenderer/renderer-puppeteer';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -85,10 +73,24 @@ export default defineConfig(({ mode }) => ({
         '/elektromontazh-v-dome',
         '/contact'
       ],
-      renderer: new JSDOMRenderer({
+      renderer: new PuppeteerRenderer({
         renderAfterTime: 5000,
-        JSDOMOptions: {
-          resources: new NoCssResourceLoader(),
+        headless: true,
+        launchOptions: {
+          args: ['--no-sandbox', '--disable-setuid-sandbox']
+        },
+        consoleHandler: (route, msg) => {
+          console.log(`[Puppeteer Route: ${route}] [${msg.type()}]`, msg.text());
+        },
+        pageHandler: (page, route) => {
+          page.on('requestfailed', request => {
+            console.log(`[Request Failed: ${route}] ${request.url()} - ${request.failure()?.errorText}`);
+          });
+          page.on('response', response => {
+            if (!response.ok()) {
+              console.log(`[Response Error: ${route}] ${response.status()} ${response.url()}`);
+            }
+          });
         }
       }),
       server: {

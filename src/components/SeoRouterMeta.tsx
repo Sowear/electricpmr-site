@@ -198,6 +198,7 @@ export default function SeoRouterMeta() {
     : baseSeo;
 
   const canonical = `${SITE_URL}${normalizedPath === "/" ? "" : normalizedPath}`;
+  console.log("SeoRouterMeta - path:", pathname, "normalized:", normalizedPath, "canonical:", canonical);
   const robots = seo.index === false ? "noindex,nofollow" : "index,follow";
 
   const breadcrumbItems = [

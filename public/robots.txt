@@ -1,11 +1,14 @@
 User-agent: *
 Allow: /
 
-# Keep private/admin routes out of indexing
+# Private routes
 Disallow: /auth
 Disallow: /dashboard
 Disallow: /projects
 Disallow: /estimator
 Disallow: /admin
+
+# Host directive for Yandex
+Host: https://electricpmr.vercel.app
 
 Sitemap: https://electricpmr.vercel.app/sitemap.xml

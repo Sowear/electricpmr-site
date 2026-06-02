@@ -7,111 +7,129 @@ import prerender from '@prerenderer/rollup-plugin';
 import PuppeteerRenderer from '@prerenderer/renderer-puppeteer';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-    proxy: {
-      "/api": {
-        target: process.env.VITE_API_PROXY_TARGET || "http://127.0.0.1:8787",
-        changeOrigin: true,
+export default defineConfig(async ({ mode }) => {
+  let prerenderRenderer;
+
+  if (mode === "production") {
+    const launchOptions: any = {
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    };
+
+    if (process.env.VERCEL) {
+      // In Vercel build environment, use the self-contained @sparticuz/chromium
+      const chromium = (await import('@sparticuz/chromium')).default;
+      launchOptions.executablePath = await chromium.executablePath();
+      launchOptions.args = [...launchOptions.args, ...chromium.args];
+      launchOptions.headless = chromium.headless;
+    }
+
+    prerenderRenderer = new PuppeteerRenderer({
+      renderAfterTime: 5000,
+      headless: true,
+      launchOptions,
+      consoleHandler: (route, msg) => {
+        console.log(`[Puppeteer Route: ${route}] [${msg.type()}]`, msg.text());
       },
-      "/files": {
-        target: process.env.VITE_API_PROXY_TARGET || "http://127.0.0.1:8787",
-        changeOrigin: true,
-      },
-    },
-    hmr: {
-      overlay: false,
-    },
-  },
-  plugins: [
-    react(),
-    mode === "development" && componentTagger(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'logo-192x192.png', 'logo-512x512.png'],
-      workbox: {
-        navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
-        globPatterns: ['**/*.{js,css,html,ico,png,webp,svg,woff,woff2}'],
-        globIgnores: ['**/sitephoto/**', '**/video/**', '**/hero-video.webp'],
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB safety net
-      },
-      manifest: {
-        name: 'ЭлектроМастер',
-        short_name: 'ЭлектроМастер',
-        description: 'Профессиональный электромонтаж квартир и домов в Приднестровье',
-        theme_color: '#eab308',
-        background_color: '#ffffff',
-        display: 'standalone',
-        icons: [
-          {
-            src: 'logo-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'logo-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
+      pageHandler: (page, route) => {
+        page.on('requestfailed', request => {
+          console.log(`[Request Failed: ${route}] ${request.url()} - ${request.failure()?.errorText}`);
+        });
+        page.on('response', response => {
+          if (!response.ok()) {
+            console.log(`[Response Error: ${route}] ${response.status()} ${response.url()}`);
           }
-        ]
+        });
       }
-    }),
-    mode === "production" && prerender({
-      routes: [
-        '/',
-        '/uslugi',
-        '/stoimost',
-        '/elektrik-v-tiraspole',
-        '/elektrik-v-benderah',
-        '/elektrik-v-slobodzee',
-        '/zamena-provodki',
-        '/sborka-elektroshchita',
-        '/avariynyy-elektrik',
-        '/elektromontazh-v-kvartire',
-        '/elektromontazh-v-dome',
-        '/contact'
-      ],
-      renderer: new PuppeteerRenderer({
-        renderAfterTime: 5000,
-        headless: true,
-        launchOptions: {
-          args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+  }
+
+  return {
+    server: {
+      host: "::",
+      port: 8080,
+      proxy: {
+        "/api": {
+          target: process.env.VITE_API_PROXY_TARGET || "http://127.0.0.1:8787",
+          changeOrigin: true,
         },
-        consoleHandler: (route, msg) => {
-          console.log(`[Puppeteer Route: ${route}] [${msg.type()}]`, msg.text());
+        "/files": {
+          target: process.env.VITE_API_PROXY_TARGET || "http://127.0.0.1:8787",
+          changeOrigin: true,
         },
-        pageHandler: (page, route) => {
-          page.on('requestfailed', request => {
-            console.log(`[Request Failed: ${route}] ${request.url()} - ${request.failure()?.errorText}`);
-          });
-          page.on('response', response => {
-            if (!response.ok()) {
-              console.log(`[Response Error: ${route}] ${response.status()} ${response.url()}`);
+      },
+      hmr: {
+        overlay: false,
+      },
+    },
+    plugins: [
+      react(),
+      mode === "development" && componentTagger(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.ico', 'logo-192x192.png', 'logo-512x512.png'],
+        workbox: {
+          navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
+          globPatterns: ['**/*.{js,css,html,ico,png,webp,svg,woff,woff2}'],
+          globIgnores: ['**/sitephoto/**', '**/video/**', '**/hero-video.webp'],
+          maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB safety net
+        },
+        manifest: {
+          name: 'ЭлектроМастер',
+          short_name: 'ЭлектроМастер',
+          description: 'Профессиональный электромонтаж квартир и домов в Приднестровье',
+          theme_color: '#eab308',
+          background_color: '#ffffff',
+          display: 'standalone',
+          icons: [
+            {
+              src: 'logo-192x192.png',
+              sizes: '192x192',
+              type: 'image/png'
+            },
+            {
+              src: 'logo-512x512.png',
+              sizes: '512x512',
+              type: 'image/png'
             }
-          });
+          ]
         }
       }),
-      server: {
-        port: 8080
-      }
-    })
-  ].filter(Boolean),
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['framer-motion', 'lucide-react', 'recharts', 'sonner'],
-          supabase: ['@supabase/supabase-js']
+      mode === "production" && prerender({
+        routes: [
+          '/',
+          '/uslugi',
+          '/stoimost',
+          '/elektrik-v-tiraspole',
+          '/elektrik-v-benderah',
+          '/elektrik-v-slobodzee',
+          '/zamena-provodki',
+          '/sborka-elektroshchita',
+          '/avariynyy-elektrik',
+          '/elektromontazh-v-kvartire',
+          '/elektromontazh-v-dome',
+          '/contact'
+        ],
+        renderer: prerenderRenderer,
+        server: {
+          port: 8080
+        }
+      })
+    ].filter(Boolean),
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            ui: ['framer-motion', 'lucide-react', 'recharts', 'sonner'],
+            supabase: ['@supabase/supabase-js']
+          }
         }
       }
-    }
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
     },
-  },
-}));
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+  };
+});

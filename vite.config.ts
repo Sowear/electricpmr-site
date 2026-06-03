@@ -65,6 +65,7 @@ export default defineConfig(async ({ mode }) => {
       react(),
       mode === "development" && componentTagger(),
       VitePWA({
+        injectRegister: false,
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'logo-192x192.png', 'logo-512x512.png'],
         workbox: {

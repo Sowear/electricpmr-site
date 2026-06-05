@@ -69,7 +69,7 @@ export default defineConfig(async ({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'logo-192x192.png', 'logo-512x512.png'],
         workbox: {
-          navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
+          navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/, /^\/apple-app-site-association$/, /^\/\.well-known\/apple-app-site-association$/],
           globPatterns: ['**/*.{js,css,html,ico,png,webp,svg,woff,woff2}'],
           globIgnores: ['**/sitephoto/**', '**/video/**', '**/hero-video.webp'],
           maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB safety net

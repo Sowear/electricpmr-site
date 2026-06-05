@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Layout from "@/components/layout/Layout";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 
 // Get UTM params from URL
@@ -105,10 +104,6 @@ const Contact = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Контакты | ЭлектроМастер</title>
-        <meta name="description" content="Свяжитесь с нами для вызова электрика или расчета стоимости. Телефон, Telegram, Viber, WhatsApp." />
-      </Helmet>
 
       <div className="section-padding min-h-screen bg-background relative overflow-hidden flex items-center">
         {/* Background Decorative Gradients */}

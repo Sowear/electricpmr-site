@@ -7,8 +7,6 @@ Disallow: /dashboard
 Disallow: /projects
 Disallow: /estimator
 Disallow: /admin
-
-# Host directive for Yandex
-Host: https://electricpmr.vercel.app
+Disallow: /catalog
 
 Sitemap: https://electricpmr.vercel.app/sitemap.xml

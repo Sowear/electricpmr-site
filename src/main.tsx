@@ -30,7 +30,8 @@ if (rootElement.hasChildNodes() && isPrerendered) {
 }
 
 // Manually register Service Worker to handle errors and avoid uncaught promise rejections
-if ('serviceWorker' in navigator) {
+const isPrerender = navigator.userAgent.includes('HeadlessChrome') || navigator.webdriver;
+if ('serviceWorker' in navigator && !isPrerender) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then((registration) => {

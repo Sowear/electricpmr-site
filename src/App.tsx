@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense } from "react";
 import SeoRouterMeta from "./components/SeoRouterMeta";
@@ -49,8 +49,8 @@ const App = () => (
         <SeoRouterMeta />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/features" element={<Features />} />
-          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/features" element={<Navigate to="/uslugi" replace />} />
+          <Route path="/pricing" element={<Navigate to="/stoimost" replace />} />
           <Route path="/elektrik-v-tiraspole" element={<ElectricianTiraspol />} />
           <Route path="/elektrik-v-benderah" element={<ElectricianBendery />} />
           <Route path="/elektrik-v-slobodzee" element={<ElectricianSlobozia />} />

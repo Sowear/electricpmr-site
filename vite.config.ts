@@ -24,7 +24,7 @@ export default defineConfig(async ({ mode }) => {
     }
 
     prerenderRenderer = new PuppeteerRenderer({
-      renderAfterTime: 5000,
+      renderAfterDocumentEvent: 'x-prerender-trigger',
       headless: true,
       launchOptions,
       consoleHandler: (route, msg) => {

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
@@ -19,22 +20,6 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     index: true,
     changefreq: "weekly",
     priority: 1.0,
-  },
-  "/features": {
-    title: "ЭлектроМастер - услуги электрика в Тирасполе и ПМР | Электромонтажные работы",
-    description:
-      "Монтаж и ремонт электрики: проводка, розетки, выключатели, автоматы, освещение, электрощиты, поиск неисправностей и аварийный выезд.",
-    index: true,
-    changefreq: "weekly",
-    priority: 0.9,
-  },
-  "/pricing": {
-    title: "ЭлектроМастер - цены на электромонтажные работы в Тирасполе и ПМР | Стоимость услуг",
-    description:
-      "Актуальные цены на электромонтажные работы: замена проводки, монтаж розеток, сборка щитов, подключение оборудования и ремонт электрики.",
-    index: true,
-    changefreq: "weekly",
-    priority: 0.9,
   },
   "/uslugi": {
     title: "ЭлектроМастер - услуги электрика в Тирасполе и ПМР | Электромонтажные работы",
@@ -125,11 +110,11 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.8,
   },
   "/catalog": {
-    title: "Каталог электротоваров ПМР | ЭлектроМастер",
-    description: "Каталог электроматериалов: кабель, автоматы, розетки, щиты. Актуальные цены и наличие в Тирасполе.",
-    index: true,
-    changefreq: "weekly",
-    priority: 0.7,
+    title: "Управление каталогом | ЭлектроМастер",
+    description: "Управление каталогом цен и материалов в системе ЭлектроМастер.",
+    index: false,
+    changefreq: "monthly",
+    priority: 0.1,
   },
   "/auth": {
     title: "Вход в личный кабинет | ЭлектроМастер",
@@ -183,7 +168,6 @@ const isDynamicInternalPath = (path: string) => {
     /^\/admin\/.+/.test(path)
   );
 };
-
 export default function SeoRouterMeta() {
   const { pathname } = useLocation();
   const normalizedPath = normalizePath(pathname);
@@ -198,6 +182,40 @@ export default function SeoRouterMeta() {
     : baseSeo;
 
   const canonical = `${SITE_URL}${normalizedPath === "/" ? "" : normalizedPath}`;
+
+  useEffect(() => {
+    const startTime = Date.now();
+    let isDispatched = false;
+
+    const checkAndTrigger = () => {
+      if (isDispatched) return;
+
+      const currentTitle = document.title;
+      const titleMatches = currentTitle === seo.title;
+
+      const canonicalEl = document.querySelector("link[rel='canonical']");
+      const canonicalMatches = canonicalEl ? canonicalEl.getAttribute("href") === canonical : false;
+
+      const timeElapsed = Date.now() - startTime;
+
+      if ((titleMatches && canonicalMatches) || timeElapsed > 10000) {
+        isDispatched = true;
+        document.dispatchEvent(new Event("x-prerender-trigger"));
+        console.log(
+          `[Prerender] x-prerender-trigger dispatched for ${pathname} (titleMatches: ${titleMatches}, canonicalMatches: ${canonicalMatches}, elapsed: ${timeElapsed}ms)`
+        );
+      } else {
+        setTimeout(checkAndTrigger, 50);
+      }
+    };
+
+    // Delay the initial check slightly to let react-helmet-async batch updates
+    const timer = setTimeout(checkAndTrigger, 50);
+    return () => {
+      isDispatched = true;
+      clearTimeout(timer);
+    };
+  }, [pathname, seo.title, canonical]);
   console.log("SeoRouterMeta - path:", pathname, "normalized:", normalizedPath, "canonical:", canonical);
   const robots = seo.index === false ? "noindex,nofollow" : "index,follow";
 

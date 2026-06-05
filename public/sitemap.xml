@@ -55,12 +55,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://electricpmr.vercel.app/catalog</loc>
-    <lastmod>2026-06-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://electricpmr.vercel.app/elektrik-v-tiraspole</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>monthly</changefreq>

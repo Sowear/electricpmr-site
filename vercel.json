@@ -1,6 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/features", "destination": "/uslugi", "statusCode": 301 },
+    { "source": "/pricing", "destination": "/stoimost", "statusCode": 301 }
+  ],
   "headers": [
     {
       "source": "/sitemap.xml",

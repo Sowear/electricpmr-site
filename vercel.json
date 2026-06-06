@@ -53,11 +53,5 @@
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/((?!api/|assets/|sitemap\\.xml|robots\\.txt|apple-app-site-association|.*\\.).*)",
-      "destination": "/index.html"
-    }
   ]
 }

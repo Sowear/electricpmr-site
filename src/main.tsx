@@ -1,6 +1,7 @@
-import { createRoot, hydrateRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { isPrerenderRuntime } from "./lib/runtime";
 
 const rootElement = document.getElementById("root")!;
 
@@ -24,14 +25,14 @@ const pathname = window.location.pathname.replace(/\/$/, '') || '/';
 const isPrerendered = prerenderedRoutes.includes(pathname);
 
 if (rootElement.hasChildNodes() && isPrerendered) {
-  hydrateRoot(rootElement, <App />);
-} else {
-  createRoot(rootElement).render(<App />);
+  // @prerenderer captures a live browser DOM, not React SSR output.
+  rootElement.replaceChildren();
 }
 
+createRoot(rootElement).render(<App />);
+
 // Manually register Service Worker to handle errors and avoid uncaught promise rejections
-const isPrerender = navigator.userAgent.includes('HeadlessChrome') || navigator.webdriver;
-if ('serviceWorker' in navigator && !isPrerender) {
+if ('serviceWorker' in navigator && !isPrerenderRuntime()) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then((registration) => {

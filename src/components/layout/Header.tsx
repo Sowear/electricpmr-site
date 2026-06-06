@@ -205,8 +205,7 @@ const Header = () => {
             </div>
 
             <button
-              className="rounded-lg border border-border/70 bg-card/90 p-2.5 shadow-sm md:hidden relative z-50"
-              style={{ touchAction: 'manipulation' }}
+              className="rounded-lg border border-border/70 bg-card/90 p-2.5 shadow-sm md:hidden relative z-50 touch-manipulation"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsMenuOpen(prev => !prev);

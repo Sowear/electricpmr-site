@@ -34,7 +34,7 @@ const Counter = ({ end, suffix = "", duration = 2 }: CounterProps) => {
 
   return (
     <span ref={ref}>
-      {count}{suffix}
+      {`${count}${suffix}`}
     </span>
   );
 };
@@ -103,14 +103,14 @@ const AboutSection = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const showcaseImages = [
-    "/sitephoto/photo_1.jpg",
-    "/sitephoto/photo_2.jpg",
-    "/sitephoto/photo_3.jpg",
-    "/sitephoto/photo_4.jpg",
-    "/sitephoto/photo_5.jpg",
-    "/sitephoto/photo_6.jpg",
-    "/sitephoto/photo_7.jpg",
-    "/sitephoto/photo_8.jpg"
+    "/sitephoto/photo_1_opt.webp",
+    "/sitephoto/photo_2_opt.webp",
+    "/sitephoto/photo_3_opt.webp",
+    "/sitephoto/photo_4_opt.webp",
+    "/sitephoto/photo_5_opt.webp",
+    "/sitephoto/photo_6_opt.webp",
+    "/sitephoto/photo_7_opt.webp",
+    "/sitephoto/photo_8_opt.webp"
   ];
 
   useEffect(() => {
@@ -182,6 +182,8 @@ const AboutSection = () => {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.8, ease: "easeInOut" }}
                       className="absolute inset-0 h-full w-full object-cover z-10"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </AnimatePresence>
                 </div>

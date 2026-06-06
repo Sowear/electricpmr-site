@@ -1,9 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import { useLocation } from "react-router-dom";
 import { motion, useScroll, useSpring } from "framer-motion";
 import ScrollWire from "../common/ScrollWire";
+import { isPrerenderRuntime } from "@/lib/runtime";
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,6 +13,20 @@ interface LayoutProps {
   description?: string;
   canonical?: string;
 }
+
+const ClientOnly = ({ children }: { children: ReactNode }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (isPrerenderRuntime()) {
+      return;
+    }
+
+    setMounted(true);
+  }, []);
+
+  return mounted ? <>{children}</> : null;
+};
 
 const Layout = ({ 
   children, 
@@ -32,11 +47,13 @@ const Layout = ({
 
   return (
     <>
-      <ScrollWire />
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-primary origin-left z-[100] shadow-[0_0_15px_hsl(var(--primary))]"
-        style={{ scaleX }}
-      />
+      <ClientOnly>
+        <ScrollWire />
+        <motion.div
+          className="fixed top-0 left-0 right-0 h-1 bg-primary origin-left z-[100] shadow-[0_0_15px_hsl(var(--primary))]"
+          style={{ scaleX }}
+        />
+      </ClientOnly>
       {/* Organization Schema */}
       <script type="application/ld+json">
         {JSON.stringify({

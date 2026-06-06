@@ -1,7 +1,18 @@
 import { Link } from "react-router-dom";
 import { Zap, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { isPrerenderRuntime } from "@/lib/runtime";
+
+const COPYRIGHT_FALLBACK_YEAR = 2026;
 
 const Footer = () => {
+  const [currentYear, setCurrentYear] = useState(COPYRIGHT_FALLBACK_YEAR);
+
+  useEffect(() => {
+    if (isPrerenderRuntime()) return;
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="bg-muted/30 dark:bg-card border-t text-foreground">
       <div className="container-main py-12 md:py-16">
@@ -133,7 +144,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 flex flex-col gap-3 border-t border-border/60 pt-6 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} ЭлектроМастер. Все права защищены.</p>
+          <p>{`© ${currentYear} ЭлектроМастер. Все права защищены.`}</p>
           <p>Работаем по всему Приднестровью</p>
         </div>
       </div>

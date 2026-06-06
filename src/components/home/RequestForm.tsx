@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import { motion } from "framer-motion";
+import { isPrerenderRuntime } from "@/lib/runtime";
 
 const requestSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа").max(100),
@@ -49,6 +50,14 @@ const trustPoints = [
   { icon: CheckCircle2, text: "Работаем по договору, акт по завершению" },
 ];
 
+const fieldIds = {
+  name: "request-form-name",
+  phone: "request-form-phone",
+  serviceType: "request-form-service-type",
+  desiredDate: "request-form-desired-date",
+  description: "request-form-description",
+};
+
 interface RequestFormProps {
   preselectedService?: string;
 }
@@ -58,6 +67,7 @@ const RequestForm = ({ preselectedService }: RequestFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [minDesiredDate, setMinDesiredDate] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -71,6 +81,11 @@ const RequestForm = ({ preselectedService }: RequestFormProps) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserId(session?.user?.id ?? null);
     });
+  }, []);
+
+  useEffect(() => {
+    if (isPrerenderRuntime()) return;
+    setMinDesiredDate(new Date().toISOString().split("T")[0]);
   }, []);
 
   useEffect(() => {
@@ -179,15 +194,18 @@ const RequestForm = ({ preselectedService }: RequestFormProps) => {
           >
             <span className="technical-label mb-5 inline-flex">Бесплатная консультация</span>
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 leading-tight">
-              Получить расчёт{" "}
+              {"Получить расчёт "}
               <span className="text-primary">бесплатно</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-              Заполните форму — мы свяжемся с вами{" "}
-              {isUrgent
-                ? <span className="text-destructive font-semibold">в течение 2 часов</span>
-                : "в течение 24 часов"
-              }
+              {isUrgent ? (
+                <>
+                  {"Заполните форму — мы свяжемся с вами "}
+                  <span className="text-destructive font-semibold">в течение 2 часов</span>
+                </>
+              ) : (
+                "Заполните форму — мы свяжемся с вами в течение 24 часов"
+              )}
             </p>
 
             {/* Trust checklist */}
@@ -267,38 +285,49 @@ const RequestForm = ({ preselectedService }: RequestFormProps) => {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-foreground/90">
+                      <label htmlFor={fieldIds.name} className="block text-sm font-medium mb-2 text-foreground/90">
                         Ваше имя <span className="text-primary">*</span>
                       </label>
                       <Input
+                        id={fieldIds.name}
                         placeholder="Иван Петров"
                         value={formData.name}
                         onChange={(e) => handleChange("name", e.target.value)}
                         className={`transition-shadow focus:shadow-[0_0_0_3px_rgba(234,179,8,0.15)] ${errors.name ? "border-destructive" : ""}`}
+                        aria-invalid={Boolean(errors.name)}
+                        aria-describedby={errors.name ? `${fieldIds.name}-error` : undefined}
                       />
-                      {errors.name && <p className="text-destructive text-xs mt-1.5">{errors.name}</p>}
+                      {errors.name && <p id={`${fieldIds.name}-error`} className="text-destructive text-xs mt-1.5">{errors.name}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-foreground/90">
+                      <label htmlFor={fieldIds.phone} className="block text-sm font-medium mb-2 text-foreground/90">
                         Телефон <span className="text-primary">*</span>
                       </label>
                       <Input
+                        id={fieldIds.phone}
                         placeholder="+373 777 12345"
                         value={formData.phone}
                         onChange={(e) => handleChange("phone", e.target.value)}
                         className={`transition-shadow focus:shadow-[0_0_0_3px_rgba(234,179,8,0.15)] ${errors.phone ? "border-destructive" : ""}`}
+                        aria-invalid={Boolean(errors.phone)}
+                        aria-describedby={errors.phone ? `${fieldIds.phone}-error` : undefined}
                       />
-                      {errors.phone && <p className="text-destructive text-xs mt-1.5">{errors.phone}</p>}
+                      {errors.phone && <p id={`${fieldIds.phone}-error`} className="text-destructive text-xs mt-1.5">{errors.phone}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-foreground/90">
+                      <label htmlFor={fieldIds.serviceType} className="block text-sm font-medium mb-2 text-foreground/90">
                         Тип услуги <span className="text-primary">*</span>
                       </label>
                       <Select value={formData.service_type} onValueChange={(v) => handleChange("service_type", v)}>
-                        <SelectTrigger className={errors.service_type ? "border-destructive" : ""}>
+                        <SelectTrigger
+                          id={fieldIds.serviceType}
+                          className={errors.service_type ? "border-destructive" : ""}
+                          aria-invalid={Boolean(errors.service_type)}
+                          aria-describedby={errors.service_type ? `${fieldIds.serviceType}-error` : undefined}
+                        >
                           <SelectValue placeholder="Выберите услугу" />
                         </SelectTrigger>
                         <SelectContent>
@@ -307,26 +336,28 @@ const RequestForm = ({ preselectedService }: RequestFormProps) => {
                           ))}
                         </SelectContent>
                       </Select>
-                      {errors.service_type && <p className="text-destructive text-xs mt-1.5">{errors.service_type}</p>}
+                      {errors.service_type && <p id={`${fieldIds.serviceType}-error`} className="text-destructive text-xs mt-1.5">{errors.service_type}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-foreground/90">
+                      <label htmlFor={fieldIds.desiredDate} className="block text-sm font-medium mb-2 text-foreground/90">
                         Желаемая дата <span className="text-xs text-muted-foreground">(опц.)</span>
                       </label>
                       <Input
+                        id={fieldIds.desiredDate}
                         type="date"
                         value={formData.desired_date}
                         onChange={(e) => handleChange("desired_date", e.target.value)}
-                        min={new Date().toISOString().split("T")[0]}
+                        min={minDesiredDate || undefined}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-foreground/90">
+                    <label htmlFor={fieldIds.description} className="block text-sm font-medium mb-2 text-foreground/90">
                       Комментарий <span className="text-xs text-muted-foreground">(опц.)</span>
                     </label>
                     <Textarea
+                      id={fieldIds.description}
                       placeholder="Опишите вашу задачу: площадь, этаж, что нужно сделать..."
                       value={formData.description}
                       onChange={(e) => handleChange("description", e.target.value)}

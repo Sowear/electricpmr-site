@@ -4,15 +4,32 @@ import { ArrowRight, AlertTriangle, CheckCircle2, Shield, Users, FileText, MapPi
 import { motion, AnimatePresence } from "framer-motion";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
+import { isPrerenderRuntime } from "@/lib/runtime";
 
 // ─── Единый источник данных: слово и фото идут в паре по одному индексу ───────
 const SLIDES = [
-  { word: "квартир",    image: "/hero-kvartira.webp",    alt: "Электромонтаж в квартире — ЭлектроМастер ПМР" },
-  { word: "домов",      image: "/hero-dom.webp",         alt: "Электромонтаж в частном доме — ЭлектроМастер ПМР" },
-  { word: "бизнеса",    image: "/hero-biznes.webp",      alt: "Электрика для бизнеса — ЭлектроМастер ПМР" },
-  { word: "новостроек", image: "/hero-novostroika.webp", alt: "Электромонтаж в новостройке — ЭлектроМастер ПМР" },
+  { word: "квартир",    image: "/hero-kvartira-opt.webp",    alt: "Электромонтаж в квартире — ЭлектроМастер ПМР" },
+  { word: "домов",      image: "/hero-dom-opt.webp",         alt: "Электромонтаж в частном доме — ЭлектроМастер ПМР" },
+  { word: "бизнеса",    image: "/hero-biznes-opt.webp",      alt: "Электрика для бизнеса — ЭлектроМастер ПМР" },
+  { word: "новостроек", image: "/hero-novostroika-opt.webp", alt: "Электромонтаж в новостройке — ЭлектроМастер ПМР" },
 ];
 const INTERVAL_MS = 2500;
+const getImageLoadAttrs = (isPriority: boolean) => ({
+  loading: isPriority ? "eager" as const : "lazy" as const,
+  fetchpriority: isPriority ? "high" as const : "low" as const,
+  decoding: "async" as const,
+});
+
+const useHydratedClient = () => {
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    if (isPrerenderRuntime()) return;
+    setHydrated(true);
+  }, []);
+
+  return hydrated;
+};
 
 // ─── Варианты анимаций ────────────────────────────────────────────────────────
 const containerVariants = {
@@ -34,13 +51,16 @@ const HeroSection = () => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [quizOpen, setQuizOpen] = useState(false);
+  const enableMotion = useHydratedClient();
 
   useEffect(() => {
+    if (!enableMotion) return;
+
     const timer = setInterval(() => {
       setSlideIndex((prev) => (prev + 1) % SLIDES.length);
     }, INTERVAL_MS);
     return () => clearInterval(timer);
-  }, []);
+  }, [enableMotion]);
 
   const trustBadges = [
     { icon: Users,        title: "Объекты любого масштаба", subtitle: "Квартиры, дома и коммерческие проекты" },
@@ -76,18 +96,28 @@ const HeroSection = () => {
             </div>
 
             {/* Фото синхронизировано с slideIndex */}
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={slideIndex}
-                src={SLIDES[slideIndex].image}
-                alt={SLIDES[slideIndex].alt}
-                initial={{ opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.45, ease: "easeInOut" }}
+            {enableMotion ? (
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={slideIndex}
+                  src={SLIDES[slideIndex].image}
+                  alt={SLIDES[slideIndex].alt}
+                  initial={{ opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.45, ease: "easeInOut" }}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  {...getImageLoadAttrs(slideIndex === 0)}
+                />
+              </AnimatePresence>
+            ) : (
+              <img
+                src={SLIDES[0].image}
+                alt={SLIDES[0].alt}
                 className="absolute inset-0 h-full w-full object-cover"
+                {...getImageLoadAttrs(true)}
               />
-            </AnimatePresence>
+            )}
 
             {/* Затемняющий градиент снизу для читаемости */}
             <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background/60 to-transparent z-10" />
@@ -98,7 +128,7 @@ const HeroSection = () => {
         <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
 
           {/* Левая колонка: текст */}
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="max-w-[42rem]">
+          <motion.div variants={containerVariants} initial={enableMotion ? "hidden" : false} animate={enableMotion ? "visible" : undefined} className="max-w-[42rem]">
             <motion.div variants={itemVariants} className="technical-label mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
@@ -111,22 +141,28 @@ const HeroSection = () => {
               variants={itemVariants}
               className="font-display text-3xl font-bold leading-[1.08] text-foreground sm:text-5xl lg:text-6xl"
             >
-              Проектируем и монтируем электрику для{" "}
+              {"Проектируем и монтируем электрику для "}
               {/* Слово берётся из того же slideIndex что и фото */}
               <span className="relative inline-block h-[1.2em] w-[160px] align-text-bottom sm:w-[240px] md:w-[280px] lg:w-[330px]">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={slideIndex}
-                    initial={{ y: 34, opacity: 0, rotateX: -90 }}
-                    animate={{ y: 0, opacity: 1, rotateX: 0 }}
-                    exit={{ y: -34, opacity: 0, rotateX: 90 }}
-                    transition={{ duration: 0.45, type: "spring", bounce: 0.28 }}
-                    className="text-gradient absolute left-0 top-0 inline-block whitespace-nowrap"
-                    style={{ transformOrigin: "50% 50% -20px" }}
-                  >
-                    {SLIDES[slideIndex].word}
-                  </motion.span>
-                </AnimatePresence>
+                {enableMotion ? (
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={slideIndex}
+                      initial={{ y: 34, opacity: 0, rotateX: -90 }}
+                      animate={{ y: 0, opacity: 1, rotateX: 0 }}
+                      exit={{ y: -34, opacity: 0, rotateX: 90 }}
+                      transition={{ duration: 0.45, type: "spring", bounce: 0.28 }}
+                      className="text-gradient absolute left-0 top-0 inline-block whitespace-nowrap"
+                      style={{ transformOrigin: "50% 50% -20px" }}
+                    >
+                      {SLIDES[slideIndex].word}
+                    </motion.span>
+                  </AnimatePresence>
+                ) : (
+                  <span className="text-gradient absolute left-0 top-0 inline-block whitespace-nowrap">
+                    {SLIDES[0].word}
+                  </span>
+                )}
               </span>
             </motion.h1>
 
@@ -178,27 +214,27 @@ const HeroSection = () => {
           {/* Правая колонка: десктопная панель с фото (скрыта на мобильном) */}
           <motion.div
             variants={panelVariants}
-            initial="hidden"
-            animate="visible"
+            initial={enableMotion ? "hidden" : false}
+            animate={enableMotion ? "visible" : undefined}
             className="relative hidden lg:flex mx-auto w-full max-w-[640px] lg:max-w-none"
           >
             <div className="relative flex min-h-[520px] w-full items-center justify-end">
               {/* Фоновые глоу-орбы */}
               <motion.div
-                animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                animate={enableMotion ? { scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] } : undefined}
+                transition={enableMotion ? { duration: 8, repeat: Infinity, ease: "easeInOut" } : undefined}
                 className="pointer-events-none absolute right-[8%] top-[14%] h-[56%] w-[60%] rounded-full bg-[rgba(255,190,60,0.18)] blur-[100px]"
               />
               <motion.div
-                animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                animate={enableMotion ? { scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] } : undefined}
+                transition={enableMotion ? { duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 } : undefined}
                 className="pointer-events-none absolute right-[14%] bottom-[14%] h-[24%] w-[34%] rounded-full bg-[rgba(59,130,246,0.15)] blur-[80px]"
               />
 
               <motion.div
                 className="relative z-10 ml-auto w-full max-w-[520px] aspect-square"
-                animate={{ y: [-12, 12, -12] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                animate={enableMotion ? { y: [-12, 12, -12] } : undefined}
+                transition={enableMotion ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : undefined}
               >
                 <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full scale-[0.85]" />
 
@@ -216,18 +252,28 @@ const HeroSection = () => {
                   </div>
 
                   {/* Фото синхронизировано с slideIndex */}
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={slideIndex}
-                      src={SLIDES[slideIndex].image}
-                      alt={SLIDES[slideIndex].alt}
-                      initial={{ opacity: 0, scale: 1.04 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.45, ease: "easeInOut" }}
+                  {enableMotion ? (
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={slideIndex}
+                        src={SLIDES[slideIndex].image}
+                        alt={SLIDES[slideIndex].alt}
+                        initial={{ opacity: 0, scale: 1.04 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.45, ease: "easeInOut" }}
+                        className="absolute inset-0 h-full w-full object-cover z-10"
+                        {...getImageLoadAttrs(slideIndex === 0)}
+                      />
+                    </AnimatePresence>
+                  ) : (
+                    <img
+                      src={SLIDES[0].image}
+                      alt={SLIDES[0].alt}
                       className="absolute inset-0 h-full w-full object-cover z-10"
+                      {...getImageLoadAttrs(true)}
                     />
-                  </AnimatePresence>
+                  )}
                 </div>
               </motion.div>
             </div>
@@ -238,8 +284,8 @@ const HeroSection = () => {
         <motion.div
           className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
           variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+          initial={enableMotion ? "hidden" : false}
+          animate={enableMotion ? "visible" : undefined}
         >
           {trustBadges.map((badge) => (
             <motion.div key={badge.title} variants={itemVariants} className="card-industrial p-5">

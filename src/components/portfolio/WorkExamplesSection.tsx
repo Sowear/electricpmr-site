@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { useWorkExamples, WorkExample } from "@/hooks/useWorkExamples";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, Eye } from "lucide-react";
 import WorkExampleLightbox from "./WorkExampleLightbox";
 
@@ -13,7 +12,7 @@ const WorkExamplesSection = () => {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
   const hasExamples = (examples?.length ?? 0) > 0;
 
-  if (!isLoading && !hasExamples) {
+  if (isLoading || !hasExamples) {
     return null;
   }
 
@@ -66,25 +65,22 @@ const WorkExamplesSection = () => {
         </motion.div>
 
         {/* Gallery Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            {examples!.map((example) => (
-              <motion.div
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {examples!.map((example) => (
+              <motion.button
                 key={example.id}
+                type="button"
                 variants={itemVariants}
-                className="group relative cursor-pointer"
+                className="group relative block w-full cursor-pointer appearance-none rounded-xl border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={() => setSelectedExample(example)}
+                aria-label={`Открыть пример работы: ${example.title}`}
+                aria-haspopup="dialog"
+                aria-expanded={selectedExample?.id === example.id}
               >
                 <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-card border border-border shadow-sm">
                   {/* Before Image */}
@@ -142,10 +138,9 @@ const WorkExamplesSection = () => {
                     </Badge>
                   </div>
                 )}
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
+              </motion.button>
+          ))}
+        </motion.div>
 
         {/* CTA */}
         {hasExamples && (

@@ -28,14 +28,37 @@ export default defineConfig(async ({ mode }) => {
       headless: true,
       launchOptions,
       consoleHandler: (route, msg) => {
+        if (
+          msg.type() === "warn" &&
+          msg.text().includes("Error while trying to use the following icon from the Manifest")
+        ) {
+          return;
+        }
+
         console.log(`[Puppeteer Route: ${route}] [${msg.type()}]`, msg.text());
       },
-      pageHandler: (page, route) => {
+      pageHandler: async (page, route) => {
+        await page.setCacheEnabled(false);
+        await page.evaluateOnNewDocument(() => {
+          Object.defineProperty(globalThis, "__ELECTRICPMR_PRERENDER__", {
+            value: true,
+            configurable: false
+          });
+        });
+
         page.on('requestfailed', request => {
-          console.log(`[Request Failed: ${route}] ${request.url()} - ${request.failure()?.errorText}`);
+          const url = request.url();
+          const isAnalyticsRequest =
+            url.includes("analytics.google.com") ||
+            url.includes("google-analytics.com") ||
+            url.includes("googletagmanager.com");
+
+          if (!isAnalyticsRequest) {
+            console.log(`[Request Failed: ${route}] ${url} - ${request.failure()?.errorText}`);
+          }
         });
         page.on('response', response => {
-          if (!response.ok()) {
+          if (!response.ok() && response.status() !== 304) {
             console.log(`[Response Error: ${route}] ${response.status()} ${response.url()}`);
           }
         });

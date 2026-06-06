@@ -38,10 +38,15 @@ const NotificationBell = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative"
+          aria-label={unreadCount > 0 ? `Уведомления: ${unreadCount} непрочитанных` : "Уведомления"}
+        >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-destructive text-destructive-foreground">
+            <Badge aria-hidden="true" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-destructive text-destructive-foreground">
               {unreadCount > 9 ? "9+" : unreadCount}
             </Badge>
           )}

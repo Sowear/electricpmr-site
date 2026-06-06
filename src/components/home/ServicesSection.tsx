@@ -26,6 +26,10 @@ const ServicesSection = () => {
   };
 
   const currentData = activeZone ? zonesData[activeZone] : zonesData["hallway"];
+  const zoneLabel = currentData.id === "hallway" ? "Входная группа" :
+    currentData.id === "kitchen" ? "Высокая нагрузка" :
+    currentData.id === "living" ? "Мультимедиа" :
+    currentData.id === "bathroom" ? "Влажная зона" : "Зона отдыха";
 
   return (
     <section className="section-padding overflow-hidden">
@@ -93,10 +97,7 @@ const ServicesSection = () => {
                   className="flex-1 flex flex-col relative z-10"
                 >
                   <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-6 w-fit">
-                    Зона: {currentData.id === 'hallway' ? 'Входная группа' : 
-                          currentData.id === 'kitchen' ? 'Высокая нагрузка' : 
-                          currentData.id === 'living' ? 'Мультимедиа' :
-                          currentData.id === 'bathroom' ? 'Влажная зона' : 'Зона отдыха'}
+                    {`Зона: ${zoneLabel}`}
                   </div>
                   
                   <h3 className="font-display text-2xl md:text-3xl font-bold mb-4 text-foreground">

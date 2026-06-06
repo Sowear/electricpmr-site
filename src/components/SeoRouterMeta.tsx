@@ -201,9 +201,6 @@ export default function SeoRouterMeta() {
       if ((titleMatches && canonicalMatches) || timeElapsed > 10000) {
         isDispatched = true;
         document.dispatchEvent(new Event("x-prerender-trigger"));
-        console.log(
-          `[Prerender] x-prerender-trigger dispatched for ${pathname} (titleMatches: ${titleMatches}, canonicalMatches: ${canonicalMatches}, elapsed: ${timeElapsed}ms)`
-        );
       } else {
         setTimeout(checkAndTrigger, 50);
       }
@@ -216,7 +213,6 @@ export default function SeoRouterMeta() {
       clearTimeout(timer);
     };
   }, [pathname, seo.title, canonical]);
-  console.log("SeoRouterMeta - path:", pathname, "normalized:", normalizedPath, "canonical:", canonical);
   const robots = seo.index === false ? "noindex,nofollow" : "index,follow";
 
   const breadcrumbItems = [

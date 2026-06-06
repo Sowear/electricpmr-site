@@ -2,12 +2,17 @@ import { Lightbulb, LightbulbOff } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { isPrerenderRuntime } from "@/lib/runtime";
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
+    if (isPrerenderRuntime()) {
+      return;
+    }
+
     setMounted(true);
   }, []);
 

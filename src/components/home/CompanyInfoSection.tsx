@@ -61,7 +61,7 @@ const CompanyInfoSection = () => {
         >
           <span className="technical-label mb-4 inline-flex">О компании</span>
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            Профессиональный электромонтаж{" "}
+            {"Профессиональный электромонтаж "}
             <span className="text-primary">в Приднестровье</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">

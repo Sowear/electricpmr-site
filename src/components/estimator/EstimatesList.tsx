@@ -92,7 +92,7 @@ const EstimatesList = () => {
             className="pl-10"
           />
         </div>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" aria-label="Фильтр смет">
           <Filter className="h-4 w-4" />
         </Button>
       </div>
@@ -180,7 +180,7 @@ const EstimatesList = () => {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" aria-label={`Действия для сметы ${estimate.estimate_number}`}>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

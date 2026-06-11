@@ -34,14 +34,11 @@ const whyNoPrices = [
 
 const Pricing = () => {
   return (
-    <Layout
-      title="Стоимость электромонтажа — ЭлектроМастер"
-      description="Цены на электромонтаж в Приднестровье. Прозрачный расчёт, понятная смета и согласование работ до начала монтажа."
-    >
+    <Layout>
       <section className="section-padding bg-secondary/30">
         <div className="container-main">
           <div className="max-w-3xl">
-            <h1 className="mb-6 font-display text-4xl font-bold md:text-5xl">Стоимость работ</h1>
+            <h1 className="mb-6 font-display text-4xl font-bold md:text-5xl">Цены на электромонтажные работы в Тирасполе и ПМР</h1>
             <p className="text-lg text-muted-foreground">
               Мы рассчитываем стоимость индивидуально для каждого проекта, чтобы вы платили только за то,
               что действительно нужно вашему объекту.

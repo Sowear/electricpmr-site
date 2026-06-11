@@ -14,10 +14,7 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
-    <Layout
-      title="ЭлектроМастер — электромонтаж в Тирасполе и Слободзее"
-      description="ЭлектроМастер — профессиональный электромонтаж в Тирасполе и Слободзее. Квартиры и частные дома, аварийный выезд и гарантия. Также работаем в Бендерах."
-    >
+    <Layout>
       {/* 1 */} <HeroSection />
       {/* 2 */} <ServicesSection />
       {/* 3 */} <QualityPassportSection />
@@ -71,12 +68,12 @@ const Index = () => {
 
             <div className="text-center pt-6">
               <p className="text-sm text-muted-foreground mb-4">Не нашли свой вопрос?</p>
-              <button
-                onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
-                className="inline-flex items-center justify-center h-10 px-4 bg-primary text-primary-foreground rounded-md font-medium hover:opacity-90 transition-opacity"
+              <a
+                href="#request-form"
+                className="inline-flex items-center justify-center h-10 px-4 bg-primary text-primary-foreground rounded-md font-medium hover:opacity-90 transition-opacity no-underline"
               >
                 Написать нам
-              </button>
+              </a>
             </div>
           </div>
         </div>

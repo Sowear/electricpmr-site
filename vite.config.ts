@@ -136,6 +136,35 @@ export default defineConfig(async ({ mode }) => {
         renderer: prerenderRenderer,
         server: {
           port: 8080
+        },
+        postProcess(renderedRoute) {
+          // Strip data-rh and other non-standard attributes from canonical link tags
+          renderedRoute.html = renderedRoute.html.replace(
+            /<link([^>]*?)rel="canonical"([^>]*?)>/gi,
+            (match) => {
+              const hrefMatch = match.match(/href="([^"]*)"/);
+              if (hrefMatch) {
+                return `<link rel="canonical" href="${hrefMatch[1]}">`;
+              }
+              return match;
+            }
+          );
+
+          // Remove duplicate canonical tags (keep only the first clean one)
+          let canonicalCount = 0;
+          renderedRoute.html = renderedRoute.html.replace(
+            /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/gi,
+            (match) => {
+              canonicalCount++;
+              return canonicalCount === 1 ? match : '';
+            }
+          );
+
+          // Strip data-rh attributes from all meta tags
+          renderedRoute.html = renderedRoute.html.replace(
+            /(<(?:meta|title|script|link)[^>]*?)\s+data-rh="true"/gi,
+            '$1'
+          );
         }
       })
     ].filter(Boolean),

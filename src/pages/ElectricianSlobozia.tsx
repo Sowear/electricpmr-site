@@ -4,14 +4,11 @@ import { Link } from "react-router-dom";
 
 const ElectricianSlobozia = () => {
   return (
-    <Layout
-      title="Электрик в Слободзее — ЭлектроМастер | Профессиональные услуги"
-      description="Электрик в Слободзее — замена проводки, установка щитов, подключение техники. Работаем по ПУЭ, с гарантией, без посредников."
-    >
+    <Layout>
       <div className="container-main py-12">
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">Электрик в Слободзее</h1>
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">Услуги электрика в Слободзее</h1>
             <p className="text-lg text-muted-foreground">
               Профессиональный электромонтаж в Слободзее: ремонт, новостройки, замена проводки. 
               Быстрое реагирование, качество, соблюдение норм безопасности.

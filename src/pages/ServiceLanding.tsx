@@ -137,10 +137,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
   if (!content) return null;
 
   return (
-    <Layout
-      title={content.title}
-      description={content.description}
-    >
+    <Layout>
       {/* Schema.org for Service */}
       <script type="application/ld+json">
         {JSON.stringify({

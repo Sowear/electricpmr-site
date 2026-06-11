@@ -4,14 +4,11 @@ import { Link } from "react-router-dom";
 
 const ElectricianBendery = () => {
   return (
-    <Layout
-      title="Электрик в Бендерах — ЭлектроМастер | Электромонтажные работы"
-      description="Электрик в Бендерах — замена проводки, установка розеток, сборка щитов. Профессиональный подход, гарантия качества, без посредников."
-    >
+    <Layout>
       <div className="container-main py-12">
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">Электрик в Бендерах</h1>
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">Услуги электрика в Бендерах</h1>
             <p className="text-lg text-muted-foreground">
               Квалифицированный электромонтаж в Бендерах: квартиры, дома, коммерческие объекты. 
               Работаем по нормам ПУЭ, с гарантией и понятной сметой.

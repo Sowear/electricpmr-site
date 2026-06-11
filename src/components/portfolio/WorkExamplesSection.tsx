@@ -3,6 +3,7 @@ import { motion, useInView } from "framer-motion";
 import { useWorkExamples, WorkExample } from "@/hooks/useWorkExamples";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
 import WorkExampleLightbox from "./WorkExampleLightbox";
 
 const WorkExamplesSection = () => {
@@ -150,13 +151,13 @@ const WorkExamplesSection = () => {
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.8 }}
           >
-            <a
-              href="#request-form"
+            <Link
+              to="/#request-form"
               className="inline-flex items-center gap-2 text-primary font-medium hover:underline underline-offset-4"
             >
               Хотите так же? Оставьте заявку
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </motion.div>
         )}
       </div>

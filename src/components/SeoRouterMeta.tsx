@@ -14,7 +14,7 @@ const SITE_URL = "https://electricpmr.vercel.app";
 
 const SEO_BY_ROUTE: Record<string, SeoConfig> = {
   "/": {
-    title: "ЭлектроМастер - электрик в Тирасполе и ПМР | Электромонтаж под ключ, замена проводки",
+    title: "ЭлектроМастер - электрик в Тирасполе и ПМР",
     description:
       "Электромонтажная компания ЭлектроМастер в Тирасполе и ПМР. Замена проводки, сборка электрощитов, монтаж розеток и освещения, поиск неисправностей. Работаем с квартирами и домами.",
     index: true,
@@ -22,7 +22,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 1.0,
   },
   "/uslugi": {
-    title: "ЭлектроМастер - услуги электрика в Тирасполе и ПМР | Электромонтажные работы",
+    title: "Услуги электрика в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Монтаж и ремонт электрики: проводка, розетки, выключатели, автоматы, освещение, электрощиты, поиск неисправностей и аварийный выезд.",
     index: true,
@@ -30,7 +30,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.8,
   },
   "/stoimost": {
-    title: "ЭлектроМастер - цены на электромонтажные работы в Тирасполе и ПМР | Стоимость услуг",
+    title: "Цены на электромонтаж в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Актуальные цены на электромонтажные работы: замена проводки, монтаж розеток, сборка щитов, подключение оборудования и ремонт электрики.",
     index: true,
@@ -38,7 +38,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.8,
   },
   "/elektrik-v-tiraspole": {
-    title: "ЭлектроМастер - электрик в Тирасполе | Электромонтаж, замена проводки, аварийный выезд",
+    title: "Электрик в Тирасполе: услуги и цены | ЭлектроМастер",
     description:
       "Услуги электрика в Тирасполе. Замена проводки, установка розеток и выключателей, сборка электрощитов, поиск неисправностей и аварийный выезд по городу.",
     index: true,
@@ -46,7 +46,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.7,
   },
   "/elektrik-v-benderah": {
-    title: "ЭлектроМастер - электрик в Бендерах | Электромонтажные работы и ремонт электрики",
+    title: "Электрик в Бендерах: услуги и цены | ЭлектроМастер",
     description:
       "Профессиональный электрик в Бендерах. Монтаж проводки, подключение автоматов, сборка электрощитов, ремонт и обслуживание электрических сетей.",
     index: true,
@@ -54,7 +54,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.7,
   },
   "/elektrik-v-slobodzee": {
-    title: "ЭлектроМастер - электрик в Слободзее | Замена проводки, монтаж электрики под ключ",
+    title: "Электрик в Слободзее: услуги и цены | ЭлектроМастер",
     description:
       "Электромонтажные работы в Слободзее. Замена старой проводки, монтаж розеток и освещения, сборка электрощитов, устранение неисправностей и консультации.",
     index: true,
@@ -62,7 +62,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.7,
   },
   "/zamena-provodki": {
-    title: "ЭлектроМастер - замена проводки в Тирасполе и ПМР | Электрик, монтаж новой проводки",
+    title: "Замена электропроводки в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Полная и частичная замена электропроводки в квартирах, домах и новостройках. Расчёт нагрузки, безопасный монтаж, современные материалы.",
     index: true,
@@ -70,7 +70,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.8,
   },
   "/sborka-elektroshchita": {
-    title: "ЭлектроМастер - сборка электрощитов в Тирасполе и ПМР | Автоматы, УЗО, щиты",
+    title: "Сборка электрощитов в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Профессиональная сборка и монтаж электрощитов. Установка автоматов, УЗО, дифавтоматов, маркировка и подключение по нормам.",
     index: true,
@@ -78,7 +78,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.8,
   },
   "/avariynyy-elektrik": {
-    title: "ЭлектроМастер - Аварийный электрик Тирасполь и ПМР | Срочный выезд электрика",
+    title: "Аварийный вызов электрика в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Срочный вызов электрика. Короткое замыкание, выбивает автомат, пропал свет, неисправность проводки. Диагностика и устранение аварий.",
     index: true,
@@ -86,7 +86,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.9,
   },
   "/elektromontazh-v-kvartire": {
-    title: "ЭлектроМастер - электромонтаж в квартире Тирасполь и ПМР | Проводка, розетки, освещение",
+    title: "Электромонтаж в квартире в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Комплексный электромонтаж квартир. Замена проводки, установка розеток, выключателей, освещения и электрощитов под ключ.",
     index: true,
@@ -94,7 +94,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.8,
   },
   "/elektromontazh-v-dome": {
-    title: "ЭлектроМастер - электромонтаж в частном доме Тирасполь и ПМР | Электрика под ключ",
+    title: "Электромонтаж в частном доме в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Проектирование и монтаж электрики в частных домах. Ввод питания, электрощиты, освещение, розетки, заземление и защита сети.",
     index: true,
@@ -102,7 +102,7 @@ const SEO_BY_ROUTE: Record<string, SeoConfig> = {
     priority: 0.8,
   },
   "/contact": {
-    title: "ЭлектроМастер - Контакты электрика в Тирасполе | Связаться с ЭлектроМастер",
+    title: "Контакты электрика в Тирасполе и ПМР | ЭлектроМастер",
     description:
       "Контакты для заказа электромонтажных работ в Тирасполе и ПМР. Консультация, расчёт стоимости и запись на выезд специалиста.",
     index: true,
@@ -168,6 +168,7 @@ const isDynamicInternalPath = (path: string) => {
     /^\/admin\/.+/.test(path)
   );
 };
+
 export default function SeoRouterMeta() {
   const { pathname } = useLocation();
   const normalizedPath = normalizePath(pathname);
@@ -182,6 +183,24 @@ export default function SeoRouterMeta() {
     : baseSeo;
 
   const canonical = `${SITE_URL}${normalizedPath === "/" ? "" : normalizedPath}`;
+
+  useEffect(() => {
+    let canonicalEl = document.querySelector("link[rel='canonical']");
+    if (!canonicalEl) {
+      canonicalEl = document.createElement("link");
+      canonicalEl.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalEl);
+    }
+    canonicalEl.setAttribute("href", canonical);
+    
+    // Clean up other attributes (e.g. data-rh) from the canonical tag if present
+    for (let i = canonicalEl.attributes.length - 1; i >= 0; i--) {
+      const attr = canonicalEl.attributes[i].name;
+      if (attr !== 'rel' && attr !== 'href') {
+        canonicalEl.removeAttribute(attr);
+      }
+    }
+  }, [canonical]);
 
   useEffect(() => {
     const startTime = Date.now();
@@ -213,6 +232,7 @@ export default function SeoRouterMeta() {
       clearTimeout(timer);
     };
   }, [pathname, seo.title, canonical]);
+
   const robots = seo.index === false ? "noindex,nofollow" : "index,follow";
 
   const breadcrumbItems = [
@@ -238,8 +258,8 @@ export default function SeoRouterMeta() {
     <Helmet>
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
-      <meta name="robots" content={robots} />
       <link rel="canonical" href={canonical} />
+      <meta name="robots" content={robots} />
 
       <meta property="og:type" content="website" />
       <meta property="og:title" content={seo.title} />

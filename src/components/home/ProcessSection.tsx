@@ -162,13 +162,13 @@ const ProcessSection = () => {
                 Расскажите, что нужно сделать — мы бесплатно проконсультируем, оценим объём и сразу сориентируем по точной стоимости.
               </p>
             </div>
-            <button 
-              onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group h-14 px-8 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-md flex items-center gap-2 mx-auto lg:mx-0"
+            <a 
+              href="#request-form"
+              className="group h-14 px-8 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-md flex items-center gap-2 mx-auto lg:mx-0 no-underline"
             >
               Оставить заявку
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} aria-hidden="true" />
-            </button>
+            </a>
           </div>
         </motion.div>
       </div>

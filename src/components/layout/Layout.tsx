@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
-import { useLocation } from "react-router-dom";
 import { motion, useScroll, useSpring } from "framer-motion";
 import ScrollWire from "../common/ScrollWire";
 import { isPrerenderRuntime } from "@/lib/runtime";
@@ -9,9 +8,6 @@ import { isPrerenderRuntime } from "@/lib/runtime";
 interface LayoutProps {
   children: ReactNode;
   showFooter?: boolean;
-  title?: string;
-  description?: string;
-  canonical?: string;
 }
 
 const ClientOnly = ({ children }: { children: ReactNode }) => {
@@ -31,9 +27,6 @@ const ClientOnly = ({ children }: { children: ReactNode }) => {
 const Layout = ({ 
   children, 
   showFooter = true, 
-  title = "ЭлектроМастер — электромонтаж в Приднестровье", 
-  description = "Профессиональный электромонтаж в Тирасполе, Слободзее, Бендерах. Монтаж, ремонт, аварийный выезд. Качественная работа с гарантией.",
-  canonical 
 }: LayoutProps) => {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -42,8 +35,7 @@ const Layout = ({
     restDelta: 0.001
   });
 
-  const loc = useLocation();
-  const currentCanonical = canonical || `https://electricpmr.vercel.app${loc.pathname === "/" ? "" : loc.pathname.replace(/\/$/, "")}`;
+
 
   return (
     <>

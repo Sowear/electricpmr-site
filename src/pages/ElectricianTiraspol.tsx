@@ -4,14 +4,11 @@ import { Link } from "react-router-dom";
 
 const ElectricianTiraspol = () => {
   return (
-    <Layout 
-      title="Электрик в Тирасполе — ЭлектроМастер | Профессиональный электромонтаж"
-      description="Электрик в Тирасполе — замена проводки, установка розеток, сборка щитов, подключение техники. Работаем по ПУЭ, гарантия, без посредников."
-    >
+    <Layout>
       <div className="container-main py-12">
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">Электрик в Тирасполе</h1>
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">Услуги электрика в Тирасполе</h1>
             <p className="text-lg text-muted-foreground">
               Профессиональный электромонтаж в Тирасполе: квартиры, частные дома, новостройки. 
               Работаем аккуратно, по нормам безопасности, с гарантией.

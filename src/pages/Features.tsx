@@ -65,16 +65,13 @@ const SERVICES = [
 
 const Features = () => {
   return (
-    <Layout
-      title="Электромонтажные услуги — ЭлектроМастер"
-      description="Полный спектр электромонтажных работ: замена проводки, установка розеток, сборка щитов, подключение техники. Работаем в Тирасполе, Слободзее, Бендерах."
-    >
+    <Layout>
       {/* Hero */}
       <section className="section-padding bg-secondary/30">
         <div className="container-main">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">
-              Наши услуги
+              Электромонтажные услуги в Тирасполе и ПМР
             </h1>
             <p className="text-lg text-muted-foreground">
               Комплексный подход к электромонтажу: от проектирования до сдачи объекта. Работаем качественно, быстро и с гарантией.
@@ -169,12 +166,12 @@ const Features = () => {
             <div className="text-center pt-6">
               <p className="text-sm text-muted-foreground mb-4">Не нашли свой вопрос?</p>
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                <button 
-                  onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
+                <Link 
+                  to="/#request-form"
                   className="inline-flex items-center justify-center h-10 px-4 bg-primary text-primary-foreground rounded-md font-medium hover:opacity-90 transition-opacity"
                 >
                   Задать вопрос
-                </button>
+                </Link>
               </div>
             </div>
           </div>

@@ -71,10 +71,7 @@ const CityLanding = ({ cityKey }: CityLandingProps) => {
   };
 
   return (
-    <Layout
-      title={getTitleByCity(cityKey)}
-      description={getDescriptionByCity(cityKey)}
-    >
+    <Layout>
       <section className="section-padding bg-secondary/30">
         <div className="container-main grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <div>

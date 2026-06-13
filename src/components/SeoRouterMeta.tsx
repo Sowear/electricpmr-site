@@ -185,24 +185,6 @@ export default function SeoRouterMeta() {
   const canonical = `${SITE_URL}${normalizedPath === "/" ? "" : normalizedPath}`;
 
   useEffect(() => {
-    let canonicalEl = document.querySelector("link[rel='canonical']");
-    if (!canonicalEl) {
-      canonicalEl = document.createElement("link");
-      canonicalEl.setAttribute("rel", "canonical");
-      document.head.appendChild(canonicalEl);
-    }
-    canonicalEl.setAttribute("href", canonical);
-    
-    // Clean up other attributes (e.g. data-rh) from the canonical tag if present
-    for (let i = canonicalEl.attributes.length - 1; i >= 0; i--) {
-      const attr = canonicalEl.attributes[i].name;
-      if (attr !== 'rel' && attr !== 'href') {
-        canonicalEl.removeAttribute(attr);
-      }
-    }
-  }, [canonical]);
-
-  useEffect(() => {
     const startTime = Date.now();
     let isDispatched = false;
 

@@ -5,6 +5,16 @@
     { "source": "/features", "destination": "/uslugi", "statusCode": 301 },
     { "source": "/pricing", "destination": "/stoimost", "statusCode": 301 }
   ],
+  "rewrites": [
+    { "source": "/auth", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/projects", "destination": "/index.html" },
+    { "source": "/projects/:path*", "destination": "/index.html" },
+    { "source": "/estimator", "destination": "/index.html" },
+    { "source": "/estimator/:path*", "destination": "/index.html" },
+    { "source": "/admin/:path*", "destination": "/index.html" },
+    { "source": "/catalog", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

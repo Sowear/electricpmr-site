@@ -9,7 +9,11 @@ interface Props {
 
 const { title, description, canonical, robots = "index,follow" } = Astro.props;
 const siteUrl = "https://electricpmr.vercel.app";
-const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
+let pathname = Astro.url.pathname;
+if (pathname.endsWith("/")) {
+  pathname = pathname.slice(0, -1);
+}
+const canonicalUrl = canonical || `${siteUrl}${pathname}`;
 
 const breadcrumbItems = [
   {

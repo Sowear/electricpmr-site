@@ -9,6 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   site: 'https://electricpmr.vercel.app',
+  trailingSlash: 'never',
   integrations: [
     react(),
     tailwind({

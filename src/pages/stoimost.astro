@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/Pricing';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Цены на электромонтаж в Тирасполе и ПМР | ЭлектроМастер";
+const description = "Актуальные цены на электромонтажные работы: замена проводки, монтаж розеток, сборка щитов, подключение оборудования и ремонт электрики.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Phone, MapPin, ShieldCheck, Clock3, CheckCircle2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -83,7 +82,7 @@ const CityLanding = ({ cityKey }: CityLandingProps) => {
 
             <div className="flex flex-wrap gap-3">
               <Button size="lg" asChild>
-                <Link to="/#request-form">Оставить заявку</Link>
+                <a href="/#request-form">Оставить заявку</a>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <a href="tel:+37377746642">

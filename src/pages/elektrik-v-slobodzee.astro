@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/ElectricianSlobozia';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Электрик в Слободзее: услуги и цены | ЭлектроМастер";
+const description = "Электромонтажные работы в Слободзее. Замена старой проводки, монтаж розеток и освещения, сборка электрощитов, устранение неисправностей и консультации.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

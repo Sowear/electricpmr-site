@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/services/ServiceAvariynyy';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Аварийный вызов электрика в Тирасполе и ПМР | ЭлектроМастер";
+const description = "Срочный вызов электрика. Короткое замыкание, выбивает автомат, пропал свет, неисправность проводки. Диагностика и устранение аварий.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

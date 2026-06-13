@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/Contact';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Контакты электрика в Тирасполе и ПМР | ЭлектроМастер";
+const description = "Контакты для заказа электромонтажных работ в Тирасполе и ПМР. Консультация, расчёт стоимости и запись на выезд специалиста.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

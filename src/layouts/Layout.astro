@@ -1,0 +1,256 @@
+---
+import "../index.css";
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  robots?: string;
+}
+
+const { title, description, canonical, robots = "index,follow" } = Astro.props;
+const siteUrl = "https://electricpmr.vercel.app";
+const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
+
+const breadcrumbItems = [
+  {
+    "@type": "ListItem",
+    position: 1,
+    name: "Главная",
+    item: siteUrl,
+  },
+  ...(Astro.url.pathname !== "/"
+    ? [
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: title,
+          item: canonicalUrl,
+        },
+      ]
+    : []),
+];
+---
+
+<!doctype html>
+<html lang="ru" class="light">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LFTBJ7RZ6C"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-LFTBJ7RZ6C");
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eab308" />
+    <link rel="apple-touch-icon" href="/logo-192x192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="/hero-kvartira-opt.webp" type="image/webp" fetchpriority="high" />
+    
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content={robots} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="ЭлектроМастер" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:image" content={`${siteUrl}/social_og_image.png`} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${siteUrl}/social_og_image.png`} />
+
+    <meta name="googlebot" content={robots} />
+
+    <!-- Schema.org JSON-LD Markup for Local Business and Rating -->
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "Electrician",
+      "name": "ЭлектроМастер ПМР",
+      "image": "https://electricpmr.vercel.app/logo-192x192.png",
+      "@id": "https://electricpmr.vercel.app",
+      "url": "https://electricpmr.vercel.app",
+      "telephone": "+37377746642",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Тирасполь",
+        "addressRegion": "ПМР",
+        "addressCountry": "MD"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 46.8360,
+        "longitude": 29.6263
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Тирасполь" },
+        { "@type": "City", "name": "Бендеры" },
+        { "@type": "City", "name": "Слободзея" },
+        { "@type": "City", "name": "Днестровск" },
+        { "@type": "City", "name": "Григориополь" }
+      ],
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "08:00",
+        "closes": "20:00"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "37"
+      },
+      "priceRange": "$$",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Электромонтажные услуги",
+        "itemListElement": [
+          {
+            "@type": "OfferCatalog",
+            "name": "Замена проводки",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Замена проводки в квартире",
+                  "url": "https://electricpmr.vercel.app/zamena-provodki"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "OfferCatalog",
+            "name": "Сборка электрощита",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Сборка и монтаж электрощита",
+                  "url": "https://electricpmr.vercel.app/sborka-elektroshchita"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "OfferCatalog",
+            "name": "Аварийный электрик",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Аварийный вызов электрика",
+                  "url": "https://electricpmr.vercel.app/avariynyy-elektrik"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+    </script>
+
+    <!-- FAQPage Schema for Rich Snippets -->
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Сколько стоит электромонтаж?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Стоимость зависит от объёма работ, состояния проводки и сложности проекта. Мы сначала уточняем задачу и даём понятный расчёт без скрытых доплат."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Вы работаете только в Тирасполе?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Работаем в Тирасполе, Слободзее, Бендерах, Днестровске и Григориополе. Выезд в другие населённые пункты — по договорённости."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Делаете ли аварийные выезды?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, помогаем в аварийных ситуациях: пропал свет, выбивает автомат, перегрев проводки. Стараемся максимально быстро реагировать на такие заявки."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как происходит работа?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Вы оставляете заявку → мы уточняем задачу → даём расчёт → после согласования приступаем к работе. Все этапы понятны заранее."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Даете ли вы гарантию?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, предоставляем гарантию на выполненные работы. Используем проверенные материалы и соблюдаем нормы безопасности."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Можно ли сначала проконсультироваться?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, вы можете написать нам или отправить фото/видео задачи. Подскажем решение и сориентируем по стоимости."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Вы работаете с частными домами и квартирами?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, выполняем электромонтаж в квартирах, частных домах, новостройках и коммерческих помещениях."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: title,
+      description: description,
+      url: canonicalUrl,
+      inLanguage: "ru"
+    })} />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbItems,
+    })} />
+  </head>
+  <body>
+    <div id="root">
+      <slot />
+    </div>
+  </body>
+</html>

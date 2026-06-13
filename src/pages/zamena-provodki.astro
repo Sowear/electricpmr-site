@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/services/ServiceZamenaProvodki';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Замена электропроводки в Тирасполе и ПМР | ЭлектроМастер";
+const description = "Полная и частичная замена электропроводки в квартирах, домах и новостройках. Расчёт нагрузки, безопасный монтаж, современные материалы.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

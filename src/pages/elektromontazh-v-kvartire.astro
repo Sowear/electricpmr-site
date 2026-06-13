@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/services/ServiceKvartira';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Электромонтаж в квартире в Тирасполе и ПМР | ЭлектроМастер";
+const description = "Комплексный электромонтаж квартир. Замена проводки, установка розеток, выключателей, освещения и электрощитов под ключ.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

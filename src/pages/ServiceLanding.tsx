@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { CheckCircle2, Clock3, Wrench, ShieldCheck, MapPin, Calculator, Phone, AlertTriangle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -204,7 +203,7 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
 
               <div className="flex flex-wrap gap-4 mb-10">
                 <Button size="lg" asChild className="h-14 px-8 text-base shadow-lg shadow-primary/20">
-                  <Link to="/#request-form">Оставить заявку</Link>
+                  <a href="/#request-form">Оставить заявку</a>
                 </Button>
                 {content.isEmergency ? (
                   <Button size="lg" variant="destructive" asChild className="h-14 px-8 text-base">

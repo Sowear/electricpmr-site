@@ -1,6 +1,5 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import FaqAccordion from "@/components/common/FaqAccordion";
 import { Calculator, FileText, Phone, CheckCircle2 } from "lucide-react";
 
@@ -95,10 +94,10 @@ const Pricing = () => {
 
               <div className="mt-6 border-t border-background/20 pt-6">
                 <Button size="lg" className="w-full" asChild>
-                  <Link to="/#request-form">
+                  <a href="/#request-form">
                     <Phone className="mr-2 h-5 w-5" />
                     Получить расчёт
-                  </Link>
+                  </a>
                 </Button>
               </div>
             </div>
@@ -190,7 +189,7 @@ const Pricing = () => {
             <div className="pt-6 text-center">
               <p className="mb-4 text-sm text-muted-foreground">Не нашли свой вопрос? Напишите нам</p>
               <Button asChild>
-                <Link to="/#request-form">Задать вопрос</Link>
+                <a href="/#request-form">Задать вопрос</a>
               </Button>
             </div>
           </div>
@@ -204,7 +203,7 @@ const Pricing = () => {
             Оставьте заявку, и мы сориентируем по стоимости, срокам и формату работ под ваш объект.
           </p>
           <Button size="lg" asChild>
-            <Link to="/#request-form">Оставить заявку</Link>
+            <a href="/#request-form">Оставить заявку</a>
           </Button>
         </div>
       </section>

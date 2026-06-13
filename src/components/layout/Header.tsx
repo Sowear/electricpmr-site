@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+// react-router-dom removed
 import { Button } from "@/components/ui/button";
 import { Zap, Menu, X, LogOut, AlertTriangle, Calculator, FolderOpen } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -8,9 +8,7 @@ import { QuizDialog } from "@/components/contact/QuizDialog";
 import NotificationBell from "./NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-const Header = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const Header = ({ currentPath }: { currentPath?: string }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [hasWorkspaceAccess, setHasWorkspaceAccess] = useState(false);
@@ -57,7 +55,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/");
+    window.location.href = "/";
   };
 
   const openQuiz = () => {
@@ -92,12 +90,14 @@ const Header = () => {
     { href: "/avariynyy-elektrik", label: "Аварийный вызов" },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const getPath = () => currentPath || (typeof window !== "undefined" ? window.location.pathname : "/");
+  const isActive = (path: string) => getPath() === path;
+  const currentPathName = getPath();
   const servicesActive =
-    location.pathname.startsWith("/zamena-") ||
-    location.pathname.startsWith("/sborka-") ||
-    location.pathname.startsWith("/elektro") ||
-    location.pathname.startsWith("/avariy") ||
+    currentPathName.startsWith("/zamena-") ||
+    currentPathName.startsWith("/sborka-") ||
+    currentPathName.startsWith("/elektro") ||
+    currentPathName.startsWith("/avariy") ||
     isActive("/uslugi");
 
   return (
@@ -105,14 +105,14 @@ const Header = () => {
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/88 shadow-[0_18px_48px_-42px_rgba(15,23,42,0.28)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/72">
         <div className="container-main">
           <div className="flex h-[72px] items-center justify-between gap-4">
-            <Link to="/" className="flex shrink-0 items-center gap-3 font-display font-bold">
+            <a href="/" className="flex shrink-0 items-center gap-3 font-display font-bold">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-[0_16px_30px_-18px_rgba(234,179,8,0.9)]">
                 <Zap className="h-5 w-5 text-primary-foreground" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg leading-none sm:text-xl">ЭлектроМастер</span>
               </div>
-            </Link>
+            </a>
 
             <nav className="hidden flex-1 items-center justify-center px-6 md:flex">
               <div className="flex items-center gap-6 rounded-full border border-border/70 bg-card/80 px-6 py-3 shadow-[0_18px_45px_-38px_rgba(15,23,42,0.25)]">
@@ -120,25 +120,25 @@ const Header = () => {
                   if (link.href === "/uslugi") {
                     return (
                       <div key={link.href} className="group relative py-1">
-                        <Link
-                          to={link.href}
+                        <a
+                          href={link.href}
                           className={`link-underline whitespace-nowrap text-sm font-medium transition-colors ${
                             servicesActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           {link.label}
-                        </Link>
+                        </a>
                         <div className="absolute left-1/2 top-full hidden w-60 -translate-x-1/2 flex-col gap-1 rounded-lg border border-border/80 bg-card/95 p-2 shadow-[0_24px_55px_-34px_rgba(15,23,42,0.35)] group-hover:flex animate-fade-in">
                           {serviceLinks.map((service) => (
-                            <Link
+                            <a
                               key={service.href}
-                              to={service.href}
+                              href={service.href}
                               className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/50 ${
                                 isActive(service.href) ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:text-foreground"
                               }`}
                             >
                               {service.label}
-                            </Link>
+                            </a>
                           ))}
                         </div>
                       </div>
@@ -146,15 +146,15 @@ const Header = () => {
                   }
 
                   return (
-                    <Link
+                    <a
                       key={link.href}
-                      to={link.href}
+                      href={link.href}
                       className={`link-underline whitespace-nowrap text-sm font-medium transition-colors ${
                         isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {link.label}
-                    </Link>
+                    </a>
                   );
                 })}
               </div>
@@ -165,20 +165,20 @@ const Header = () => {
                 <>
                   {hasWorkspaceAccess && (
                     <Button variant="ghost" size="sm" asChild>
-                      <Link to="/projects">
+                      <a href="/projects">
                         <FolderOpen className="mr-1 h-4 w-4" />
                         Проекты
-                      </Link>
+                      </a>
                     </Button>
                   )}
                   {hasAdminAccess && (
                     <Button variant="ghost" size="sm" asChild>
-                      <Link to="/admin/users">Админ</Link>
+                      <a href="/admin/users">Админ</a>
                     </Button>
                   )}
                   {hasWorkspaceAccess && <NotificationBell />}
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/dashboard">Мои заявки</Link>
+                    <a href="/dashboard">Мои заявки</a>
                   </Button>
                   <Button variant="ghost" size="sm" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -190,7 +190,7 @@ const Header = () => {
                   <ThemeToggle />
                   <div className="h-4 w-px bg-border/60 mx-1" />
                   <Button variant="ghost" size="sm" asChild>
-                    <Link to="/auth">Войти</Link>
+                    <a href="/auth">Войти</a>
                   </Button>
                   <Button size="sm" onClick={openQuiz}>
                     <Calculator className="mr-2 h-4 w-4" />
@@ -233,16 +233,16 @@ const Header = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   {navLinks.map((link) => (
-                    <Link
+                    <a
                       key={link.href}
-                      to={link.href}
+                      href={link.href}
                       className={`rounded-lg border px-4 py-3 text-sm font-semibold transition-colors ${
                         isActive(link.href) ? "border-primary/35 bg-primary/10 text-foreground" : "border-border/70 bg-card text-muted-foreground hover:text-foreground"
                       }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {link.label}
-                    </Link>
+                    </a>
                   ))}
                 </div>
 
@@ -252,14 +252,14 @@ const Header = () => {
                   </p>
                   <div className="grid gap-2">
                     {serviceLinks.map((link) => (
-                      <Link
+                      <a
                         key={link.href}
-                        to={link.href}
+                        href={link.href}
                         className="rounded-md bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.label}
-                      </Link>
+                      </a>
                     ))}
                   </div>
                 </div>
@@ -269,23 +269,23 @@ const Header = () => {
                     <>
                       {hasWorkspaceAccess && (
                         <Button variant="ghost" size="sm" asChild>
-                          <Link to="/projects" onClick={() => setIsMenuOpen(false)}>
+                          <a href="/projects" onClick={() => setIsMenuOpen(false)}>
                             <FolderOpen className="mr-1 h-4 w-4" />
                             Проекты
-                          </Link>
+                          </a>
                         </Button>
                       )}
                       {hasAdminAccess && (
                         <Button variant="ghost" size="sm" asChild>
-                          <Link to="/admin/users" onClick={() => setIsMenuOpen(false)}>
+                          <a href="/admin/users" onClick={() => setIsMenuOpen(false)}>
                             Админ-панель
-                          </Link>
+                          </a>
                         </Button>
                       )}
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                        <a href="/dashboard" onClick={() => setIsMenuOpen(false)}>
                           Мои заявки
-                        </Link>
+                        </a>
                       </Button>
                       <Button variant="ghost" size="sm" onClick={handleLogout}>
                         Выйти
@@ -298,9 +298,9 @@ const Header = () => {
                         <ThemeToggle />
                       </div>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                        <a href="/auth" onClick={() => setIsMenuOpen(false)}>
                           Войти
-                        </Link>
+                        </a>
                       </Button>
                       <Button size="sm" onClick={openQuiz}>
                         <Calculator className="mr-2 h-4 w-4" />

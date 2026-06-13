@@ -6,14 +6,18 @@
     { "source": "/pricing", "destination": "/stoimost", "statusCode": 301 }
   ],
   "rewrites": [
-    { "source": "/auth", "destination": "/index.html" },
-    { "source": "/dashboard", "destination": "/index.html" },
-    { "source": "/projects", "destination": "/index.html" },
-    { "source": "/projects/:path*", "destination": "/index.html" },
-    { "source": "/estimator", "destination": "/index.html" },
-    { "source": "/estimator/:path*", "destination": "/index.html" },
-    { "source": "/admin/:path*", "destination": "/index.html" },
-    { "source": "/catalog", "destination": "/index.html" }
+    { "source": "/auth", "destination": "/auth/index.html" },
+    { "source": "/auth/:path*", "destination": "/auth/index.html" },
+    { "source": "/dashboard", "destination": "/dashboard/index.html" },
+    { "source": "/dashboard/:path*", "destination": "/dashboard/index.html" },
+    { "source": "/projects", "destination": "/projects/index.html" },
+    { "source": "/projects/:path*", "destination": "/projects/index.html" },
+    { "source": "/estimator", "destination": "/estimator/index.html" },
+    { "source": "/estimator/:path*", "destination": "/estimator/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/:path*", "destination": "/admin/index.html" },
+    { "source": "/catalog", "destination": "/catalog/index.html" },
+    { "source": "/catalog/:path*", "destination": "/catalog/index.html" }
   ],
   "headers": [
     {

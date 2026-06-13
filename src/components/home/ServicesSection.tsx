@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
@@ -120,10 +119,10 @@ const ServicesSection = () => {
               </AnimatePresence>
 
               <Button className="w-full group relative z-10" asChild>
-                <Link to="/contact">
+                <a href="/contact">
                   Рассчитать проект
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
+                </a>
               </Button>
             </div>
           </div>

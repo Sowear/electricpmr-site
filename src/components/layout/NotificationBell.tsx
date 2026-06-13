@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications, useMarkNotificationRead, useMarkAllRead } from "@/hooks/useNotifications";
-import { useNavigate } from "react-router-dom";
+// react-router-dom removed
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 
@@ -24,14 +24,14 @@ const NotificationBell = () => {
   const { data: notifications, unreadCount } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllRead();
-  const navigate = useNavigate();
+  // useNavigate removed
 
   const handleClick = (notification: any) => {
     if (notification.status === "unread") {
       markRead.mutate(notification.id);
     }
     if (notification.link) {
-      navigate(notification.link);
+      window.location.href = notification.link;
     }
   };
 

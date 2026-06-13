@@ -10,7 +10,6 @@ import FaqAccordion from "@/components/common/FaqAccordion";
 import CompanyInfoSection from "@/components/home/CompanyInfoSection";
 import ProcessSection from "@/components/home/ProcessSection";
 import QualityPassportSection from "@/components/home/QualityPassportSection";
-import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -93,18 +92,18 @@ const Index = () => {
             Мы выполняем электромонтажные работы в Тирасполе, Бендерах и Слободзее.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            <Link to="/elektrik-v-tiraspole" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+            <a href="/elektrik-v-tiraspole" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
               <h3 className="font-semibold text-lg mb-2">Тирасполь</h3>
               <p className="text-sm text-muted-foreground">Электромонтаж, замена проводки, установка оборудования</p>
-            </Link>
-            <Link to="/elektrik-v-benderah" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+            </a>
+            <a href="/elektrik-v-benderah" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
               <h3 className="font-semibold text-lg mb-2">Бендеры</h3>
               <p className="text-sm text-muted-foreground">Ремонт, диагностика, подключение техники</p>
-            </Link>
-            <Link to="/elektrik-v-slobodzee" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+            </a>
+            <a href="/elektrik-v-slobodzee" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
               <h3 className="font-semibold text-lg mb-2">Слободзея</h3>
               <p className="text-sm text-muted-foreground">Комплексные работы, сборка щитов, автоматизация</p>
-            </Link>
+            </a>
           </div>
         </div>
       </section>

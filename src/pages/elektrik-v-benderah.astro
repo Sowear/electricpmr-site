@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/ElectricianBendery';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Электрик в Бендерах: услуги и цены | ЭлектроМастер";
+const description = "Профессиональный электрик в Бендерах. Монтаж проводки, подключение автоматов, сборка электрощитов, ремонт и обслуживание электрических сетей.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

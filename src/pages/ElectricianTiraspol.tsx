@@ -1,6 +1,5 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 const ElectricianTiraspol = () => {
   return (
@@ -50,7 +49,7 @@ const ElectricianTiraspol = () => {
                 ул. Румынская, ул. Советская, ул. Бендерская, ул. Слободзейская и другие районы Тирасполя.
               </p>
               <Button asChild>
-                <Link to="/#request-form">Вызвать электрика в Тирасполь</Link>
+                <a href="/#request-form">Вызвать электрика в Тирасполь</a>
               </Button>
             </div>
           </div>

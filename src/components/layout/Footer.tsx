@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+// react-router-dom removed
 import { Zap, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { isPrerenderRuntime } from "@/lib/runtime";
@@ -26,23 +26,23 @@ const Footer = () => {
               Разберёмся в задаче, подскажем по стоимости и по срокам без лишней воды.
             </p>
           </div>
-          <Link
-            to="/contact"
+          <a
+            href="/contact"
             className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[0_18px_36px_-18px_rgba(234,179,8,0.9)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105"
           >
             Связаться
             <ArrowRight className="h-4 w-4" />
-          </Link>
+          </a>
         </div>
 
         <div className="grid grid-cols-1 gap-10 md:grid-cols-5 md:gap-12">
           <div className="md:col-span-2">
-            <Link to="/" className="mb-4 flex items-center gap-3 font-display text-xl font-bold">
+            <a href="/" className="mb-4 flex items-center gap-3 font-display text-xl font-bold">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
                 <Zap className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
               </div>
               <span>ЭлектроМастер</span>
-            </Link>
+            </a>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
               Профессиональный электромонтаж в Приднестровье: квартиры, дома, коммерческие объекты и аварийные выезды.
             </p>
@@ -52,29 +52,29 @@ const Footer = () => {
             <h4 className="mb-4 font-display font-semibold">Навигация</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/" className="text-muted-foreground transition-colors hover:text-foreground">
                   Главная
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/uslugi" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/uslugi" className="text-muted-foreground transition-colors hover:text-foreground">
                   Услуги
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/stoimost" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/stoimost" className="text-muted-foreground transition-colors hover:text-foreground">
                   Стоимость
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/contact" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/contact" className="text-muted-foreground transition-colors hover:text-foreground">
                   Контакты
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/auth" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/auth" className="text-muted-foreground transition-colors hover:text-foreground">
                   Личный кабинет
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -83,29 +83,29 @@ const Footer = () => {
             <h4 className="mb-4 font-display font-semibold">Услуги</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/zamena-provodki" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/zamena-provodki" className="text-muted-foreground transition-colors hover:text-foreground">
                   Замена проводки
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/sborka-elektroshchita" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/sborka-elektroshchita" className="text-muted-foreground transition-colors hover:text-foreground">
                   Сборка щита
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/elektromontazh-v-kvartire" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/elektromontazh-v-kvartire" className="text-muted-foreground transition-colors hover:text-foreground">
                   Электрика в квартире
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/elektromontazh-v-dome" className="text-muted-foreground transition-colors hover:text-foreground">
+                <a href="/elektromontazh-v-dome" className="text-muted-foreground transition-colors hover:text-foreground">
                   Электрика в доме
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/avariynyy-elektrik" className="font-medium text-primary transition-colors hover:text-primary/80">
+                <a href="/avariynyy-elektrik" className="font-medium text-primary transition-colors hover:text-primary/80">
                   Аварийный вызов
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -131,15 +131,15 @@ const Footer = () => {
 
         <div className="mt-10 border-t border-border/60 pt-8">
           <div className="grid gap-3 text-sm sm:grid-cols-3">
-            <Link to="/elektrik-v-tiraspole" className="text-muted-foreground transition-colors hover:text-foreground">
+            <a href="/elektrik-v-tiraspole" className="text-muted-foreground transition-colors hover:text-foreground">
               Электрик в Тирасполе
-            </Link>
-            <Link to="/elektrik-v-benderah" className="text-muted-foreground transition-colors hover:text-foreground">
+            </a>
+            <a href="/elektrik-v-benderah" className="text-muted-foreground transition-colors hover:text-foreground">
               Электрик в Бендерах
-            </Link>
-            <Link to="/elektrik-v-slobodzee" className="text-muted-foreground transition-colors hover:text-foreground">
+            </a>
+            <a href="/elektrik-v-slobodzee" className="text-muted-foreground transition-colors hover:text-foreground">
               Электрик в Слободзее
-            </Link>
+            </a>
           </div>
         </div>
 

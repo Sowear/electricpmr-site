@@ -1,0 +1,12 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import PageComponent from '@/pages/services/ServiceSborkaShchita';
+import PageWrapper from '@/components/PageWrapper';
+
+const title = "Сборка электрощитов в Тирасполе и ПМР | ЭлектроМастер";
+const description = "Профессиональная сборка и монтаж электрощитов. Установка автоматов, УЗО, дифавтоматов, маркировка и подключение по нормам.";
+---
+
+<Layout title={title} description={description}>
+  <PageWrapper Component={PageComponent} client:load />
+</Layout>

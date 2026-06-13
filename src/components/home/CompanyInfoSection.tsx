@@ -1,6 +1,5 @@
 import { Building2, Zap, MapPin, ShieldCheck, ArrowRight, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 
 const cards = [
   {
@@ -113,13 +112,13 @@ const CompanyInfoSection = () => {
               </div>
 
               {/* Link */}
-              <Link
-                to={card.link.to}
+              <a
+                href={card.link.to}
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary group/link"
               >
                 {card.link.label}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-1" />
-              </Link>
+              </a>
             </motion.div>
           ))}
         </div>

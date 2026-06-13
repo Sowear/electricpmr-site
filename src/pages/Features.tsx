@@ -1,7 +1,6 @@
 import Layout from "@/components/layout/Layout";
 import { Home, Building, Construction, Plug, Sliders, Zap, Lightbulb, ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import FaqAccordion from "@/components/common/FaqAccordion";
 
 const SERVICES = [
@@ -166,12 +165,12 @@ const Features = () => {
             <div className="text-center pt-6">
               <p className="text-sm text-muted-foreground mb-4">Не нашли свой вопрос?</p>
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                <Link 
-                  to="/#request-form"
+                <a 
+                  href="/#request-form"
                   className="inline-flex items-center justify-center h-10 px-4 bg-primary text-primary-foreground rounded-md font-medium hover:opacity-90 transition-opacity"
                 >
                   Задать вопрос
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -188,10 +187,10 @@ const Features = () => {
             Оставьте заявку, и мы бесплатно приедем на осмотр и составим смету
           </p>
           <Button size="lg" asChild className="group h-14 px-8 text-base shadow-lg">
-            <Link to="/#request-form" className="flex items-center gap-2">
+            <a href="/#request-form" className="flex items-center gap-2">
               Оставить заявку
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={2} aria-hidden="true" />
-            </Link>
+            </a>
           </Button>
         </div>
       </section>

@@ -68,10 +68,10 @@ const Pricing = () => {
               </ul>
             </div>
 
-            <div className="card-industrial bg-foreground p-8 text-background">
+            <div className="card-industrial p-8">
               <FileText className="mb-4 h-8 w-8 text-primary" />
               <h3 className="mb-3 font-display text-xl font-semibold">Как узнать стоимость?</h3>
-              <ol className="space-y-4 text-background/80">
+              <ol className="space-y-4 text-muted-foreground">
                 <li className="flex gap-3">
                   <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
                     1
@@ -92,7 +92,7 @@ const Pricing = () => {
                 </li>
               </ol>
 
-              <div className="mt-6 border-t border-background/20 pt-6">
+              <div className="mt-6 border-t border-border pt-6">
                 <Button size="lg" className="w-full" asChild>
                   <a href="/#request-form">
                     <Phone className="mr-2 h-5 w-5" />

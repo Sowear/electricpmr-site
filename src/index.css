@@ -116,8 +116,10 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased overflow-x-hidden;
+    @apply bg-background text-foreground antialiased;
+    overflow-x: clip;
     font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
     min-height: 100dvh;
     background-image: var(--page-gradient, linear-gradient(180deg, hsl(42 45% 97%) 0%, hsl(42 28% 98%) 26%, hsl(0 0% 100%) 100%));
   }

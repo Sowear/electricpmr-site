@@ -138,8 +138,9 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
   return (
     <Layout>
       {/* Schema.org for Service */}
-      <script type="application/ld+json">
-        {JSON.stringify({
+      <script 
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
           "name": content.heading,
@@ -166,8 +167,8 @@ export default function ServiceLanding({ serviceKey }: ServiceLandingProps) {
               "priceCurrency": "USD"
             }
           }
-        })}
-      </script>
+        }) }}
+      />
 
       <section className="relative overflow-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(234,179,8,0.10),transparent_28%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--secondary))_100%)] pt-10 pb-12 md:pt-16 md:pb-20">
         <div className="tech-grid absolute inset-0 text-foreground/[0.06]" />

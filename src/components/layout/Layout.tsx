@@ -47,8 +47,9 @@ const Layout = ({
         />
       </ClientOnly>
       {/* Organization Schema */}
-      <script type="application/ld+json">
-        {JSON.stringify({
+      <script 
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "ЭлектроМастер",
@@ -84,8 +85,8 @@ const Layout = ({
               }
             }
           ]
-        })}
-      </script>
+        }) }}
+      />
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">{children}</main>

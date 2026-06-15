@@ -7,7 +7,7 @@ import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
 import NotificationBell from "./NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { RouteContext } from "@/components/PageWrapper";
+import { RouteContext } from "@/components/RouteContext";
 
 const Header = ({ currentPath }: { currentPath?: string }) => {
   const routeContextPath = useContext(RouteContext);

@@ -30,7 +30,7 @@ const Pages: Record<string, React.ElementType> = {
   "services/ServiceZamenaProvodki": ServiceZamenaProvodki,
 };
 
-export const RouteContext = React.createContext<string>("/");
+import { RouteContext } from "./RouteContext";
 
 export default function PageWrapper({ pagePath, currentPath }: { pagePath?: string, currentPath?: string }) {
   if (!pagePath) return null;

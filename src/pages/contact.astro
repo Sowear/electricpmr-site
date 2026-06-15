@@ -8,5 +8,5 @@ const description = "Контакты для заказа электромонт
 ---
 
 <Layout title={title} description={description}>
-  <PageWrapper pagePath="Contact" client:load />
+  <PageWrapper pagePath="Contact" currentPath={Astro.url.pathname} client:load />
 </Layout>

@@ -8,5 +8,5 @@ const description = "Услуги электрика в Тирасполе. За
 ---
 
 <Layout title={title} description={description}>
-  <PageWrapper pagePath="ElectricianTiraspol" client:load />
+  <PageWrapper pagePath="ElectricianTiraspol" currentPath={Astro.url.pathname} client:load />
 </Layout>

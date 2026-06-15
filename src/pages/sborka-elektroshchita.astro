@@ -8,5 +8,5 @@ const description = "Профессиональная сборка и монта
 ---
 
 <Layout title={title} description={description}>
-  <PageWrapper pagePath="services/ServiceSborkaShchita" client:load />
+  <PageWrapper pagePath="services/ServiceSborkaShchita" currentPath={Astro.url.pathname} client:load />
 </Layout>

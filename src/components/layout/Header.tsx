@@ -1,14 +1,16 @@
 // react-router-dom removed
 import { Button } from "@/components/ui/button";
 import { Zap, Menu, X, LogOut, AlertTriangle, Calculator, FolderOpen } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { supabase, type User } from "@/integrations/supabase/client";
 import EmergencyCallDialog from "@/components/contact/EmergencyCallDialog";
 import { QuizDialog } from "@/components/contact/QuizDialog";
 import NotificationBell from "./NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { RouteContext } from "@/components/PageWrapper";
 
 const Header = ({ currentPath }: { currentPath?: string }) => {
+  const routeContextPath = useContext(RouteContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [hasWorkspaceAccess, setHasWorkspaceAccess] = useState(false);
@@ -90,7 +92,7 @@ const Header = ({ currentPath }: { currentPath?: string }) => {
     { href: "/avariynyy-elektrik", label: "Аварийный вызов" },
   ];
 
-  const getPath = () => currentPath || (typeof window !== "undefined" ? window.location.pathname : "/");
+  const getPath = () => currentPath || (routeContextPath !== "/" ? routeContextPath : (typeof window !== "undefined" ? window.location.pathname : "/"));
   const isActive = (path: string) => getPath() === path;
   const currentPathName = getPath();
   const servicesActive =

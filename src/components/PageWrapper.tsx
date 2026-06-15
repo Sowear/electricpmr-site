@@ -30,7 +30,9 @@ const Pages: Record<string, React.ElementType> = {
   "services/ServiceZamenaProvodki": ServiceZamenaProvodki,
 };
 
-export default function PageWrapper({ pagePath }: { pagePath?: string }) {
+export const RouteContext = React.createContext<string>("/");
+
+export default function PageWrapper({ pagePath, currentPath }: { pagePath?: string, currentPath?: string }) {
   if (!pagePath) return null;
   const Component = Pages[pagePath];
   
@@ -40,8 +42,10 @@ export default function PageWrapper({ pagePath }: { pagePath?: string }) {
   }
   
   return (
-    <Providers>
-      <Component />
-    </Providers>
+    <RouteContext.Provider value={currentPath || "/"}>
+      <Providers>
+        <Component />
+      </Providers>
+    </RouteContext.Provider>
   );
 }

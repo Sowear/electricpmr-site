@@ -92,7 +92,7 @@ const Header = ({ currentPath }: { currentPath?: string }) => {
     { href: "/avariynyy-elektrik", label: "Аварийный вызов" },
   ];
 
-  const getPath = () => currentPath || (routeContextPath !== "/" ? routeContextPath : (typeof window !== "undefined" ? window.location.pathname : "/"));
+  const getPath = () => currentPath || routeContextPath;
   const isActive = (path: string) => getPath() === path;
   const currentPathName = getPath();
   const servicesActive =

@@ -1,19 +1,19 @@
 import Providers from "./Providers";
 import React, { lazy, Suspense } from "react";
 
-import Index from "@/pages/Index";
-import Features from "@/pages/Features";
-import Pricing from "@/pages/Pricing";
-import Contact from "@/pages/Contact";
-import ElectricianBendery from "@/pages/ElectricianBendery";
-import ElectricianSlobozia from "@/pages/ElectricianSlobozia";
-import ElectricianTiraspol from "@/pages/ElectricianTiraspol";
+import Index from "@/components/pages/Index";
+import Features from "@/components/pages/Features";
+import Pricing from "@/components/pages/Pricing";
+import Contact from "@/components/pages/Contact";
+import ElectricianBendery from "@/components/pages/ElectricianBendery";
+import ElectricianSlobozia from "@/components/pages/ElectricianSlobozia";
+import ElectricianTiraspol from "@/components/pages/ElectricianTiraspol";
 
-import ServiceAvariynyy from "@/pages/services/ServiceAvariynyy";
-import ServiceDom from "@/pages/services/ServiceDom";
-import ServiceKvartira from "@/pages/services/ServiceKvartira";
-import ServiceSborkaShchita from "@/pages/services/ServiceSborkaShchita";
-import ServiceZamenaProvodki from "@/pages/services/ServiceZamenaProvodki";
+import ServiceAvariynyy from "@/components/pages/services/ServiceAvariynyy";
+import ServiceDom from "@/components/pages/services/ServiceDom";
+import ServiceKvartira from "@/components/pages/services/ServiceKvartira";
+import ServiceSborkaShchita from "@/components/pages/services/ServiceSborkaShchita";
+import ServiceZamenaProvodki from "@/components/pages/services/ServiceZamenaProvodki";
 
 const Pages: Record<string, React.ElementType> = {
   "Index": Index,

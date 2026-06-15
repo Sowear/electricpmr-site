@@ -8,20 +8,20 @@ import { LazyComponent, LazyPage } from "./components/LazyPage";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { isPrerenderRuntime } from "./lib/runtime";
 
-const Estimator = lazy(() => import("./pages/Estimator"));
-const EstimatorEdit = lazy(() => import("./pages/EstimatorEdit"));
+const Estimator = lazy(() => import("./components/pages/Estimator"));
+const EstimatorEdit = lazy(() => import("./components/pages/EstimatorEdit"));
 
-const Auth = lazy(() => import("./pages/Auth"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const AdminUsers = lazy(() => import("./pages/AdminUsers"));
-const AdminWorkExamples = lazy(() => import("./pages/AdminWorkExamples"));
-const Projects = lazy(() => import("./pages/Projects"));
-const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
-const ProjectPayouts = lazy(() => import("./pages/ProjectPayouts"));
-const AdminFinanceSettings = lazy(() => import("./pages/AdminFinanceSettings"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const CityLanding = lazy(() => import("./pages/CityLanding"));
-const Catalog = lazy(() => import("./pages/Catalog"));
+const Auth = lazy(() => import("./components/pages/Auth"));
+const Dashboard = lazy(() => import("./components/pages/Dashboard"));
+const AdminUsers = lazy(() => import("./components/pages/AdminUsers"));
+const AdminWorkExamples = lazy(() => import("./components/pages/AdminWorkExamples"));
+const Projects = lazy(() => import("./components/pages/Projects"));
+const ProjectDetail = lazy(() => import("./components/pages/ProjectDetail"));
+const ProjectPayouts = lazy(() => import("./components/pages/ProjectPayouts"));
+const AdminFinanceSettings = lazy(() => import("./components/pages/AdminFinanceSettings"));
+const NotFound = lazy(() => import("./components/pages/NotFound"));
+const CityLanding = lazy(() => import("./components/pages/CityLanding"));
+const Catalog = lazy(() => import("./components/pages/Catalog"));
 
 const queryClient = new QueryClient();
 

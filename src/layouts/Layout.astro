@@ -1,5 +1,6 @@
 ---
 import "../index.css";
+import { SITE_URL, SITEMAP_INDEX_PATH } from "@/lib/site.js";
 interface Props {
   title: string;
   description: string;
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const { title, description, canonical, robots = "index,follow" } = Astro.props;
-const siteUrl = "https://electricpmr.vercel.app";
+const siteUrl = (Astro.site?.href || SITE_URL).replace(/\/$/, "");
 let pathname = Astro.url.pathname;
 if (pathname.endsWith("/")) {
   pathname = pathname.slice(0, -1);
@@ -61,6 +62,7 @@ const breadcrumbItems = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="sitemap" href={SITEMAP_INDEX_PATH} />
     <meta name="robots" content={robots} />
 
     <meta property="og:type" content="website" />

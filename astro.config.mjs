@@ -4,18 +4,21 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { SITE_URL, isPrivateRoutePath } from './src/lib/site.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  site: 'https://electricpmr.vercel.app',
+  site: SITE_URL,
   trailingSlash: 'never',
   integrations: [
     react(),
     tailwind({
       applyBaseStyles: false,
     }),
-    sitemap(),
+    sitemap({
+      filter: (page) => !isPrivateRoutePath(new URL(page).pathname),
+    }),
   ],
   vite: {
     server: {

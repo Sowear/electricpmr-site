@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { isPrerenderRuntime } from "./lib/runtime";
 
 const rootElement = document.getElementById("root")!;
 
@@ -30,16 +29,3 @@ if (rootElement.hasChildNodes() && isPrerendered) {
 }
 
 createRoot(rootElement).render(<App />);
-
-// Manually register Service Worker to handle errors and avoid uncaught promise rejections
-if ('serviceWorker' in navigator && !isPrerenderRuntime()) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      .then((registration) => {
-        console.log('Service Worker registered successfully with scope:', registration.scope);
-      })
-      .catch((error) => {
-        console.warn('Service Worker registration skipped or failed (this is normal in some environments):', error);
-      });
-  });
-}

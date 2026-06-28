@@ -46,11 +46,12 @@ class ApiError extends Error {
 }
 
 const SESSION_STORAGE_KEY = "electricpmr.cloudflare.session";
-const SUPABASE_URL = String(import.meta.env.VITE_SUPABASE_URL || "").trim();
-const SUPABASE_PUBLISHABLE_KEY = String(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "").trim();
+const SUPABASE_URL = String(import.meta.env.VITE_SUPABASE_URL || "https://nphnnbodnbanvhhofpbz.supabase.co").trim();
+const SUPABASE_PUBLISHABLE_KEY = String(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waG5uYm9kbmJhbnZoaG9mcGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzODc1MjIsImV4cCI6MjA4NDk2MzUyMn0.N4XaW2ezMpWxGwODAXt9QaeSCQSWIG8FiqE9CDaWDsw").trim();
 const RAW_API_BASE_URL = String(import.meta.env.VITE_API_BASE_URL || "").trim();
 const API_BASE_URL = RAW_API_BASE_URL.replace(/\/+$/, "").replace(/\/api$/, "");
 const USE_CLOUDFLARE_API = API_BASE_URL.length > 0;
+
 const authSubscribers = new Set<(event: AuthChangeEvent, session: AuthSession | null) => void>();
 
 const isBrowser = typeof window !== "undefined";

@@ -98,12 +98,14 @@ const Dashboard = () => {
             <h1 className="font-display text-2xl md:text-3xl font-bold">Мои заявки</h1>
             <p className="text-muted-foreground">Отслеживайте статус ваших заявок</p>
           </div>
-          <Button asChild>
-            <a href="/#request-form">
-              <Plus className="mr-2 h-4 w-4" />
-              Новая заявка
-            </a>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild>
+              <a href="/#request-form">
+                <Plus className="mr-2 h-4 w-4" />
+                Новая заявка
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Content */}

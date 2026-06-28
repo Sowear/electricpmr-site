@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase, type User } from "@/integrations/supabase/client";
-import { Loader2, Search, Users, FileText, Clock, CheckCircle2, Wrench, Filter, Image, Shield, Crown, UserCog } from "lucide-react";
+import { Loader2, Search, Users, FileText, Clock, CheckCircle2, Wrench, Filter, Image, Shield, Crown, UserCog, Zap } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
@@ -258,6 +258,7 @@ const AdminUsers = () => {
           </Button>
           <Button variant="outline" size="sm" asChild><Link to="/admin/work-examples"><Image className="mr-2 h-4 w-4" />Примеры работ</Link></Button>
           <Button variant="outline" size="sm" asChild><Link to="/admin/finance-settings">Фин. настройки</Link></Button>
+          <Button variant="outline" size="sm" asChild><Link to="/admin/editor"><Zap className="mr-2 h-4 w-4" />Проектировщик</Link></Button>
         </div>
 
         {isLoading ? (

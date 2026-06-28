@@ -22,6 +22,7 @@ const AdminFinanceSettings = lazy(() => import("./components/pages/AdminFinanceS
 const NotFound = lazy(() => import("./components/pages/NotFound"));
 const CityLanding = lazy(() => import("./components/pages/CityLanding"));
 const Catalog = lazy(() => import("./components/pages/Catalog"));
+const ElectricalEditor = lazy(() => import("./components/pages/ElectricalEditor"));
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/estimator/:id" element={<LazyComponent Component={EstimatorEdit} />} />
             <Route path="/catalog/*" element={<LazyComponent Component={Catalog} />} />
             <Route path="/admin/finance-settings" element={<LazyComponent Component={AdminFinanceSettings} />} />
+            <Route path="/admin/editor/*" element={<LazyComponent Component={ElectricalEditor} />} />
             <Route path="*" element={<LazyComponent Component={NotFound} />} />
           </Routes>
         </BrowserRouter>

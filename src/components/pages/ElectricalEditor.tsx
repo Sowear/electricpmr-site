@@ -76,6 +76,13 @@ function ElectricalEditorContent() {
   const explainCircuit = useProjectStore(s => s.explainCircuit)
   const setExplainedCircuit = useProjectStore(s => s.setExplainedCircuit)
   const autoPlace = useProjectStore(s => s.autoPlace)
+  const removeWall = useProjectStore(s => s.removeWall)
+  const removeRoom = useProjectStore(s => s.removeRoom)
+  const removeDoor = useProjectStore(s => s.removeDoor)
+  const removeWindow = useProjectStore(s => s.removeWindow)
+  const removeElectricalPoint = useProjectStore(s => s.removeElectricalPoint)
+  const removeObject = useProjectStore(s => s.removeObject)
+  const selectObject = useProjectStore(s => s.selectObject)
 
   const [query, setQuery] = useState("")
   const [libraryOpen, setLibraryOpen] = useState(false)
@@ -94,6 +101,28 @@ function ElectricalEditorContent() {
   useEffect(() => {
     validate()
   }, [scene.walls.length, scene.doors.length, scene.windows.length, scene.objects.length, electrical.points.length, electrical.circuits.length, validate])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Delete" && e.key !== "Backspace") return
+      if ((e.target as HTMLElement)?.tagName === "INPUT" || (e.target as HTMLElement)?.tagName === "TEXTAREA") return
+
+      const id = ui.selectedObjectId
+      if (!id) return
+
+      e.preventDefault()
+      if (scene.walls.some(w => w.id === id)) removeWall(id)
+      else if (scene.rooms.some(r => r.id === id)) removeRoom(id)
+      else if (scene.doors.some(d => d.id === id)) removeDoor(id)
+      else if (scene.windows.some(w => w.id === id)) removeWindow(id)
+      else if (scene.objects.some(o => o.id === id)) removeObject(id)
+      else if (electrical.points.some(p => p.id === id)) removeElectricalPoint(id)
+      selectObject(null)
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [ui.selectedObjectId, scene, electrical.points, removeWall, removeRoom, removeDoor, removeWindow, removeObject, removeElectricalPoint, selectObject])
 
   const trustScore = useMemo(() => {
     let score = 20

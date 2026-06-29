@@ -1,8 +1,11 @@
 ---
 import App from '@/App';
 import Layout from '@/layouts/Layout.astro';
+import { ADMIN_STATIC_PATHS } from '@/lib/adminRoutes';
 
-export const prerender = false;
+export function getStaticPaths() {
+  return ADMIN_STATIC_PATHS.map(path => ({ params: { all: path } }));
+}
 ---
 <Layout title="ЭлектроМастер ПМР" description="Личный кабинет" robots="noindex,nofollow">
   <App client:only="react" />

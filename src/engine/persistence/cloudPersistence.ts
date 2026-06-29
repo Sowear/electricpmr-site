@@ -35,7 +35,17 @@ const TABLE = "projects"
 // CRUD Operations
 // ============================================================
 
-export async function saveToCloud(state: PersistedProject): Promise<{ id: string; error: string | null }> {
+export interface SaveResult {
+  id: string
+  error: string | null
+  conflict?: boolean
+  serverVersion?: PersistedProject
+}
+
+export async function saveToCloud(
+  state: PersistedProject,
+  lastSyncedAt?: string
+): Promise<SaveResult> {
   const { data: session } = await supabase.auth.getSession()
   if (!session?.session) {
     return { id: state.id, error: "Необходима авторизация для сохранения в облако" }
@@ -43,6 +53,23 @@ export async function saveToCloud(state: PersistedProject): Promise<{ id: string
 
   const userId = session.session.user.id
   const now = new Date().toISOString()
+
+  if (state.id && lastSyncedAt) {
+    const { data: existing } = await supabase
+      .from(TABLE)
+      .select("updated_at, data")
+      .eq("id", state.id)
+      .single()
+
+    if (existing?.updated_at && existing.updated_at > lastSyncedAt) {
+      try {
+        const serverVersion = JSON.parse(existing.data) as PersistedProject
+        return { id: state.id, error: "Конфликт версий: проект был изменён на другом устройстве", conflict: true, serverVersion }
+      } catch {
+        return { id: state.id, error: "Конфликт версий", conflict: true }
+      }
+    }
+  }
 
   const record = {
     id: state.id || `project_${Date.now()}`,

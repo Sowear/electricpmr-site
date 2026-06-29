@@ -1245,6 +1245,60 @@ const handleDbSelect = async (request: Request, env: Env, session: SessionContex
   });
 };
 
+const isPrivilegedRole = (role: unknown) => role === "admin" || role === "super_admin";
+
+// Defense-in-depth for user_roles writes. authorizeTable already restricts writes
+// to admins; this enforces the finer RBAC rules (mirrors the client-side
+// canChangeRole) so a curious admin cannot escalate via the raw data API:
+//  - only super_admin may grant/revoke admin or super_admin
+//  - immutable roles cannot be removed (except by super_admin)
+//  - nobody may change their own roles (except super_admin)
+//  - role rows are never updated in place
+const enforceUserRoleChange = async (
+  env: Env,
+  action: DbAction,
+  body: { values?: unknown; filters?: unknown },
+  session: SessionContext | null,
+): Promise<Response | null> => {
+  if (hasAnyRole(session, ["super_admin"])) return null;
+  const actorId = session?.user.id;
+
+  if (action === "insert") {
+    const rows = Array.isArray(body.values) ? body.values : [body.values];
+    for (const row of rows) {
+      const record = (row || {}) as Record<string, unknown>;
+      if (record.role === "user") continue; // baseline role from signup
+      if (isPrivilegedRole(record.role)) {
+        return textError("Only super_admin can grant admin or super_admin roles", 403);
+      }
+      if (record.user_id && record.user_id === actorId) {
+        return textError("You cannot change your own roles", 403);
+      }
+    }
+    return null;
+  }
+
+  if (action === "delete") {
+    const filters = Array.isArray(body.filters) ? (body.filters as QueryFilter[]) : [];
+    const existing = await fetchRows(env, "user_roles", filters, { columns: "*" });
+    for (const row of existing) {
+      if (row.immutable) {
+        return textError("Protected role cannot be removed", 403);
+      }
+      if (isPrivilegedRole(row.role)) {
+        return textError("Only super_admin can remove admin or super_admin roles", 403);
+      }
+      if (row.user_id && row.user_id === actorId) {
+        return textError("You cannot change your own roles", 403);
+      }
+    }
+    return null;
+  }
+
+  // update / upsert
+  return textError("Direct role row updates are not permitted", 403);
+};
+
 const handleDbMutation = async (
   request: Request,
   env: Env,
@@ -1256,6 +1310,11 @@ const handleDbMutation = async (
   const auth = authorizeTable(action, table, session);
   if (!auth.allowed) {
     return textError("Forbidden", session ? 403 : 401);
+  }
+
+  if (table === "user_roles") {
+    const denied = await enforceUserRoleChange(env, action, body, session);
+    if (denied) return denied;
   }
 
   const filters = applyScope(table, Array.isArray(body.filters) ? body.filters : [], auth.scopeUserId);
@@ -1339,6 +1398,16 @@ const handleRpc = async (request: Request, env: Env, session: SessionContext | n
   }
 
   const body = await parseJsonBody(request);
+
+  if (name === "admin_list_user_emails") {
+    if (!canAdmin(session)) {
+      return textError("Forbidden", 403);
+    }
+    const result = await env.DB
+      .prepare("SELECT id AS user_id, email FROM app_users")
+      .all<{ user_id: string; email: string }>();
+    return json({ data: result.results || [] });
+  }
 
   if (name === "assign_estimate_participants") {
     const estimateId = String(body.p_estimate_id || "");

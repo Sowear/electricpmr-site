@@ -1171,7 +1171,31 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       validation: state.validation,
       aiState: state.aiState,
     }
-    const result = await cloudSave(persisted)
+    const result = await cloudSave(persisted, state.lastSyncedAt ?? undefined)
+    if (result.conflict && result.serverVersion) {
+      const overwrite = window.confirm(
+        `Обнаружен конфликт версий! Проект "${result.serverVersion.name}" был изменён на другом устройстве.\n\nНажмите OK, чтобы перезаписать серверную версию своей. Нажмите Отмена, чтобы загрузить серверную версию.`
+      )
+      if (overwrite) {
+        const forceResult = await cloudSave(persisted)
+        set({ cloudSyncing: false, lastSyncedAt: forceResult.error ? null : new Date().toISOString() })
+        return !forceResult.error
+      } else {
+        set(state => ({
+          ...result.serverVersion!,
+          id: result.serverVersion!.id,
+          undoStack: [],
+          redoStack: [],
+          lastSyncedAt: new Date().toISOString(),
+          cloudSyncing: false,
+          ui: { ...state.ui, selectedObjectId: null, lastSavedAt: new Date().toISOString() },
+        }))
+        persistProject(get())
+        get().recalculate()
+        get().validate()
+        return true
+      }
+    }
     set({ cloudSyncing: false, lastSyncedAt: result.error ? null : new Date().toISOString() })
     return !result.error
   },

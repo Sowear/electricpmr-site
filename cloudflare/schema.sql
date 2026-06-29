@@ -60,9 +60,11 @@ CREATE TABLE IF NOT EXISTS requests (
   status TEXT NOT NULL DEFAULT 'new',
   source TEXT DEFAULT 'website',
   address TEXT,
+  assigned_to TEXT,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES app_users(id) ON DELETE SET NULL
+  FOREIGN KEY (user_id) REFERENCES app_users(id) ON DELETE SET NULL,
+  FOREIGN KEY (assigned_to) REFERENCES app_users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS rate_limits (
@@ -422,6 +424,7 @@ INSERT OR IGNORE INTO finance_settings (
 
 CREATE INDEX IF NOT EXISTS idx_requests_user_id ON requests (user_id);
 CREATE INDEX IF NOT EXISTS idx_requests_status ON requests (status);
+CREATE INDEX IF NOT EXISTS idx_requests_assigned_to ON requests (assigned_to);
 CREATE INDEX IF NOT EXISTS idx_rate_limits_ip_action ON rate_limits (ip_address, action_type, created_at);
 CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects (created_at);
 CREATE INDEX IF NOT EXISTS idx_project_objects_project_id ON project_objects (project_id);

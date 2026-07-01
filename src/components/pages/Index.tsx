@@ -82,6 +82,44 @@ const Index = () => {
       {/* 10 */} <ContactSection />
       <FloatingContactBar />
 
+      {/* Services coverage */}
+      <section className="section-padding bg-secondary/30">
+        <div className="container-main text-center">
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
+            Услуги электромонтажа
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+            Комплексные электромонтажные работы: от замены проводки до сборки электрощитов.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <a href="/elektromontazh-v-kvartire" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Электромонтаж в квартире</h3>
+              <p className="text-sm text-muted-foreground">Проектирование и монтаж под ключ</p>
+            </a>
+            <a href="/elektromontazh-v-dome" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Электрика в частном доме</h3>
+              <p className="text-sm text-muted-foreground">Ввод, заземление, внутренняя разводка</p>
+            </a>
+            <a href="/zamena-provodki" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Замена проводки</h3>
+              <p className="text-sm text-muted-foreground">Замена старой проводки на медную</p>
+            </a>
+            <a href="/sborka-elektroshchita" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Сборка электрощита</h3>
+              <p className="text-sm text-muted-foreground">Щиты для квартиры и дома</p>
+            </a>
+            <a href="/avariynyy-elektrik" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Аварийный электрик</h3>
+              <p className="text-sm text-muted-foreground">Срочный выезд и устранение неисправностей</p>
+            </a>
+            <a href="/stoimost" className="card-industrial p-6 text-center hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">Стоимость работ</h3>
+              <p className="text-sm text-muted-foreground">Цены на электромонтаж в ПМР</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Cities Coverage */}
       <section className="section-padding bg-secondary/30">
         <div className="container-main text-center">

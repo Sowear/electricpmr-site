@@ -137,22 +137,45 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 };
 
+const securityHeaders = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+};
+
+const withHeaders = (response: Response, extra: Record<string, string> = {}): Response => {
+  for (const [key, value] of Object.entries({ ...corsHeaders, ...securityHeaders, ...extra })) {
+    response.headers.set(key, value);
+  }
+  return response;
+};
+
 const nowIso = () => new Date().toISOString();
 const roundMoney = (value: number) => Math.round(value * 100) / 100;
 const createId = () => crypto.randomUUID();
 const createToken = () => crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
 
 const json = (data: unknown, status = 200) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      ...corsHeaders,
-    },
-  });
+  withHeaders(
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
 
 const textError = (message: string, status = 400) =>
   json({ error: message }, status);
+
+const safePath = (path: string): string => {
+  const normalized = path.replace(/\\/g, "/").replace(/^\/+/, "").split("/")
+    .reduce<string[]>((acc, segment) => {
+      if (segment === ".." || segment === "." || !segment) return acc;
+      acc.push(segment);
+      return acc;
+    }, []);
+  return normalized.join("/");
+};
 
 const toBase64 = (bytes: Uint8Array) => {
   let binary = "";
@@ -893,6 +916,7 @@ const runInsert = async (
   const resultRows: Record<string, unknown>[] = [];
   const touchedRows: Record<string, unknown>[] = [];
   const returningSql = returning ? ` RETURNING ${parseColumnList(returning)}` : "";
+  const statements: D1PreparedStatement[] = [];
 
   for (const item of items) {
     if (!item || typeof item !== "object") {
@@ -905,14 +929,16 @@ const runInsert = async (
     const entries = Object.entries(prepared);
     const columns = entries.map(([column]) => column);
     const sql = `INSERT INTO ${table} (${columns.join(", ")}) VALUES (${columns.map(() => "?").join(", ")})${returningSql}`;
-    const statement = env.DB.prepare(sql).bind(...entries.map(([, value]) => value));
+    statements.push(env.DB.prepare(sql).bind(...entries.map(([, value]) => value)));
+  }
 
-    if (returning) {
-      const inserted = await statement.all<Record<string, unknown>>();
+  if (returning) {
+    for (let i = 0; i < statements.length; i++) {
+      const inserted = await statements[i].all<Record<string, unknown>>();
       resultRows.push(...normalizeRows(table, inserted.results || []));
-    } else {
-      await statement.run();
     }
+  } else {
+    await env.DB.batch(statements);
   }
 
   await afterMutation(env, table, touchedRows);
@@ -1007,6 +1033,7 @@ const runUpsert = async (
   const resultRows: Record<string, unknown>[] = [];
   const touchedRows: Record<string, unknown>[] = [];
   const returningSql = returning ? ` RETURNING ${parseColumnList(returning)}` : "";
+  const statements: D1PreparedStatement[] = [];
 
   for (const item of items) {
     if (!item || typeof item !== "object") {
@@ -1030,13 +1057,16 @@ const runUpsert = async (
       ${returningSql}
     `;
 
-    const statement = env.DB.prepare(sql).bind(...entries.map(([, value]) => value));
-    if (returning) {
-      const rows = await statement.all<Record<string, unknown>>();
+    statements.push(env.DB.prepare(sql).bind(...entries.map(([, value]) => value)));
+  }
+
+  if (returning) {
+    for (let i = 0; i < statements.length; i++) {
+      const rows = await statements[i].all<Record<string, unknown>>();
       resultRows.push(...normalizeRows(table, rows.results || []));
-    } else {
-      await statement.run();
     }
+  } else {
+    await env.DB.batch(statements);
   }
 
   await afterMutation(env, table, touchedRows);
@@ -1094,23 +1124,14 @@ const signup = async (request: Request, env: Env) => {
   const phone = typeof metadata.phone === "string" ? metadata.phone.trim() : "";
   const currentTimestamp = nowIso();
 
-  await env.DB.prepare(
-    `
-      INSERT INTO app_users (id, email, password_hash, password_salt, name, phone, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `,
-  )
-    .bind(userId, email, passwordHash, salt, name || null, phone || null, currentTimestamp, currentTimestamp)
-    .run();
-
-  await env.DB.prepare(
-    `
-      INSERT INTO profiles (id, user_id, name, phone, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `,
-  )
-    .bind(createId(), userId, name || null, phone || null, currentTimestamp, currentTimestamp)
-    .run();
+  const statements: D1PreparedStatement[] = [
+    env.DB.prepare(
+      "INSERT INTO app_users (id, email, password_hash, password_salt, name, phone, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    ).bind(userId, email, passwordHash, salt, name || null, phone || null, currentTimestamp, currentTimestamp),
+    env.DB.prepare(
+      "INSERT INTO profiles (id, user_id, name, phone, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)"
+    ).bind(createId(), userId, name || null, phone || null, currentTimestamp, currentTimestamp),
+  ];
 
   const userCount = await env.DB.prepare("SELECT COUNT(*) AS count FROM app_users")
     .first<{ count: number }>();
@@ -1120,15 +1141,14 @@ const signup = async (request: Request, env: Env) => {
 
   const roles = isFirstUser || isEnvSuperAdmin ? ["user", "super_admin"] : ["user"];
   for (const role of roles) {
-    await env.DB.prepare(
-      `
-        INSERT INTO user_roles (id, user_id, role, immutable, assigned_at)
-        VALUES (?, ?, ?, ?, ?)
-      `,
-    )
-      .bind(createId(), userId, role, role === "super_admin" ? 1 : 0, currentTimestamp)
-      .run();
+    statements.push(
+      env.DB.prepare(
+        "INSERT INTO user_roles (id, user_id, role, immutable, assigned_at) VALUES (?, ?, ?, ?, ?)"
+      ).bind(createId(), userId, role, role === "super_admin" ? 1 : 0, currentTimestamp)
+    );
   }
+
+  await env.DB.batch(statements);
 
   const session = await issueSession(env, {
     id: userId,
@@ -1348,10 +1368,11 @@ const upsertEstimateParticipants = async (
   participants: Array<Record<string, unknown>>,
   replace: boolean,
 ) => {
+  const statements: D1PreparedStatement[] = [];
   if (replace) {
-    await env.DB.prepare("DELETE FROM estimate_participants WHERE estimate_id = ?")
-      .bind(estimateId)
-      .run();
+    statements.push(
+      env.DB.prepare("DELETE FROM estimate_participants WHERE estimate_id = ?").bind(estimateId)
+    );
   }
 
   for (const participant of participants) {
@@ -1372,21 +1393,23 @@ const upsertEstimateParticipants = async (
     );
 
     const entries = Object.entries(prepared);
-    await env.DB.prepare(
-      `
-        INSERT INTO estimate_participants (${entries.map(([column]) => column).join(", ")})
-        VALUES (${entries.map(() => "?").join(", ")})
-        ON CONFLICT (estimate_id, user_id, role)
-        DO UPDATE SET
-          project_member_id = excluded.project_member_id,
-          object_id = excluded.object_id,
-          payout_type = excluded.payout_type,
-          percent_share = excluded.percent_share,
-          fixed_amount = excluded.fixed_amount
-      `,
-    )
-      .bind(...entries.map(([, value]) => value))
-      .run();
+    statements.push(
+      env.DB.prepare(
+        `INSERT INTO estimate_participants (${entries.map(([column]) => column).join(", ")})
+         VALUES (${entries.map(() => "?").join(", ")})
+         ON CONFLICT (estimate_id, user_id, role)
+         DO UPDATE SET
+           project_member_id = excluded.project_member_id,
+           object_id = excluded.object_id,
+           payout_type = excluded.payout_type,
+           percent_share = excluded.percent_share,
+           fixed_amount = excluded.fixed_amount`
+      ).bind(...entries.map(([, value]) => value))
+    );
+  }
+
+  if (statements.length > 0) {
+    await env.DB.batch(statements);
   }
 
   return participants.length;
@@ -1453,74 +1476,43 @@ const handleRpc = async (request: Request, env: Env, session: SessionContext | n
 
     const actorId = session?.user.id || null;
     const confirmedAt = nowIso();
-    await env.DB.prepare(
-      `
-        UPDATE payments
-        SET status = 'confirmed',
-            confirmed_at = ?,
-            confirmed_by = ?,
-            verified = 1,
-            verified_by = ?,
-            updated_at = ?
-        WHERE id = ?
-      `,
-    )
-      .bind(confirmedAt, actorId, actorId, confirmedAt, paymentId)
-      .run();
-
     const paymentAmount = Number(payment.amount || 0);
     const paymentFees = Number(payment.fees || 0);
-    await env.DB.prepare(
-      `
-        INSERT INTO finance_entries (
-          id, type, amount, currency, source, description, estimate_id, payment_id, project_id, object_id,
-          gross_amount, fees, net_amount, created_by, created_at, updated_at
-        )
-        VALUES (?, 'income', ?, ?, 'estimate_payment', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-    )
-      .bind(
-        createId(),
-        paymentAmount,
-        payment.currency || "RUB_PMR",
+    const netAmount = Number(payment.net_amount || paymentAmount - paymentFees);
+
+    const statements: D1PreparedStatement[] = [
+      env.DB.prepare(
+        `UPDATE payments SET status = 'confirmed', confirmed_at = ?, confirmed_by = ?, verified = 1, verified_by = ?, updated_at = ? WHERE id = ?`
+      ).bind(confirmedAt, actorId, actorId, confirmedAt, paymentId),
+      env.DB.prepare(
+        `INSERT INTO finance_entries (id, type, amount, currency, source, description, estimate_id, payment_id, project_id, object_id, gross_amount, fees, net_amount, created_by, created_at, updated_at) VALUES (?, 'income', ?, ?, 'estimate_payment', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        createId(), paymentAmount, payment.currency || "RUB_PMR",
         `Payment confirmed: ${payment.reference || payment.id}`,
-        payment.estimate_id,
-        payment.id,
-        payment.project_id || null,
-        payment.object_id || null,
-        Number(payment.gross_amount || paymentAmount),
-        paymentFees,
-        Number(payment.net_amount || paymentAmount - paymentFees),
-        actorId,
-        confirmedAt,
-        confirmedAt,
-      )
-      .run();
+        payment.estimate_id, payment.id, payment.project_id || null, payment.object_id || null,
+        Number(payment.gross_amount || paymentAmount), paymentFees, netAmount,
+        actorId, confirmedAt, confirmedAt,
+      ),
+    ];
 
     if (payment.account_id) {
-      await env.DB.prepare(
-        "UPDATE company_accounts SET balance = balance + ? WHERE id = ?",
-      )
-        .bind(Number(payment.net_amount || paymentAmount - paymentFees), payment.account_id)
-        .run();
+      statements.push(
+        env.DB.prepare("UPDATE company_accounts SET balance = balance + ? WHERE id = ?")
+          .bind(netAmount, payment.account_id)
+      );
     }
 
-    await env.DB.prepare(
-      `
-        INSERT INTO estimate_history (id, estimate_id, action, changed_by, changed_at, old_values, new_values)
-        VALUES (?, ?, 'payment_confirmed', ?, ?, ?, ?)
-      `,
-    )
-      .bind(
-        createId(),
-        payment.estimate_id,
-        actorId,
-        confirmedAt,
+    statements.push(
+      env.DB.prepare(
+        `INSERT INTO estimate_history (id, estimate_id, action, changed_by, changed_at, old_values, new_values) VALUES (?, ?, 'payment_confirmed', ?, ?, ?, ?)`
+      ).bind(
+        createId(), payment.estimate_id, actorId, confirmedAt,
         JSON.stringify({ status: payment.status }),
         JSON.stringify({ status: "confirmed", amount: payment.amount }),
       )
-      .run();
+    );
 
+    await env.DB.batch(statements);
     await recalculatePaidAmount(env, String(payment.estimate_id));
     return json({ data: true });
   }
@@ -1894,7 +1886,7 @@ const handleStorageUpload = async (
     return textError("file is required", 400);
   }
 
-  const objectPath = path.replace(/^\/+/, "");
+  const objectPath = safePath(path);
   await bucket.put(objectPath, await file.arrayBuffer(), {
     httpMetadata: {
       contentType: file.type || "application/octet-stream",
@@ -1922,7 +1914,7 @@ const handleStorageRemove = async (
   const paths = Array.isArray(body.paths) ? body.paths.map((path: unknown) => String(path)) : [];
   await Promise.all(
     paths
-      .map((path) => path.replace(/^public\//, "").replace(/^\/+/, ""))
+      .map((path) => safePath(path))
       .filter(Boolean)
       .map((path) => bucket.delete(path)),
   );
@@ -1934,7 +1926,7 @@ const handlePublicFile = async (env: Env, bucketName: string, objectPath: string
   const bucket = getBucket(env, bucketName);
   if (!bucket) return textError("Bucket is not configured", 500);
 
-  const object = await bucket.get(objectPath.replace(/^\/+/, ""));
+  const object = await bucket.get(safePath(objectPath));
   if (!object) {
     return new Response("Not found", { status: 404 });
   }
@@ -1949,7 +1941,7 @@ const handlePublicFile = async (env: Env, bucketName: string, objectPath: string
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     if (request.method === "OPTIONS") {
-      return new Response("ok", { headers: corsHeaders });
+      return withHeaders(new Response("ok"));
     }
 
     try {

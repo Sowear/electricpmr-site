@@ -1,7 +1,3 @@
-// ============================================================
-// ElectricPMR — Auto Layout (Event-driven пересчёт)
-// ============================================================
-
 import { EventBus } from "../events/eventBus"
 import { EngineeringEngine } from "./engineering"
 import type { ElectricalPoint, CircuitGroup } from "../types/electrical"
@@ -10,9 +6,11 @@ import type { SystemEvent } from "../types/events"
 let recalculationTimer: ReturnType<typeof setTimeout> | null = null
 let currentPoints: ElectricalPoint[] = []
 let currentCircuits: CircuitGroup[] = []
+let unsubscribe: (() => void) | null = null
 
 export function initAutoLayout(): void {
-  EventBus.on("*", handleEvent)
+  if (unsubscribe) unsubscribe()
+  unsubscribe = EventBus.on("*", handleEvent)
 }
 
 export function updateAutoLayoutData(points: ElectricalPoint[], circuits: CircuitGroup[]): void {
@@ -55,18 +53,4 @@ function performRecalculation(): void {
   if (!phaseBalance.isBalanced) {
     EventBus.emit({ type: "calculation.phase.imbalanced", balance: phaseBalance })
   }
-}
-
-export function updateConnectedObjects(pointId: string, points: ElectricalPoint[]): void {
-  const point = points.find(p => p.id === pointId)
-  if (!point) return
-
-  const panel = points.find(p => p.type === "panel" && p.floor === point.floor)
-  if (!panel) return
-
-  const dx = panel.position.x - point.position.x
-  const dy = panel.position.y - point.position.y
-  const distance = Math.round(Math.sqrt(dx * dx + dy * dy))
-  const cableLength = Math.round(distance * 1.15)
-  void cableLength
 }

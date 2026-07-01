@@ -20,6 +20,7 @@ import {
   syncToCloud as cloudSync,
   type CloudProjectMeta,
 } from "../engine/persistence/cloudPersistence"
+import { getDefaultMountingHeight, getPointNameRu } from "../engine/pointCatalog"
 
 type Point = { x: number; y: number }
 type ProjectSnapshot = string
@@ -196,8 +197,11 @@ function restoreProjectSnapshot(snapshot: ProjectSnapshot): PersistedProject {
 
 function persistProject(state: ProjectState): void {
   if (typeof window === "undefined") return
-
-  window.localStorage.setItem(STORAGE_KEY, createProjectSnapshot(state))
+  try {
+    window.localStorage.setItem(STORAGE_KEY, createProjectSnapshot(state))
+  } catch (e) {
+    console.warn("localStorage persist failed:", e)
+  }
 }
 
 function getProjectItemKey(id: string): string {
@@ -215,7 +219,11 @@ function readProjectIndex(): ProjectListItem[] {
 
 function writeProjectIndex(items: ProjectListItem[]): void {
   if (typeof window === "undefined") return
-  window.localStorage.setItem(PROJECT_INDEX_KEY, JSON.stringify(items))
+  try {
+    window.localStorage.setItem(PROJECT_INDEX_KEY, JSON.stringify(items))
+  } catch (e) {
+    console.warn("localStorage writeProjectIndex failed:", e)
+  }
 }
 
 function saveProjectToLibrary(state: ProjectState): string {
@@ -233,7 +241,11 @@ function saveProjectToLibrary(state: ProjectState): string {
     updatedAt: now,
   }
 
-  window.localStorage.setItem(getProjectItemKey(id), snapshot)
+  try {
+    window.localStorage.setItem(getProjectItemKey(id), snapshot)
+  } catch (e) {
+    console.warn("localStorage saveProjectToLibrary failed:", e)
+  }
   writeProjectIndex([item, ...index.filter(entry => entry.id !== id)].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)))
   return id
 }
@@ -265,13 +277,6 @@ function createSuggestedPoint(type: ElectricalPoint["type"], name: string, posit
     createdAt: new Date(),
     updatedAt: new Date(),
   }
-}
-
-function getDefaultMountingHeight(type: string): number {
-  if (type.includes("switch")) return 900
-  if (type.includes("light")) return 2700
-  if (type === "panel") return 1500
-  return 300
 }
 
 function hasNearbyPoint(points: ElectricalPoint[], position: Point, radius = 80): boolean {
@@ -435,31 +440,6 @@ function findPanelPoint(points: ElectricalPoint[]): ElectricalPoint | undefined 
   return points.find(point => point.type === "panel")
 }
 
-function createCableRoute(from: ElectricalPoint, to: ElectricalPoint, index: number) {
-  const ceilingY = Math.min(from.position.y, to.position.y) - 80
-  const waypoints = [
-    { x: from.position.x, y: ceilingY },
-    { x: to.position.x, y: ceilingY },
-  ]
-  const lengthPx =
-    Math.abs(from.position.y - ceilingY) +
-    Math.abs(to.position.x - from.position.x) +
-    Math.abs(to.position.y - ceilingY)
-
-  return {
-    id: `route_${Date.now()}_${index}`,
-    cableId: `cable_virtual_${index}`,
-    from: from.id,
-    to: to.id,
-    waypoints,
-    length: Math.round((lengthPx / 100) * 1.15 * 10) / 10,
-    method: "in_wall" as const,
-    viaJunctionBoxes: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-}
-
 export const useProjectStore = create<ProjectState>((set, get) => ({
   id: "",
   name: "Новый проект",
@@ -488,13 +468,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   addWall: (points, thickness = 200, height = 2700) => {
     const wall = GeometryEngine.createWall(points, thickness, height)
-    set(state => ({
-      ...withHistory(state),
-      scene: { ...state.scene, walls: [...state.scene.walls, wall] },
-    }))
+    const wallsAfter: Wall[] = []
+    set(state => {
+      const next = [...state.scene.walls, wall]
+      wallsAfter.push(...next)
+      return {
+        ...withHistory(state),
+        scene: { ...state.scene, walls: next },
+      }
+    })
     get().recalculate()
-    const state = get()
-    if (state.scene.walls.length >= 3 && state.scene.rooms.length === 0) {
+    if (wallsAfter.length >= 3 && get().scene.rooms.length === 0) {
       get().detectRooms()
     }
     return wall
@@ -1078,7 +1062,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       id: duplicateId,
       name: `${restored.name || "Проект"} копия`,
     }
-    window.localStorage.setItem(getProjectItemKey(duplicateId), JSON.stringify(duplicate))
+    try { window.localStorage.setItem(getProjectItemKey(duplicateId), JSON.stringify(duplicate)) } catch (e) { console.warn("localStorage duplicateProject failed:", e) }
     const now = new Date().toISOString()
     writeProjectIndex([
       { id: duplicateId, name: duplicate.name, createdAt: now, updatedAt: now },
@@ -1090,7 +1074,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   deleteProject: (id) => {
     if (typeof window === "undefined") return
 
-    window.localStorage.removeItem(getProjectItemKey(id))
+    try { window.localStorage.removeItem(getProjectItemKey(id)) } catch (e) { console.warn("localStorage deleteProject failed:", e) }
     writeProjectIndex(readProjectIndex().filter(item => item.id !== id))
   },
 
@@ -1157,6 +1141,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   saveToCloud: async () => {
+    if (get().cloudSyncing) return false
     set({ cloudSyncing: true })
     const state = get()
     const persisted: PersistedProject = {
@@ -1416,11 +1401,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const outletTypes = new Map<string, number>()
     state.electrical.points.forEach(p => {
       if (p.type.startsWith("outlet") || p.type === "switch" || p.type === "switch_pass_through" || p.type === "dimmer") {
-        const name = p.type === "outlet_waterproof" ? "Розетка IP44" :
-                     p.type === "outlet_triple" ? "Блок розеток 3-местный" :
-                     p.type === "switch" ? "Выключатель 1-кл" :
-                     p.type === "switch_pass_through" ? "Проходной выключатель" :
-                     p.type === "dimmer" ? "Диммер" : "Розетка 220В"
+        const name = getPointNameRu(p.type)
         outletTypes.set(name, (outletTypes.get(name) ?? 0) + 1)
       }
     })
@@ -1441,9 +1422,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const lightTypes = new Map<string, number>()
     state.electrical.points.forEach(p => {
       if (p.type.startsWith("light")) {
-        const name = p.type === "light_ceiling" ? "Потолочный светильник" :
-                     p.type === "light_wall" ? "Бра" :
-                     p.type === "light_spot" ? "Точечный светильник" : "Светильник"
+        const name = getPointNameRu(p.type)
         lightTypes.set(name, (lightTypes.get(name) ?? 0) + 1)
       }
     })

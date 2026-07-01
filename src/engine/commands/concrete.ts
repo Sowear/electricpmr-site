@@ -8,6 +8,7 @@ import type { UUID, Point } from "../types/common"
 import type { Wall, Room, Door, Window, GeometryObject } from "../types/geometry"
 import type { ElectricalPoint, CircuitGroup, CableRoute, BreakerSpec, RCDSpec, Panel, PanelEquipment } from "../types/electrical"
 import { EventBus } from "../events/eventBus"
+import { getDefaultMountingHeight } from "@/engine/pointCatalog"
 
 // ============================================================
 // КОМАНДЫ ГЕОМЕТРИИ
@@ -364,25 +365,7 @@ export class CreateElectricalPointCommand implements Command {
   }
 
   private getDefaultHeight(): number {
-    const heightMap: Record<string, number> = {
-      outlet: 300,
-      outlet_waterproof: 300,
-      outlet_triple: 300,
-      switch: 900,
-      switch_pass_through: 900,
-      dimmer: 900,
-      light_ceiling: 2700,
-      light_wall: 1500,
-      light_spot: 2700,
-      light_strip: 2700,
-      sensor_motion: 2400,
-      sensor_smoke: 2400,
-      sensor_leak: 50,
-      thermostat: 1200,
-      panel: 1500,
-      junction_box: 2400,
-    }
-    return heightMap[this.params.type] ?? 300
+    return getDefaultMountingHeight(this.params.type)
   }
 }
 

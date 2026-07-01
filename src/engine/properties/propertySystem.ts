@@ -6,6 +6,8 @@
 // без написания отдельного UI для каждого типа.
 // ============================================================
 
+import { getPointNameRu } from "@/engine/pointCatalog"
+
 // ============================================================
 // ТИПЫ ПОЛЕЙ
 // ============================================================
@@ -339,27 +341,5 @@ function calculateWallLength(obj: Record<string, unknown>): number {
 }
 
 function getReadableType(type: string): string {
-  const typeNames: Record<string, string> = {
-    outlet: "Розетка",
-    outlet_waterproof: "Розетка IP44",
-    outlet_triple: "Тройная розетка",
-    switch: "Выключатель",
-    switch_pass_through: "Проходной выключатель",
-    dimmer: "Диммер",
-    light_ceiling: "Потолочный светильник",
-    light_wall: "Бра",
-    light_spot: "Точечный светильник",
-    light_strip: "Светодиодная лента",
-    sensor_motion: "Датчик движения",
-    sensor_smoke: "Датчик дыма",
-    sensor_leak: "Датчик протечки",
-    thermostat: "Терморегулятор",
-    junction_box: "Распределительная коробка",
-    appliance_stove: "Электроплита",
-    appliance_boiler: "Бойлер",
-    appliance_ac: "Кондиционер",
-    appliance_washing_machine: "Стиральная машина",
-    appliance_floor_heating: "Тёплый пол",
-  }
-  return typeNames[type] ?? type
+  return getPointNameRu(type)
 }

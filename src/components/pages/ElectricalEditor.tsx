@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { getLibraryByCategory, searchLibrary } from "@/engine/library"
 import { useUserRole } from "@/hooks/useUserRole"
+import { useToast } from "@/hooks/use-toast"
 import { ErrorBoundary } from "@/components/editor/ErrorBoundary"
 import { TOOLS } from "@/components/editor/helpers"
 import { ToolGroup, ToolButton, RailButton, HeaderButton, WorkflowPills } from "@/components/editor/toolbar"
@@ -76,18 +77,12 @@ function ElectricalEditorContent() {
   const explainCircuit = useProjectStore(s => s.explainCircuit)
   const setExplainedCircuit = useProjectStore(s => s.setExplainedCircuit)
   const autoPlace = useProjectStore(s => s.autoPlace)
-  const removeWall = useProjectStore(s => s.removeWall)
-  const removeRoom = useProjectStore(s => s.removeRoom)
-  const removeDoor = useProjectStore(s => s.removeDoor)
-  const removeWindow = useProjectStore(s => s.removeWindow)
-  const removeElectricalPoint = useProjectStore(s => s.removeElectricalPoint)
-  const removeObject = useProjectStore(s => s.removeObject)
-  const selectObject = useProjectStore(s => s.selectObject)
 
   const [query, setQuery] = useState("")
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [category, setCategory] = useState("outlets")
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     initAutoLayout()
@@ -98,31 +93,13 @@ function ElectricalEditorContent() {
     updateAutoLayoutData(electrical.points, electrical.circuits)
   }, [electrical.points, electrical.circuits])
 
+  const debouncedValidateRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   useEffect(() => {
-    validate()
+    if (debouncedValidateRef.current) clearTimeout(debouncedValidateRef.current)
+    debouncedValidateRef.current = setTimeout(() => { validate() }, 300)
+    return () => { if (debouncedValidateRef.current) clearTimeout(debouncedValidateRef.current) }
   }, [scene.walls.length, scene.doors.length, scene.windows.length, scene.objects.length, electrical.points.length, electrical.circuits.length, validate])
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Delete" && e.key !== "Backspace") return
-      if ((e.target as HTMLElement)?.tagName === "INPUT" || (e.target as HTMLElement)?.tagName === "TEXTAREA") return
-
-      const id = ui.selectedObjectId
-      if (!id) return
-
-      e.preventDefault()
-      if (scene.walls.some(w => w.id === id)) removeWall(id)
-      else if (scene.rooms.some(r => r.id === id)) removeRoom(id)
-      else if (scene.doors.some(d => d.id === id)) removeDoor(id)
-      else if (scene.windows.some(w => w.id === id)) removeWindow(id)
-      else if (scene.objects.some(o => o.id === id)) removeObject(id)
-      else if (electrical.points.some(p => p.id === id)) removeElectricalPoint(id)
-      selectObject(null)
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [ui.selectedObjectId, scene, electrical.points, removeWall, removeRoom, removeDoor, removeWindow, removeObject, removeElectricalPoint, selectObject])
 
   const trustScore = useMemo(() => {
     let score = 20
@@ -171,12 +148,13 @@ function ElectricalEditorContent() {
     reader.onload = (e) => {
       const text = e.target?.result
       if (typeof text === "string") {
-        importProject(text)
+        const ok = importProject(text)
+        if (!ok) toast({ title: "Ошибка импорта", description: "Неверный формат файла или повреждённые данные.", variant: "destructive" })
       }
     }
     reader.readAsText(file)
     event.target.value = ""
-  }, [importProject])
+  }, [importProject, toast])
 
   const exportPdf = useCallback(() => {
     downloadPDF({ id: "", name, description: "", type: "apartment", phase: "design", status: "draft", scene, electrical, validation, aiState: { totalActions: 0, confidence: 0, taskHistory: [] } }, `${name || "electricpmr-project"}.pdf`)
@@ -237,8 +215,8 @@ function ElectricalEditorContent() {
             <HeaderButton label="Новый проект" icon={FilePlus2} onClick={handleNewProject} />
             <HeaderButton label="Сохранить" icon={Save} onClick={() => { saveProject(); UXRecorder.track("save") }} />
             <Separator orientation="vertical" className="mx-1 h-6" />
-            <HeaderButton label="Отменить" icon={Undo2} onClick={() => { undo(); recalculate(); UXRecorder.track("undo") }} disabled={undoStack.length === 0} />
-            <HeaderButton label="Повторить" icon={Redo2} onClick={() => { redo(); recalculate(); UXRecorder.track("redo") }} disabled={redoStack.length === 0} />
+            <HeaderButton label="Отменить" icon={Undo2} onClick={() => { undo(); recalculate(); UXRecorder.track("undo") }} disabled={undoStack.length === 0} title="Ctrl+Z" />
+            <HeaderButton label="Повторить" icon={Redo2} onClick={() => { redo(); recalculate(); UXRecorder.track("redo") }} disabled={redoStack.length === 0} title="Ctrl+Shift+Z" />
             <Separator orientation="vertical" className="mx-1 h-6" />
             <HeaderButton label="Библиотека объектов" icon={Search} onClick={() => setLibraryOpen(value => !value)} active={libraryOpen} />
             <Button variant="outline" size="sm" className="h-9 gap-2" disabled={scene.walls.length < 3} onClick={() => { detectRooms(); validate() }}>

@@ -16,6 +16,7 @@ import type {
 } from "../types/electrical"
 import type { ValidationResult, UUID } from "../types/common"
 import { EventBus } from "../events/eventBus"
+import { getPointDefaultPower } from "@/engine/pointCatalog"
 
 // ============================================================
 // КАТАЛОГ КАБЕЛЕЙ (базовый для ПМР, 220/380В)
@@ -504,32 +505,7 @@ class EngineeringEngineImpl {
   // --- Утилита: мощность объекта ---
 
   private getObjectPower(point: ElectricalPoint): number {
-    const powerMap: Record<string, number> = {
-      outlet: 0,                    // розетка сама по себе 0, считается потребитель
-      outlet_waterproof: 0,
-      outlet_triple: 0,
-      switch: 0,
-      switch_pass_through: 0,
-      dimmer: 0,
-      light_ceiling: 80,
-      light_wall: 60,
-      light_spot: 15,
-      light_strip: 14,              // Вт/м × 1м
-      sensor_motion: 5,
-      sensor_smoke: 0.5,
-      sensor_leak: 1,
-      thermostat: 5,
-      appliance_stove: 7000,
-      appliance_boiler: 2000,
-      appliance_ac: 2500,
-      appliance_floor_heating: 1500,
-      appliance_kettle: 1500,
-      appliance_washing_machine: 2000,
-      appliance_dishwasher: 2000,
-      appliance_oven: 3000,
-      appliance_fridge: 150,
-    }
-    return powerMap[point.type] ?? 0
+    return getPointDefaultPower(point.type)
   }
 
   // --- Доступ к каталогам ---

@@ -2,6 +2,7 @@ import { type ElementType } from "react"
 import {
   AlertTriangle, DoorOpen, Layers, Lightbulb, PanelTop, Plug, Power, Square, Zap,
 } from "lucide-react"
+import { POINT_CATALOG, getPointNameRu, getPointDefaultPower } from "@/engine/pointCatalog"
 
 export const BREAKER_LABELS: Record<string, string> = {
   "brk_1p_c6": "C6", "brk_1p_c10": "C10", "brk_1p_c16": "C16",
@@ -37,69 +38,14 @@ export const ROOM_TYPES = [
   ["custom", "Другая"],
 ] as const
 
-export const POINT_TYPES = [
-  ["outlet", "Розетка"],
-  ["outlet_waterproof", "Розетка IP44"],
-  ["outlet_triple", "Тройная розетка"],
-  ["switch", "Выключатель"],
-  ["switch_pass_through", "Проходной выключатель"],
-  ["light_ceiling", "Свет потолочный"],
-  ["light_wall", "Бра"],
-  ["sensor_motion", "Датчик движения"],
-  ["sensor_smoke", "Датчик дыма"],
-  ["sensor_leak", "Датчик протечки"],
-  ["appliance_stove", "Электроплита"],
-  ["appliance_boiler", "Бойлер"],
-  ["appliance_ac", "Кондиционер"],
-  ["appliance_washing_machine", "Стиральная машина"],
-  ["appliance_fridge", "Холодильник"],
-  ["panel", "Щит"],
-] as const
+export const POINT_TYPES = Object.entries(POINT_CATALOG).map(([key, val]) => [key, val.nameRu] as const)
 
 export function pointType(value: string): string {
-  return ({
-    outlet: "Розетка",
-    outlet_waterproof: "Розетка IP44",
-    outlet_triple: "Тройная розетка",
-    switch: "Выключатель",
-    switch_pass_through: "Проходной выключатель",
-    dimmer: "Диммер",
-    light_ceiling: "Потолочный светильник",
-    light_wall: "Бра",
-    light_spot: "Точечный светильник",
-    light_strip: "Светодиодная лента",
-    sensor_motion: "Датчик движения",
-    sensor_smoke: "Датчик дыма",
-    sensor_leak: "Датчик протечки",
-    thermostat: "Термостат",
-    panel: "Щит",
-    junction_box: "Распределительная коробка",
-    appliance_stove: "Электроплита",
-    appliance_boiler: "Бойлер",
-    appliance_ac: "Кондиционер",
-    appliance_washing_machine: "Стиральная машина",
-    appliance_dishwasher: "Посудомоечная машина",
-    appliance_oven: "Духовой шкаф",
-    appliance_fridge: "Холодильник",
-  } as Record<string, string>)[value] ?? value
+  return getPointNameRu(value)
 }
 
 export function defaultPower(value: string): number {
-  return ({
-    outlet: 500,
-    outlet_waterproof: 700,
-    outlet_triple: 1500,
-    light_ceiling: 80,
-    light_wall: 60,
-    light_spot: 15,
-    light_strip: 120,
-    appliance_stove: 7000,
-    appliance_boiler: 2000,
-    appliance_washing_machine: 2000,
-    appliance_dishwasher: 2000,
-    appliance_oven: 3000,
-    appliance_fridge: 150,
-  } as Record<string, number>)[value] ?? 0
+  return getPointDefaultPower(value)
 }
 
 export type Tool = "select" | "wall" | "door" | "window" | "outlet" | "switch" | "light" | "sensor" | "panel"

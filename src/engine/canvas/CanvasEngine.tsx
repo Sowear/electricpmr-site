@@ -6,6 +6,7 @@ import { SelectionEngine } from "../selection"
 import type { Point, UUID } from "../types/common"
 import type { ElectricalPoint } from "../types"
 import type { Door, GeometryObject, Room, Wall, Window } from "../types/geometry"
+import { getPointColor, getPointLabel, getDefaultMountingHeight, getPointNameRu } from "@/engine/pointCatalog"
 
 interface CanvasEngineProps {
   width?: number
@@ -20,27 +21,25 @@ export function CanvasEngine({ width = 800, height = 600 }: CanvasEngineProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [canvasSize, setCanvasSize] = useState({ width, height })
 
-  const {
-    scene,
-    electrical,
-    ui,
-    addWall,
-    addDoor,
-    addWindow,
-    moveWall,
-    moveObject,
-    removeWall,
-    removeRoom,
-    removeDoor,
-    removeWindow,
-    removeObject,
-    addElectricalPoint,
-    removeElectricalPoint,
-    moveElectricalPoint,
-    selectObject,
-    undo,
-    redo,
-  } = useProjectStore()
+  const scene = useProjectStore(s => s.scene)
+  const electrical = useProjectStore(s => s.electrical)
+  const ui = useProjectStore(s => s.ui)
+  const selectObject = useProjectStore(s => s.selectObject)
+  const undo = useProjectStore(s => s.undo)
+  const redo = useProjectStore(s => s.redo)
+  const addWall = useProjectStore(s => s.addWall)
+  const addDoor = useProjectStore(s => s.addDoor)
+  const addWindow = useProjectStore(s => s.addWindow)
+  const moveWall = useProjectStore(s => s.moveWall)
+  const moveObject = useProjectStore(s => s.moveObject)
+  const removeWall = useProjectStore(s => s.removeWall)
+  const removeRoom = useProjectStore(s => s.removeRoom)
+  const removeDoor = useProjectStore(s => s.removeDoor)
+  const removeWindow = useProjectStore(s => s.removeWindow)
+  const removeObject = useProjectStore(s => s.removeObject)
+  const addElectricalPoint = useProjectStore(s => s.addElectricalPoint)
+  const removeElectricalPoint = useProjectStore(s => s.removeElectricalPoint)
+  const moveElectricalPoint = useProjectStore(s => s.moveElectricalPoint)
 
   useEffect(() => {
     if (!canvasRef.current || !containerRef.current) return
@@ -133,12 +132,10 @@ export function CanvasEngine({ width = 800, height = 600 }: CanvasEngineProps) {
     const canvas = fabricRef.current
     if (!canvas) return
 
-    canvas.clear()
-    canvas.backgroundColor = "#f4f7fb"
-
-    if (ui.showGrid) {
-      drawGrid(canvas, canvasSize.width, canvasSize.height)
-    }
+    // Remove only data objects (with data.id), keep grid lines intact
+    canvas.getObjects().forEach(obj => {
+      if (obj.data?.id) canvas.remove(obj)
+    })
 
     scene.rooms.forEach(room => {
       canvas.add(createRoomObject(room))
@@ -190,7 +187,21 @@ export function CanvasEngine({ width = 800, height = 600 }: CanvasEngineProps) {
     })
 
     canvas.renderAll()
-  }, [canvasSize.height, canvasSize.width, electrical.cables, electrical.points, scene.doors, scene.objects, scene.rooms, scene.walls, scene.windows, ui.showGrid])
+  }, [canvasSize.height, canvasSize.width, electrical.cables, electrical.points, scene.doors, scene.objects, scene.rooms, scene.walls, scene.windows])
+
+  // Draw grid on canvas size change, update visibility on toggle
+  useEffect(() => {
+    const canvas = fabricRef.current
+    if (!canvas) return
+    // Remove old grid lines (those with excludeFromExport but no data.id)
+    canvas.getObjects().forEach(obj => {
+      if (obj.excludeFromExport && !obj.data?.id) canvas.remove(obj)
+    })
+    if (ui.showGrid) {
+      drawGrid(canvas, canvasSize.width, canvasSize.height)
+      canvas.renderAll()
+    }
+  }, [canvasSize.height, canvasSize.width, ui.showGrid])
 
   useEffect(() => {
     const canvas = fabricRef.current
@@ -199,30 +210,31 @@ export function CanvasEngine({ width = 800, height = 600 }: CanvasEngineProps) {
     const onModified = (event: fabric.TEvent) => {
       const obj = event.target as fabric.FabricObject | undefined
       if (!obj?.data?.id) return
+      const st = useProjectStore.getState()
 
       if (obj.data.type === "wall") {
         const original = obj.data.points as [Point, Point]
         const delta = { x: obj.left ?? 0, y: obj.top ?? 0 }
-        moveWall(obj.data.id, [
-          snapPoint({ x: original[0].x + delta.x, y: original[0].y + delta.y }, ui.snapToGrid),
-          snapPoint({ x: original[1].x + delta.x, y: original[1].y + delta.y }, ui.snapToGrid),
+        st.moveWall(obj.data.id, [
+          snapPoint({ x: original[0].x + delta.x, y: original[0].y + delta.y }, st.ui.snapToGrid),
+          snapPoint({ x: original[1].x + delta.x, y: original[1].y + delta.y }, st.ui.snapToGrid),
         ])
         return
       }
 
       if (isElectricalCanvasType(obj.data.type)) {
         if (obj.data.type === "furniture") {
-          moveObject(obj.data.id, snapPoint({ x: obj.left ?? 0, y: obj.top ?? 0 }, ui.snapToGrid))
+          st.moveObject(obj.data.id, snapPoint({ x: obj.left ?? 0, y: obj.top ?? 0 }, st.ui.snapToGrid))
           return
         }
         const center = obj.getCenterPoint()
-        moveElectricalPoint(obj.data.id, snapPlacementPoint({ x: center.x, y: center.y }, scene.walls, ui.snapToGrid).point)
+        st.moveElectricalPoint(obj.data.id, snapPlacementPoint({ x: center.x, y: center.y }, st.scene.walls, st.ui.snapToGrid).point)
       }
     }
 
     canvas.on("object:modified", onModified)
     return () => { canvas.off("object:modified", onModified) }
-  }, [moveElectricalPoint, moveObject, moveWall, scene.walls, ui.snapToGrid])
+  }, [])
 
   useEffect(() => {
     const canvas = fabricRef.current
@@ -336,6 +348,18 @@ export function CanvasEngine({ width = 800, height = 600 }: CanvasEngineProps) {
         redo()
       }
 
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
+        e.preventDefault()
+        const allObjects = canvas?.getObjects().filter(obj => obj.data?.id) ?? []
+        allObjects.forEach(obj => SelectionEngine.select(obj.data.id as UUID))
+        canvas?.discardActiveObject()
+        if (allObjects.length > 0) {
+          const sel = new fabric.ActiveSelection(allObjects, { canvas: canvas ?? undefined })
+          canvas?.setActiveObject(sel)
+        }
+        canvas?.requestRenderAll()
+      }
+
       if ((e.key === "Delete" || e.key === "Backspace") && SelectionEngine.getSelectedIds().length > 0) {
         SelectionEngine.getSelectedIds().forEach(id => {
           if (scene.walls.some(w => w.id === id)) removeWall(id)
@@ -362,7 +386,7 @@ export function CanvasEngine({ width = 800, height = 600 }: CanvasEngineProps) {
   }, [electrical.points, redo, removeDoor, removeElectricalPoint, removeObject, removeRoom, removeWall, removeWindow, scene.doors, scene.objects, scene.rooms, scene.walls, scene.windows, selectObject, undo])
 
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-hidden bg-[#f4f7fb]">
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden bg-[#f4f7fb]" role="img" aria-label="Канвас редактора плана. Используйте колесо мыши для зума, зажмите среднюю кнопку или Alt для панорамирования.">
       <canvas ref={canvasRef} className="block" />
       {scene.walls.length === 0 && electrical.points.length === 0 && (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center select-none">
@@ -383,6 +407,12 @@ export function CanvasEngine({ width = 800, height = 600 }: CanvasEngineProps) {
             Инструмент: {getToolHint(ui.activeTool)}
           </Badge>
         )}
+      </div>
+      <div className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1">
+        <Badge variant="outline" className="bg-white/70 shadow-sm text-[10px]">⌨ Ctrl+Z Отмена</Badge>
+        <Badge variant="outline" className="bg-white/70 shadow-sm text-[10px]">⌨ Ctrl+Shift+Z Повтор</Badge>
+        <Badge variant="outline" className="bg-white/70 shadow-sm text-[10px]">⌨ Del Удалить</Badge>
+        <Badge variant="outline" className="bg-white/70 shadow-sm text-[10px]">⌨ Esc Снять выделение</Badge>
       </div>
     </div>
   )
@@ -673,46 +703,6 @@ function getToolHint(tool: string): string {
   return hints[tool] ?? tool
 }
 
-function getDefaultMountingHeight(type: string): number {
-  if (type.includes("switch")) return 900
-  if (type.includes("light")) return 2700
-  if (type === "panel") return 1500
-  return 300
-}
-
-function getPointColor(type: string): string {
-  const colors: Record<string, string> = {
-    outlet: "#2563eb",
-    outlet_waterproof: "#0891b2",
-    outlet_triple: "#4f46e5",
-    switch: "#ca8a04",
-    switch_pass_through: "#b45309",
-    dimmer: "#ea580c",
-    light_ceiling: "#eab308",
-    light_wall: "#facc15",
-    light_spot: "#fde047",
-    light_strip: "#fef08a",
-    sensor_motion: "#dc2626",
-    sensor_smoke: "#991b1b",
-    sensor_leak: "#06b6d4",
-    thermostat: "#059669",
-    panel: "#334155",
-    junction_box: "#7c3aed",
-    appliance_stove: "#b91c1c",
-    appliance_boiler: "#0e7490",
-    appliance_ac: "#0284c7",
-    appliance_washing_machine: "#1d4ed8",
-    appliance_floor_heating: "#c2410c",
-    appliance_kettle: "#d97706",
-    appliance_dishwasher: "#4338ca",
-    appliance_oven: "#be123c",
-    appliance_fridge: "#0f766e",
-    cable_tray: "#64748b",
-    cable_conduit: "#64748b",
-  }
-  return colors[type] ?? "#64748b"
-}
-
 function getPointStatus(point: ElectricalPoint): "ok" | "warning" | "error" | "panel" {
   if (point.type === "panel") return "panel"
   if (point.parameters?.aiSuggested) return "warning"
@@ -727,58 +717,8 @@ function getStatusColor(status: "ok" | "warning" | "error" | "panel"): { stroke:
   return { stroke: "#facc15", fill: "rgba(250, 204, 21, 0.14)" }
 }
 
-function getPointLabel(type: string): string {
-  const labels: Record<string, string> = {
-    outlet: "Р",
-    outlet_waterproof: "IP",
-    outlet_triple: "3Р",
-    switch: "В",
-    switch_pass_through: "ПВ",
-    dimmer: "Д",
-    light_ceiling: "Л",
-    light_wall: "Б",
-    light_spot: "Т",
-    light_strip: "LED",
-    sensor_motion: "ДД",
-    sensor_smoke: "ДМ",
-    sensor_leak: "ДП",
-    thermostat: "Тр",
-    panel: "Щ",
-    junction_box: "К",
-    appliance_stove: "ПЛ",
-    appliance_boiler: "Б",
-    appliance_ac: "Кн",
-    appliance_washing_machine: "СМ",
-    appliance_floor_heating: "ТП",
-    appliance_kettle: "Ч",
-    appliance_dishwasher: "ПМ",
-    appliance_oven: "Дх",
-    appliance_fridge: "Х",
-    cable_tray: "Лт",
-    cable_conduit: "Тр",
-  }
-  return labels[type] ?? "?"
-}
-
 function getDefaultName(type: string): string {
-  const names: Record<string, string> = {
-    outlet: "Розетка",
-    outlet_waterproof: "Розетка IP44",
-    outlet_triple: "Тройная розетка",
-    switch: "Выключатель",
-    switch_pass_through: "Проходной выключатель",
-    dimmer: "Диммер",
-    light_ceiling: "Потолочный светильник",
-    light_wall: "Бра",
-    light_spot: "Точечный светильник",
-    light_strip: "Светодиодная лента",
-    sensor_motion: "Датчик движения",
-    sensor_smoke: "Датчик дыма",
-    sensor_leak: "Датчик протечки",
-    panel: "Щит",
-    junction_box: "Распределительная коробка",
-  }
-  return names[type] ?? "Объект"
+  return getPointNameRu(type)
 }
 
 function getFurnitureLabel(type: string): string {

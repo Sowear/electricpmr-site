@@ -8,6 +8,7 @@
 
 import type { Wall, Room, Door, Window, Point } from "../types/geometry"
 import type { ElectricalPoint, CableRoute } from "../types/electrical"
+import { getPointLabel } from "@/engine/pointCatalog"
 
 // ============================================================
 // DXF GENERATOR
@@ -184,22 +185,6 @@ const POINT_COLORS: Record<string, number> = {
 }
 
 // ============================================================
-// LABEL MAP
-// ============================================================
-
-const POINT_LABELS: Record<string, string> = {
-  outlet: "Р", outlet_waterproof: "IP", outlet_triple: "3Р",
-  switch: "В", switch_pass_through: "ПВ", dimmer: "Д",
-  light_ceiling: "Л", light_wall: "Б", light_spot: "Т", light_strip: "LED",
-  sensor_motion: "ДД", sensor_smoke: "ДМ", sensor_leak: "ДП",
-  thermostat: "Тр", panel: "Щ", junction_box: "К",
-  appliance_stove: "ПЛ", appliance_boiler: "Б", appliance_ac: "Кн",
-  appliance_washing_machine: "СМ", appliance_floor_heating: "ТП",
-  appliance_kettle: "Ч", appliance_dishwasher: "ПМ",
-  appliance_oven: "Дх", appliance_fridge: "Х",
-}
-
-// ============================================================
 // MAIN EXPORT FUNCTION
 // ============================================================
 
@@ -284,7 +269,7 @@ export function generateDXF(
       entities.push(dxfCircle(point.position.x, point.position.y, r, "ELECTRICAL", color))
 
       if (opts.includeLabels) {
-        const label = POINT_LABELS[point.type] ?? "?"
+        const label = getPointLabel(point.type)
         entities.push(dxfText(
           point.position.x + r + 30,
           point.position.y + 30,

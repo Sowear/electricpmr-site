@@ -596,6 +596,6 @@ const supabaseClient =
       })
     : null;
 
-export const supabase = (USE_CLOUDFLARE_API || !supabaseClient ? cloudflareClient : supabaseClient) as typeof cloudflareClient;
+export const supabase = cloudflareClient;
 
 export type User = AuthUser | SupabaseAuthUser;

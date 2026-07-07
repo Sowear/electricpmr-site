@@ -1477,7 +1477,7 @@ const handleRpc = async (request: Request, env: Env, session: SessionContext | n
     const estimate = await fetchRowById(env, "estimates", String(payment.estimate_id));
     if (!estimate) return textError("Estimate not found", 404);
 
-    const actorId = session?.user.id || null;
+    const actorId = session?.user.id || (body.p_actor_id ? String(body.p_actor_id) : null);
     const confirmedAt = nowIso();
     const paymentAmount = Number(payment.amount || 0);
     const paymentFees = Number(payment.fees || 0);

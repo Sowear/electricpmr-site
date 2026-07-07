@@ -1474,11 +1474,20 @@ const handleRpc = async (request: Request, env: Env, session: SessionContext | n
     const payment = await fetchRowById(env, "payments", paymentId);
     if (!payment) return textError("Payment not found", 404);
 
+    const estimate = await fetchRowById(env, "estimates", String(payment.estimate_id));
+    if (!estimate) return textError("Estimate not found", 404);
+
     const actorId = session?.user.id || null;
     const confirmedAt = nowIso();
     const paymentAmount = Number(payment.amount || 0);
     const paymentFees = Number(payment.fees || 0);
     const netAmount = Number(payment.net_amount || paymentAmount - paymentFees);
+
+    const rule = estimate.snapshot_threshold_rule || "deposit";
+    const total = Number(estimate.total || 0);
+    const depositPct = Number(estimate.deposit_pct || 0);
+    const depositAmount = Number(estimate.deposit_amount || 0);
+    const threshold = rule === "full" ? total : Math.max(depositAmount, total * (depositPct / 100));
 
     const statements: D1PreparedStatement[] = [
       env.DB.prepare(
@@ -1514,6 +1523,32 @@ const handleRpc = async (request: Request, env: Env, session: SessionContext | n
 
     await env.DB.batch(statements);
     await recalculatePaidAmount(env, String(payment.estimate_id));
+
+    // Fetch new total paid
+    const paymentsResult = await env.DB.prepare(
+      "SELECT COALESCE(SUM(amount), 0) AS paid_amount FROM payments WHERE estimate_id = ? AND status = 'confirmed'"
+    )
+      .bind(payment.estimate_id)
+      .first<{ paid_amount: number }>();
+    const totalPaid = Number(paymentsResult?.paid_amount || 0);
+
+    if (totalPaid >= threshold) {
+      const updateFields = ["prepayment_confirmed = 1", "prepayment_confirmed_at = ?", "prepayment_confirmed_by = ?"];
+      const bindParams: any[] = [confirmedAt, actorId];
+
+      if (estimate.status === "pending_prepayment") {
+        updateFields.push("status = 'prepayment_received'");
+      }
+
+      bindParams.push(nowIso(), estimate.id);
+
+      await env.DB.prepare(
+        `UPDATE estimates SET ${updateFields.join(", ")}, updated_at = ? WHERE id = ?`
+      )
+        .bind(...bindParams)
+        .run();
+    }
+
     return json({ data: true });
   }
 

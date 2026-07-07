@@ -182,14 +182,18 @@ const LineItemRow = memo(({
 
   const handleQuantityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    const numValue = parseFloat(value) || 0;
+    const capped = Math.max(0, numValue);
     setLocalQuantity(value);
-    debouncedQuantityUpdate(parseFloat(value) || 0);
+    debouncedQuantityUpdate(capped);
   }, [debouncedQuantityUpdate]);
 
   const handlePriceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    const numValue = parseFloat(value) || 0;
+    const capped = Math.max(0, numValue);
     setLocalPrice(value);
-    debouncedPriceUpdate(parseFloat(value) || 0);
+    debouncedPriceUpdate(capped);
   }, [debouncedPriceUpdate]);
 
   return (
@@ -407,8 +411,8 @@ const LineItemsEditor = memo(({ estimateId, lineItems, readOnly, hidePrices }: L
       id: editingItem.id,
       estimateId,
       description: editDescription,
-      quantity: parseFloat(editQuantity) || 0,
-      unit_price: parseFloat(editUnitPrice) || 0,
+      quantity: Math.max(0, parseFloat(editQuantity) || 0),
+      unit_price: Math.max(0, parseFloat(editUnitPrice) || 0),
       item_type: editType,
       unit: editUnit,
       comment: editComment,

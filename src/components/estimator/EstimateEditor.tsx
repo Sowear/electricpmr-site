@@ -69,10 +69,12 @@ const EstimateEditor = () => {
     title: "",
     currency: "RUB_PMR",
     global_discount_pct: 0,
+    global_discount_amount: 0,
     global_tax_pct: 0,
     extra_fees: 0,
     extra_fees_description: "",
     deposit_pct: 0,
+    deposit_amount: 0,
     notes: "",
     valid_until: "",
     payment_method: "",
@@ -112,10 +114,12 @@ const EstimateEditor = () => {
         title: estimate.title || "",
         currency: estimate.currency,
         global_discount_pct: estimate.global_discount_pct,
+        global_discount_amount: estimate.global_discount_amount || 0,
         global_tax_pct: estimate.global_tax_pct,
         extra_fees: estimate.extra_fees,
         extra_fees_description: estimate.extra_fees_description || "",
         deposit_pct: estimate.deposit_pct,
+        deposit_amount: estimate.deposit_amount || 0,
         notes: estimate.notes || "",
         valid_until: estimate.valid_until || "",
         payment_method: (estimate as any).payment_method || "",
@@ -131,6 +135,46 @@ const EstimateEditor = () => {
   const handleChange = useCallback((field: keyof Estimate, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
+
+  const handleDiscountPctChange = useCallback((pct: number) => {
+    const subtotal = estimate?.subtotal || 0;
+    const amount = Math.round((subtotal * pct) / 100 * 100) / 100;
+    setFormData(prev => ({
+      ...prev,
+      global_discount_pct: pct,
+      global_discount_amount: amount
+    }));
+  }, [estimate?.subtotal]);
+
+  const handleDiscountAmountChange = useCallback((amount: number) => {
+    const subtotal = estimate?.subtotal || 0;
+    const pct = subtotal > 0 ? Math.round((amount / subtotal) * 100 * 100) / 100 : 0;
+    setFormData(prev => ({
+      ...prev,
+      global_discount_pct: pct,
+      global_discount_amount: amount
+    }));
+  }, [estimate?.subtotal]);
+
+  const handleDepositPctChange = useCallback((pct: number) => {
+    const total = estimate?.total || 0;
+    const amount = Math.round((total * pct) / 100 * 100) / 100;
+    setFormData(prev => ({
+      ...prev,
+      deposit_pct: pct,
+      deposit_amount: amount
+    }));
+  }, [estimate?.total]);
+
+  const handleDepositAmountChange = useCallback((amount: number) => {
+    const total = estimate?.total || 0;
+    const pct = total > 0 ? Math.round((amount / total) * 100 * 100) / 100 : 0;
+    setFormData(prev => ({
+      ...prev,
+      deposit_pct: pct,
+      deposit_amount: amount
+    }));
+  }, [estimate?.total]);
 
   const handleSave = async () => {
     if (!id || isReadOnly) return;
@@ -215,7 +259,7 @@ const EstimateEditor = () => {
       tax_amount: estimate.tax_amount || 0,
       total: estimate.total || 0,
       balance_due: estimate.balance_due || 0,
-      deposit_amount: estimate.deposit_amount || 0,
+      deposit_amount: formData.deposit_amount ?? estimate.deposit_amount ?? 0,
       deposit_pct: formData.deposit_pct ?? estimate.deposit_pct ?? 0,
       currency: formData.currency || estimate.currency,
       valid_until: formData.valid_until || estimate.valid_until || "",
@@ -256,7 +300,7 @@ const EstimateEditor = () => {
         tax_amount: estimate.tax_amount || 0,
         total: estimate.total || 0,
         balance_due: estimate.balance_due || 0,
-        deposit_amount: estimate.deposit_amount || undefined,
+        deposit_amount: formData.deposit_amount ?? estimate.deposit_amount ?? undefined,
         deposit_pct: formData.deposit_pct ?? estimate.deposit_pct ?? undefined,
         currency: formData.currency || estimate.currency,
         valid_until: formData.valid_until || estimate.valid_until || undefined,
@@ -634,11 +678,19 @@ const EstimateEditor = () => {
               <div className="border rounded-lg p-3 lg:p-4">
                 <h3 className="font-semibold text-sm mb-3">Итоговые настройки</h3>
                 <div className="grid grid-cols-3 gap-2 lg:gap-3">
-                  <FieldWithTooltip label="Скидка %" tooltip="Общая скидка на всю смету.">
+                  <FieldWithTooltip label="Скидка %" tooltip="Общая скидка на всю смету в процентах.">
                     <Input
                       type="number" min="0" max="100"
                       value={formData.global_discount_pct}
-                      onChange={(e) => handleChange("global_discount_pct", parseFloat(e.target.value) || 0)}
+                      onChange={(e) => handleDiscountPctChange(parseFloat(e.target.value) || 0)}
+                      className="h-8" disabled={isReadOnly}
+                    />
+                  </FieldWithTooltip>
+                  <FieldWithTooltip label="Скидка (сумма)" tooltip="Общая скидка на всю смету в валюте сметы.">
+                    <Input
+                      type="number" min="0"
+                      value={formData.global_discount_amount}
+                      onChange={(e) => handleDiscountAmountChange(parseFloat(e.target.value) || 0)}
                       className="h-8" disabled={isReadOnly}
                     />
                   </FieldWithTooltip>
@@ -650,14 +702,25 @@ const EstimateEditor = () => {
                       className="h-8" disabled={isReadOnly}
                     />
                   </FieldWithTooltip>
+                </div>
+                <div className="grid grid-cols-3 gap-2 lg:gap-3 mt-2">
                   <FieldWithTooltip label="Предоплата %" tooltip="Обычно 30%. Менять только по договорённости с клиентом." bold>
                     <Input
                       type="number" min="0" max="100"
                       value={formData.deposit_pct}
-                      onChange={(e) => handleChange("deposit_pct", parseFloat(e.target.value) || 0)}
+                      onChange={(e) => handleDepositPctChange(parseFloat(e.target.value) || 0)}
                       className="h-8" disabled={isReadOnly}
                     />
                   </FieldWithTooltip>
+                  <FieldWithTooltip label="Предоплата (сумма)" tooltip="Требуемая сумма предоплаты в валюте сметы." bold>
+                    <Input
+                      type="number" min="0"
+                      value={formData.deposit_amount}
+                      onChange={(e) => handleDepositAmountChange(parseFloat(e.target.value) || 0)}
+                      className="h-8" disabled={isReadOnly}
+                    />
+                  </FieldWithTooltip>
+                  <div />
                 </div>
                 <div className="grid grid-cols-2 gap-2 lg:gap-3 mt-2">
                   <FieldWithTooltip label="Доп. расходы" tooltip="Выезд, мелкие расходники и т.п.">

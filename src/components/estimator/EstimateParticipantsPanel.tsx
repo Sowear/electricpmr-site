@@ -625,119 +625,35 @@ const EstimateParticipantsPanel = ({
                 const showPercent = p.payout_type === "percent_profit" || p.payout_type === "percent_revenue" || p.payout_type === "hybrid";
                 const showFixed = p.payout_type === "fixed" || p.payout_type === "hybrid";
                 return (
-                <tr key={p.id} className="border-t">
-                  <td className="p-2.5">
-                    <div className="flex items-center gap-1">
+                  <tr key={p.id} className="border-t hover:bg-muted/30 transition-colors">
+                    <td className="p-2.5 font-medium">
                       {profile?.name || p.user_id}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                              <Info className="h-3.5 w-3.5" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                            Имя или идентификатор участника
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </td>
-                  <td className="p-2.5">
-                    <div className="flex items-center gap-1">
+                    </td>
+                    <td className="p-2.5 text-muted-foreground">
                       {MEMBER_ROLE_LABELS[p.role as MemberRole] || p.role}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                              <Info className="h-3.5 w-3.5" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                            Роль участника в проекте: менеджер, электрик или организатор
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </td>
-                  <td className="p-2.5">
-                    <div className="flex items-center gap-1">
+                    </td>
+                    <td className="p-2.5 text-muted-foreground">
                       {PAYOUT_TYPE_OPTIONS.find((x) => x.value === p.payout_type)?.label || p.payout_type}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                              <Info className="h-3.5 w-3.5" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                            Тип расчета оплаты: процент от прибыли, процента от выручки, фиксированная сумма или гибрид
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </td>
-                  <td className="p-2.5">
-                    <div className="flex items-center gap-1">
+                    </td>
+                    <td className="p-2.5 font-mono text-foreground">
                       {showPercent ? `${Number(p.percent_share || 0)}%` : "—"}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                              <Info className="h-3.5 w-3.5" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                            Процент от прибыли или выручки, который получит сотрудник
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </td>
-                  <td className="p-2.5">
-                    <div className="flex items-center gap-1">
+                    </td>
+                    <td className="p-2.5 font-mono text-foreground">
                       {showFixed ? Number(p.fixed_amount || 0).toLocaleString("ru-RU") : "—"}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                              <Info className="h-3.5 w-3.5" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                            Фиксированная сумма, которую получит сотрудник
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </td>
-                  {!readOnly && (
-                    <td className="p-2.5">
-                      <div className="flex items-center gap-1">
+                    </td>
+                    {!readOnly && (
+                      <td className="p-2.5">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 text-xs"
+                          className="h-7 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
                           onClick={() => removeParticipant.mutate({ participantId: p.id, estimateId })}
                         >
                           Удалить
                         </Button>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full text-muted-foreground hover:text-foreground cursor-help transition-colors">
-                                <Info className="h-3.5 w-3.5" />
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs z-[300]">
-                              Удалить участника из сметы
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    </td>
-                  )}
-                </tr>
+                      </td>
+                    )}
+                  </tr>
                 );
               })
             )}

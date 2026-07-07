@@ -220,6 +220,12 @@ async function createStatusChangeNotification(
 
     if (!estimate) return;
 
+    // Get all assigned estimate participants to notify
+    const { data: participants } = await supabase
+      .from("estimate_participants")
+      .select("user_id")
+      .eq("estimate_id", estimateId);
+
     const STATUS_LABELS: Record<string, string> = {
       draft: "Черновик", sent: "Отправлена", viewed: "Просмотрена",
       approved: "Согласована", pending_prepayment: "Ожидает предоплату",
@@ -228,18 +234,35 @@ async function createStatusChangeNotification(
       converted: "Конвертирована",
     };
 
-    const targetUserId = estimate.created_by;
-    if (!targetUserId || targetUserId === userId) return;
+    const recipientUserIds = new Set<string>();
+    if (estimate.created_by) {
+      recipientUserIds.add(estimate.created_by);
+    }
+    
+    if (participants) {
+      participants.forEach((p: any) => {
+        if (p.user_id) recipientUserIds.add(p.user_id);
+      });
+    }
+
+    // Exclude the user who triggered the status change
+    if (userId) {
+      recipientUserIds.delete(userId);
+    }
+
+    if (recipientUserIds.size === 0) return;
 
     const estimateLink = `/projects/${(estimate as any).project_id || ''}/estimates/${estimateId}`;
 
-    await supabase.from("notifications").insert({
-      user_id: targetUserId,
+    const notificationsToInsert = Array.from(recipientUserIds).map((recipientId) => ({
+      user_id: recipientId,
       type: "status_change",
       title: `${estimate.estimate_number}: ${STATUS_LABELS[oldStatus] || oldStatus} → ${STATUS_LABELS[newStatus] || newStatus}`,
       message: `Смета для ${estimate.client_name}`,
       link: (estimate as any).project_id ? estimateLink : `/estimator/${estimateId}`,
-    });
+    }));
+
+    await supabase.from("notifications").insert(notificationsToInsert);
   } catch (e) {
     console.error("Failed to create notification:", e);
   }

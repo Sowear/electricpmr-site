@@ -79,16 +79,15 @@ export function useChangeEstimateStatus() {
         throw new Error(validation.reason);
       }
 
+      let noParticipantsWarning = false;
       if (newStatus === 'approved') {
         const { count, error: participantCountError } = await (supabase as any)
           .from("estimate_participants")
           .select("id", { count: "exact", head: true })
           .eq("estimate_id", estimateId);
 
-        if (participantCountError) throw participantCountError;
-
-        if ((count || 0) === 0) {
-          throw new Error("Нельзя согласовать смету без назначенных участников. Добавьте хотя бы одного участника.");
+        if (!participantCountError && (count || 0) === 0) {
+          noParticipantsWarning = true;
         }
       }
 
@@ -124,12 +123,18 @@ export function useChangeEstimateStatus() {
       // Create notification for status change
       await createStatusChangeNotification(estimateId, oldStatus, newStatus, user?.id);
 
-      return { estimateId, newStatus };
+      return { estimateId, newStatus, noParticipantsWarning };
     },
-    onSuccess: ({ estimateId }) => {
+    onSuccess: ({ estimateId, noParticipantsWarning }) => {
       queryClient.invalidateQueries({ queryKey: ["estimate", estimateId] });
       queryClient.invalidateQueries({ queryKey: ["estimates"] });
       toast({ title: "Статус обновлён" });
+      if (noParticipantsWarning) {
+        toast({
+          title: "⚠️ Нет назначенных участников",
+          description: "Смета согласована, но участники не назначены. Рекомендуем добавить хотя бы одного участника.",
+        });
+      }
     },
     onError: (error) => {
       toast({

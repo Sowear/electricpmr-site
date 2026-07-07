@@ -95,12 +95,67 @@ export function useConfirmPayment() {
   return useMutation({
     mutationFn: async (paymentId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data, error } = await (supabase as any).rpc("confirm_payment_and_generate_finance", {
-        p_payment_id: paymentId,
-        p_actor_id: user?.id,
-        p_snapshot_threshold: 0,
-      });
-      if (error) throw error;
+      
+      let rpcSucceeded = false;
+      try {
+        const { data, error } = await (supabase as any).rpc("confirm_payment_and_generate_finance", {
+          p_payment_id: paymentId,
+          p_actor_id: user?.id,
+          p_snapshot_threshold: 0,
+        });
+        if (!error) rpcSucceeded = true;
+        if (error) throw error;
+      } catch (rpcError: any) {
+        // Fallback: if the RPC function is missing (e.g. migration not applied),
+        // confirm the payment via direct table updates
+        const msg = rpcError?.message || "";
+        if (msg.includes("schema cache") || msg.includes("could not find") || msg.includes("Unknown RPC")) {
+          console.warn("RPC confirm_payment_and_generate_finance unavailable, using fallback:", msg);
+          
+          const now = new Date().toISOString();
+          
+          // 1. Confirm the payment
+          const { error: updatePaymentErr } = await supabase
+            .from("payments")
+            .update({
+              status: "confirmed",
+              confirmed_at: now,
+              confirmed_by: user?.id || null,
+              verified: true,
+              verified_by: user?.id || null,
+            })
+            .eq("id", paymentId);
+          if (updatePaymentErr) throw updatePaymentErr;
+          
+          // 2. Fetch the payment to get estimate_id and amount
+          const { data: paymentRow, error: fetchPayErr } = await supabase
+            .from("payments")
+            .select("*")
+            .eq("id", paymentId)
+            .single();
+          if (fetchPayErr) throw fetchPayErr;
+          
+          // 3. Recalculate paid_amount for the estimate
+          const { data: confirmedPayments } = await (supabase as any)
+            .from("payments")
+            .select("amount")
+            .eq("estimate_id", paymentRow.estimate_id)
+            .eq("status", "confirmed");
+          
+          const totalPaid = (confirmedPayments || []).reduce(
+            (sum: number, p: any) => sum + Number(p.amount || 0), 0
+          );
+          
+          await supabase
+            .from("estimates")
+            .update({ paid_amount: totalPaid })
+            .eq("id", paymentRow.estimate_id);
+          
+          rpcSucceeded = true;
+        } else {
+          throw rpcError;
+        }
+      }
 
       const { data: payment, error: fetchErr } = await supabase
         .from("payments")

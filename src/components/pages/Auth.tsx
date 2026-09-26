@@ -10,8 +10,14 @@ import { z } from "zod";
 
 const SAVED_EMAIL_KEY = "electricpmr_saved_email";
 
+const isEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+const isPhone = (val: string) => /^[\d\s\+\-\(\)]+$/.test(val.trim()) && val.replace(/\D/g, "").length >= 6;
+
 const loginSchema = z.object({
-  email: z.string().trim().email("Введите корректный email"),
+  email: z.string().trim().refine(
+    (val) => isEmail(val) || isPhone(val),
+    { message: "Введите корректный email или номер телефона (+373...)" }
+  ),
   password: z.string().min(6, "Пароль должен содержать минимум 6 символов"),
 });
 
@@ -45,7 +51,7 @@ const Auth = () => {
       }
     });
 
-    // Prefill remembered email if present
+    // Prefill remembered email/login if present
     const savedEmail = localStorage.getItem(SAVED_EMAIL_KEY);
     if (savedEmail) {
       setFormData((prev) => ({ ...prev, email: savedEmail }));
@@ -100,7 +106,7 @@ const Auth = () => {
             error.message.includes("401") ||
             error.message.includes("Unauthorized")
           ) {
-            throw new Error("Неверный email или пароль");
+            throw new Error("Неверный email/телефон или пароль");
           }
           throw error;
         }
@@ -180,7 +186,7 @@ const Auth = () => {
           </p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form noValidate onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <>
                 <div>
@@ -221,14 +227,20 @@ const Auth = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
+              <label className="block text-sm font-medium mb-2">
+                {isLogin ? "Email или телефон (+373)" : "Email"}
+              </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                {isLogin && !formData.email.includes("@") && formData.email.replace(/\D/g, "").length > 0 ? (
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                ) : (
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                )}
                 <Input
                   name="email"
-                  type="email"
+                  type={isLogin ? "text" : "email"}
                   autoComplete="username"
-                  placeholder="email@example.com"
+                  placeholder={isLogin ? "email@example.com или +373 777 69367" : "email@example.com"}
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
                   className={`pl-10 ${errors.email ? "border-destructive" : ""}`}

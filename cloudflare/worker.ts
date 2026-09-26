@@ -1166,11 +1166,38 @@ const signup = async (request: Request, env: Env) => {
 
 const signin = async (request: Request, env: Env) => {
   const payload = await parseJsonBody(request);
-  const email = String(payload.email || "").trim().toLowerCase();
+  const rawIdentifier = String(
+    payload.email || payload.phone || payload.login || payload.identifier || "",
+  ).trim();
   const password = String(payload.password || "");
 
-  if (!email || !password) {
-    return textError("Email and password are required", 400);
+  if (!rawIdentifier || !password) {
+    return textError("Email or phone number and password are required", 400);
+  }
+
+  const emailLower = rawIdentifier.toLowerCase();
+  const digits = rawIdentifier.replace(/\D/g, "");
+  let phoneFormatted = "";
+  let phoneNoPlus = "";
+  let phoneShort = "";
+
+  if (digits.length >= 6) {
+    if (digits.startsWith("373")) {
+      phoneFormatted = `+${digits}`;
+      phoneNoPlus = digits;
+      phoneShort = digits.slice(3);
+    } else if (digits.startsWith("0")) {
+      phoneFormatted = `+373${digits.slice(1)}`;
+      phoneNoPlus = `373${digits.slice(1)}`;
+      phoneShort = digits.slice(1);
+    } else if (digits.length === 8) {
+      phoneFormatted = `+373${digits}`;
+      phoneNoPlus = `373${digits}`;
+      phoneShort = digits;
+    } else {
+      phoneFormatted = rawIdentifier.startsWith("+") ? rawIdentifier : `+${digits}`;
+      phoneNoPlus = digits;
+    }
   }
 
   const user = await env.DB.prepare(
@@ -1178,10 +1205,26 @@ const signin = async (request: Request, env: Env) => {
       SELECT id, email, phone, created_at, name, password_hash, password_salt
       FROM app_users
       WHERE email = ?
+         OR (phone IS NOT NULL AND phone != '' AND (
+              phone = ?
+              OR phone = ?
+              OR phone = ?
+              OR REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '(', ''), ')', '') = ?
+              OR REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '(', ''), ')', '') = ?
+              OR REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '(', ''), ')', '') = ?
+            ))
       LIMIT 1
     `,
   )
-    .bind(email)
+    .bind(
+      emailLower,
+      rawIdentifier,
+      phoneFormatted,
+      phoneNoPlus,
+      digits,
+      phoneFormatted.replace(/\D/g, ""),
+      phoneShort ? "373" + phoneShort : digits,
+    )
     .first<Record<string, unknown>>();
 
   if (!user?.id || typeof user.password_hash !== "string" || typeof user.password_salt !== "string") {

@@ -100,7 +100,12 @@ const writeStoredSession = (session: AuthSession | null, event: AuthChangeEvent)
 };
 
 const parseErrorMessage = (payload: unknown, fallback: string) => {
-  if (typeof payload === "string" && payload.trim()) return payload;
+  if (typeof payload === "string" && payload.trim()) {
+    if (payload.includes("NOT_FOUND") || payload.includes("<!DOCTYPE") || payload.includes("<html")) {
+      return fallback;
+    }
+    return payload;
+  }
   if (payload && typeof payload === "object") {
     const errorPayload = payload as Record<string, unknown>;
     const directMessage = errorPayload.error;
@@ -423,21 +428,78 @@ const auth = {
     };
   },
 
-  async signInWithPassword(credentials: { email: string; password: string }) {
+  async signInWithPassword(credentials: { email?: string; phone?: string; login?: string; password: string }) {
+    const rawIdentifier = (credentials.email || credentials.phone || credentials.login || "").trim();
+
     const { data, error } = await requestJson<AuthSession>(
       "/api/auth/signin",
       "POST",
-      credentials,
+      { ...credentials, email: rawIdentifier },
       { auth: false },
     );
 
     if (!error && data) {
       writeStoredSession(data, "SIGNED_IN");
+      return {
+        data: { session: data, user: data.user },
+        error: null,
+      };
     }
 
+    if (error && (error.status === 404 || !USE_CLOUDFLARE_API) && supabaseClient) {
+      const isEmailAddress = rawIdentifier.includes("@");
+      const supabaseRes = isEmailAddress
+        ? await supabaseClient.auth.signInWithPassword({
+            email: rawIdentifier,
+            password: credentials.password,
+          })
+        : await supabaseClient.auth.signInWithPassword({
+            phone: rawIdentifier,
+            password: credentials.password,
+          });
+
+      if (!supabaseRes.error && supabaseRes.data.session && supabaseRes.data.user) {
+        const user = supabaseRes.data.user;
+        const authSession: AuthSession = {
+          access_token: supabaseRes.data.session.access_token,
+          expires_at: new Date(Date.now() + (supabaseRes.data.session.expires_in || 3600) * 1000).toISOString(),
+          user: {
+            id: user.id,
+            email: user.email || "",
+            phone: user.phone || null,
+            created_at: user.created_at,
+            user_metadata: user.user_metadata || {},
+          },
+        };
+        writeStoredSession(authSession, "SIGNED_IN");
+        return {
+          data: { session: authSession, user: authSession.user },
+          error: null,
+        };
+      }
+
+      if (supabaseRes.error) {
+        return {
+          data: null,
+          error: new ApiError(
+            supabaseRes.error.message.includes("Invalid login credentials")
+              ? "Неверный email, телефон или пароль"
+              : supabaseRes.error.message,
+            supabaseRes.error.status || 401
+          ),
+        };
+      }
+    }
+
+    const cleanMsg = error
+      ? (error.message.includes("NOT_FOUND") || error.message.includes("404") || error.message.includes("Request failed")
+          ? "Неверный email, телефон или пароль"
+          : error.message)
+      : "Не удалось авторизоваться";
+
     return {
-      data: data ? { session: data, user: data.user } : { session: null, user: null },
-      error,
+      data: null,
+      error: new ApiError(cleanMsg, error?.status || 401),
     };
   },
 

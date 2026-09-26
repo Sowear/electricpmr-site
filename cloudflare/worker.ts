@@ -1233,6 +1233,52 @@ const signout = async (request: Request, env: Env) => {
   return json({ data: true });
 };
 
+const changePassword = async (request: Request, env: Env) => {
+  const session = await getSessionContext(request, env);
+  if (!session?.user?.id) {
+    return textError("Unauthorized", 401);
+  }
+
+  const payload = await parseJsonBody(request);
+  const currentPassword = String(payload.currentPassword || "");
+  const newPassword = String(payload.newPassword || "");
+
+  if (!currentPassword || !newPassword) {
+    return textError("Укажите текущий и новый пароль", 400);
+  }
+
+  if (newPassword.length < 6) {
+    return textError("Новый пароль должен содержать не менее 6 символов", 400);
+  }
+
+  const user = await env.DB.prepare(
+    "SELECT id, password_hash, password_salt FROM app_users WHERE id = ? LIMIT 1"
+  )
+    .bind(session.user.id)
+    .first<Record<string, unknown>>();
+
+  if (!user?.id || typeof user.password_hash !== "string" || typeof user.password_salt !== "string") {
+    return textError("Пользователь не найден", 404);
+  }
+
+  const calculatedHash = await derivePasswordHash(currentPassword, user.password_salt);
+  if (calculatedHash !== user.password_hash) {
+    return textError("Неверный текущий пароль", 400);
+  }
+
+  const newSalt = createId();
+  const newPasswordHash = await derivePasswordHash(newPassword, newSalt);
+  const currentTimestamp = nowIso();
+
+  await env.DB.prepare(
+    "UPDATE app_users SET password_hash = ?, password_salt = ?, updated_at = ? WHERE id = ?"
+  )
+    .bind(newPasswordHash, newSalt, currentTimestamp, session.user.id)
+    .run();
+
+  return json({ data: { message: "Пароль успешно изменен" } });
+};
+
 const handleDbSelect = async (request: Request, env: Env, session: SessionContext | null) => {
   const body = await parseJsonBody(request);
   const table = assertTable(body.table);
@@ -1998,6 +2044,10 @@ export default {
 
       if (path === "/api/auth/signout" && request.method === "POST") {
         return signout(request, env);
+      }
+
+      if (path === "/api/auth/change-password" && request.method === "POST") {
+        return changePassword(request, env);
       }
 
       if (path === "/api/db/select" && request.method === "POST") {

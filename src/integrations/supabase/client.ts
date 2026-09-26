@@ -187,7 +187,15 @@ const resolveSession = async (): Promise<AuthSession | null> => {
   if (!storedSession?.access_token) return null;
 
   const { data, error } = await requestJson<AuthSession>("/api/auth/session", "GET");
-  if (error || !data) {
+  if (error) {
+    if (error.status === 401) {
+      writeStoredSession(null, "SIGNED_OUT");
+      return null;
+    }
+    return storedSession;
+  }
+
+  if (!data) {
     writeStoredSession(null, "SIGNED_OUT");
     return null;
   }
@@ -476,6 +484,24 @@ const auth = {
         },
       },
     };
+  },
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    const { data, error } = await requestJson<{ message: string }>(
+      "/api/auth/change-password",
+      "POST",
+      { currentPassword, newPassword },
+      { auth: true }
+    );
+
+    return { data, error };
+  },
+
+  async updateUser(attributes: { password?: string; currentPassword?: string }) {
+    if (attributes.password) {
+      return this.changePassword(attributes.currentPassword || "", attributes.password);
+    }
+    return { data: null, error: null };
   },
 };
 

@@ -479,14 +479,17 @@ const auth = {
       }
 
       if (supabaseRes.error) {
+        const msg = supabaseRes.error.message;
+        const cleanMsg =
+          msg.includes("Invalid login credentials") ||
+          msg.includes("Phone logins are disabled") ||
+          msg.includes("User not found")
+            ? "Неверный email, телефон или пароль"
+            : msg;
+
         return {
           data: null,
-          error: new ApiError(
-            supabaseRes.error.message.includes("Invalid login credentials")
-              ? "Неверный email, телефон или пароль"
-              : supabaseRes.error.message,
-            supabaseRes.error.status || 401
-          ),
+          error: new ApiError(cleanMsg, supabaseRes.error.status || 401),
         };
       }
     }

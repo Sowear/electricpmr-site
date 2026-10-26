@@ -47,6 +47,14 @@ interface EstimateStatusWorkflowProps {
   canChangeStatus: boolean;
 }
 
+type HistoryEntry = {
+  id: string;
+  action: string;
+  changed_at: string;
+  old_values?: { status?: string } | null;
+  new_values?: { status?: string; comment?: string } | null;
+};
+
 const EstimateStatusWorkflow = ({ estimate, canChangeStatus }: EstimateStatusWorkflowProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -58,7 +66,7 @@ const EstimateStatusWorkflow = ({ estimate, canChangeStatus }: EstimateStatusWor
 
   const availableTransitions = useMemo(
     () => getAvailableTransitions(estimate),
-    [estimate.status, estimate.deposit_pct, estimate.prepayment_confirmed, estimate.payment_method, estimate.payment_recipient]
+    [estimate]
   );
 
   const currentStatusInfo = ESTIMATE_STATUSES.find(s => s.value === estimate.status);
@@ -218,7 +226,7 @@ const EstimateStatusWorkflow = ({ estimate, canChangeStatus }: EstimateStatusWor
           <ScrollArea className="flex-1">
             {history && history.length > 0 ? (
               <div className="space-y-3 pr-4">
-                {history.map((entry: any) => (
+                {(history as HistoryEntry[]).map((entry) => (
                   <div key={entry.id} className="border rounded-lg p-3 text-sm">
                     <div className="flex items-center gap-2 mb-1">
                       <Clock className="h-3.5 w-3.5 text-muted-foreground" />
@@ -240,7 +248,9 @@ const EstimateStatusWorkflow = ({ estimate, canChangeStatus }: EstimateStatusWor
                         </>
                       )}
                       {entry.action === 'prepayment_confirmed' && 'Предоплата подтверждена'}
-                      {entry.action !== 'status_change' && entry.action !== 'prepayment_confirmed' && entry.action}
+                      {entry.action === 'ai_draft_created' && 'ИИ-черновик сохранён после подтверждения'}
+                      {entry.action === 'ai_lines_added' && 'ИИ добавил подтверждённые работы'}
+                      {entry.action !== 'status_change' && entry.action !== 'prepayment_confirmed' && entry.action !== 'ai_draft_created' && entry.action !== 'ai_lines_added' && entry.action}
                     </p>
                     {entry.new_values?.comment && (
                       <p className="text-muted-foreground mt-1 text-xs italic">

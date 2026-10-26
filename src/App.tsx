@@ -7,9 +7,11 @@ import { lazy, useEffect, useState, type ReactNode } from "react";
 import { LazyComponent, LazyPage } from "./components/LazyPage";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { isPrerenderRuntime } from "./lib/runtime";
+import ProtectedEstimator from "./components/estimator/ProtectedEstimator";
 
 const Estimator = lazy(() => import("./components/pages/Estimator"));
 const EstimatorEdit = lazy(() => import("./components/pages/EstimatorEdit"));
+const AIEstimator = lazy(() => import("./components/estimator/AIEstimator"));
 
 const Auth = lazy(() => import("./components/pages/Auth"));
 const Dashboard = lazy(() => import("./components/pages/Dashboard"));
@@ -58,6 +60,7 @@ const App = () => (
             <Route path="/projects/:projectId" element={<LazyComponent Component={ProjectDetail} />} />
             <Route path="/projects/:projectId/estimates/:estimateId" element={<LazyComponent Component={EstimatorEdit} />} />
             <Route path="/projects/:projectId/finance/payouts" element={<LazyComponent Component={ProjectPayouts} />} />
+            <Route path="/estimator/assistant" element={<ProtectedEstimator><LazyComponent Component={AIEstimator} /></ProtectedEstimator>} />
             <Route path="/estimator/*" element={<LazyComponent Component={Estimator} />} />
             <Route path="/estimator/:id" element={<LazyComponent Component={EstimatorEdit} />} />
             <Route path="/catalog/*" element={<LazyComponent Component={Catalog} />} />

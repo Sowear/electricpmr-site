@@ -193,33 +193,17 @@ export function useEstimate(id: string | undefined) {
   });
 }
 
-import { defaultCatalogItems } from "@/data/catalog";
-
-const LS_CATALOG_KEY = "estimate_catalog_items";
-
-const getLocalCatalog = (): LineItemPreset[] => {
-  if (typeof window === "undefined") return defaultCatalogItems;
-  try {
-    const raw = window.localStorage.getItem(LS_CATALOG_KEY);
-    if (!raw) return defaultCatalogItems;
-    return JSON.parse(raw);
-  } catch {
-    return defaultCatalogItems;
-  }
-};
-
-const saveLocalCatalog = (items: LineItemPreset[]) => {
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(LS_CATALOG_KEY, JSON.stringify(items));
-  }
-};
-
 export function useLineItemPresets() {
   return useQuery({
     queryKey: ["line-item-presets"],
     queryFn: async () => {
-      const items = getLocalCatalog();
-      return items.filter(item => item.is_active !== false);
+      const { data, error } = await supabase
+        .from("catalog_items")
+        .select("*")
+        .eq("is_hidden", false)
+        .order("name", { ascending: true });
+      if (error) throw error;
+      return (data || []).map((item) => mapCatalogRowToPreset(item as CatalogItemRow));
     },
   });
 }
@@ -228,8 +212,13 @@ export function useHiddenLineItemPresets() {
   return useQuery({
     queryKey: ["line-item-presets", "hidden"],
     queryFn: async () => {
-      const items = getLocalCatalog();
-      return items.filter(item => item.is_active === false);
+      const { data, error } = await supabase
+        .from("catalog_items")
+        .select("*")
+        .eq("is_hidden", true)
+        .order("name", { ascending: true });
+      if (error) throw error;
+      return (data || []).map((item) => mapCatalogRowToPreset(item as CatalogItemRow));
     },
   });
 }
@@ -243,41 +232,25 @@ export function useCreateCatalogItem() {
       if (!item.name.trim()) throw new Error("Название позиции обязательно");
       if (item.base_price < 0) throw new Error("Цена не может быть отрицательной");
 
-      const marketMin = item.market_min ?? Math.round(item.base_price * 0.7);
-      const marketMax = item.market_max ?? Math.round(item.base_price * 1.3);
-
-      const newItem: LineItemPreset = {
-        id: "cat-item-" + Date.now(),
+      const payload: CatalogItemInsert = {
         name: item.name.trim(),
-        description: item.description,
-        item_type: "service",
-        unit: item.unit,
-        quantity: 1,
-        unit_price: item.base_price,
+        description: item.description || null,
+        unit: item.unit || "шт",
         base_price: item.base_price,
-        labor_hours: 0,
-        labor_rate: 0,
-        cost_price: 0,
-        markup_pct: 0,
-        market_min: marketMin,
-        market_max: marketMax,
-        category: item.category,
-        category_key: normalizeCategoryKey(item.category),
+        market_min: item.market_min ?? null,
+        market_max: item.market_max ?? null,
+        category: item.category || "Прочее",
         tags: item.tags || [],
         synonyms: item.synonyms || [],
-        keywords: [...(item.tags || []), ...(item.synonyms || [])],
         complexity: item.complexity || "low",
         popularity_score: item.popularity_score || 0,
-        popular: (item.popularity_score || 0) >= 8,
-        calc_default: item.calc_default || "piece",
-        special_type: item.special_type || undefined,
-        source: "custom",
-        is_active: true
+        is_hidden: false,
+        calc_default: item.calc_default || null,
+        special_type: item.special_type || null,
       };
-
-      const catalog = getLocalCatalog();
-      saveLocalCatalog([newItem, ...catalog]);
-      return newItem.id;
+      const { data, error } = await supabase.from("catalog_items").insert(payload).select().single();
+      if (error) throw error;
+      return String((data as CatalogItemRow).id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["line-item-presets"] });
@@ -300,31 +273,23 @@ export function useUpdateCatalogItem() {
         throw new Error("Название позиции обязательно");
       }
 
-      const catalog = getLocalCatalog();
-      const index = catalog.findIndex(i => i.id === id);
-      if (index === -1) throw new Error("Позиция не найдена");
-
-      const item = catalog[index];
-      catalog[index] = {
-        ...item,
-        name: updates.name?.trim() ?? item.name,
-        description: updates.description ?? item.description,
-        unit: updates.unit ?? item.unit,
-        base_price: updates.base_price ?? item.base_price,
-        unit_price: updates.base_price ?? item.unit_price,
-        market_min: updates.market_min ?? item.market_min,
-        market_max: updates.market_max ?? item.market_max,
-        category: updates.category ?? item.category,
-        category_key: updates.category ? normalizeCategoryKey(updates.category) : item.category_key,
-        tags: updates.tags ?? item.tags,
-        synonyms: updates.synonyms ?? item.synonyms,
-        complexity: updates.complexity ?? item.complexity,
-        popularity_score: updates.popularity_score ?? item.popularity_score,
-        calc_default: updates.calc_default ?? item.calc_default,
-        special_type: updates.special_type ?? item.special_type,
+      const payload: CatalogItemUpdate = {
+        ...(updates.name !== undefined ? { name: updates.name.trim() } : {}),
+        ...(updates.description !== undefined ? { description: updates.description || null } : {}),
+        ...(updates.unit !== undefined ? { unit: updates.unit || "шт" } : {}),
+        ...(updates.base_price !== undefined ? { base_price: updates.base_price } : {}),
+        ...(updates.market_min !== undefined ? { market_min: updates.market_min } : {}),
+        ...(updates.market_max !== undefined ? { market_max: updates.market_max } : {}),
+        ...(updates.category !== undefined ? { category: updates.category || "Прочее" } : {}),
+        ...(updates.tags !== undefined ? { tags: updates.tags } : {}),
+        ...(updates.synonyms !== undefined ? { synonyms: updates.synonyms } : {}),
+        ...(updates.complexity !== undefined ? { complexity: updates.complexity } : {}),
+        ...(updates.popularity_score !== undefined ? { popularity_score: updates.popularity_score } : {}),
+        ...(updates.calc_default !== undefined ? { calc_default: updates.calc_default || null } : {}),
+        ...(updates.special_type !== undefined ? { special_type: updates.special_type || null } : {}),
       };
-
-      saveLocalCatalog(catalog);
+      const { error } = await supabase.from("catalog_items").update(payload).eq("id", id);
+      if (error) throw error;
       return id;
     },
     onSuccess: () => {
@@ -344,12 +309,8 @@ export function useHideCatalogItem() {
 
   return useMutation({
     mutationFn: async ({ id, hidden }: { id: string; hidden: boolean }) => {
-      const catalog = getLocalCatalog();
-      const index = catalog.findIndex(i => i.id === id);
-      if (index !== -1) {
-        catalog[index].is_active = !hidden;
-        saveLocalCatalog(catalog);
-      }
+      const { error } = await supabase.from("catalog_items").update({ is_hidden: hidden }).eq("id", id);
+      if (error) throw error;
       return id;
     },
     onSuccess: () => {
@@ -369,9 +330,8 @@ export function useDeleteCatalogItem() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const catalog = getLocalCatalog();
-      const updatedCatalog = catalog.filter(i => i.id !== id);
-      saveLocalCatalog(updatedCatalog);
+      const { error } = await supabase.from("catalog_items").delete().eq("id", id);
+      if (error) throw error;
       return id;
     },
     onSuccess: () => {
@@ -381,6 +341,57 @@ export function useDeleteCatalogItem() {
     },
     onError: (error) => {
       toast({ title: "Ошибка", description: error.message, variant: "destructive" });
+    },
+  });
+}
+
+/** Imports the old browser-only catalogue once, preserving the server catalogue as the source of truth. */
+export function useImportLegacyCatalog() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (items: LineItemPreset[]) => {
+      if (items.length > 500) throw new Error("Локальный каталог содержит больше 500 позиций и требует отдельной миграции");
+
+      const { data: existing, error: existingError } = await supabase.from("catalog_items").select("name");
+      if (existingError) throw existingError;
+      const names = new Set((existing || []).map((item) => String(item.name).trim().toLocaleLowerCase()));
+      let imported = 0;
+
+      for (const item of items) {
+        const name = item.name?.trim();
+        if (!name || names.has(name.toLocaleLowerCase())) continue;
+        const payload: CatalogItemInsert = {
+          name,
+          description: item.description || null,
+          unit: item.unit || "шт",
+          base_price: Number(item.base_price ?? item.unit_price ?? 0),
+          market_min: item.market_min ?? null,
+          market_max: item.market_max ?? null,
+          category: item.category || "Прочее",
+          tags: item.tags || [],
+          synonyms: item.synonyms || [],
+          complexity: item.complexity || "low",
+          popularity_score: item.popularity_score || 0,
+          is_hidden: item.is_active === false,
+          calc_default: item.calc_default || null,
+          special_type: item.special_type || null,
+        };
+        const { error } = await supabase.from("catalog_items").insert(payload);
+        if (error) throw error;
+        names.add(name.toLocaleLowerCase());
+        imported++;
+      }
+      return imported;
+    },
+    onSuccess: (imported) => {
+      queryClient.invalidateQueries({ queryKey: ["line-item-presets"] });
+      queryClient.invalidateQueries({ queryKey: ["line-item-presets", "hidden"] });
+      toast({ title: "Импорт завершён", description: imported ? `Добавлено позиций: ${imported}` : "Новых позиций не найдено" });
+    },
+    onError: (error) => {
+      toast({ title: "Не удалось импортировать каталог", description: error.message, variant: "destructive" });
     },
   });
 }

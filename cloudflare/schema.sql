@@ -228,6 +228,18 @@ CREATE TABLE IF NOT EXISTS catalog_items (
   FOREIGN KEY (created_by) REFERENCES app_users(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS estimate_ai_context (
+  id TEXT PRIMARY KEY,
+  estimate_id TEXT NOT NULL UNIQUE,
+  description TEXT NOT NULL,
+  inspection_json TEXT NOT NULL DEFAULT '{}',
+  created_by TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (estimate_id) REFERENCES estimates(id) ON DELETE CASCADE,
+  FOREIGN KEY (created_by) REFERENCES app_users(id) ON DELETE SET NULL
+);
+
 CREATE TABLE IF NOT EXISTS estimate_history (
   id TEXT PRIMARY KEY,
   estimate_id TEXT NOT NULL,
@@ -432,6 +444,7 @@ CREATE INDEX IF NOT EXISTS idx_project_members_project_object ON project_members
 CREATE INDEX IF NOT EXISTS idx_estimates_project_object ON estimates (project_id, object_id);
 CREATE INDEX IF NOT EXISTS idx_estimate_line_items_estimate_id ON estimate_line_items (estimate_id, position);
 CREATE INDEX IF NOT EXISTS idx_catalog_items_category ON catalog_items (category, is_hidden);
+CREATE INDEX IF NOT EXISTS idx_estimate_ai_context_estimate_id ON estimate_ai_context (estimate_id);
 CREATE INDEX IF NOT EXISTS idx_payments_estimate_status ON payments (estimate_id, status);
 CREATE INDEX IF NOT EXISTS idx_finance_entries_project_type ON finance_entries (project_id, object_id, type);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_status ON notifications (user_id, status, created_at);

@@ -33,6 +33,8 @@ type Env = {
   ESTIMATE_EMAIL_WEBHOOK_TOKEN?: string;
   SESSION_TTL_DAYS?: string;
   SUPER_ADMIN_EMAIL?: string;
+  OPENAI_API_KEY?: string;
+  OPENAI_MODEL?: string;
 };
 
 const APP_TABLES = new Set([
@@ -48,6 +50,7 @@ const APP_TABLES = new Set([
   "estimates",
   "estimate_line_items",
   "catalog_items",
+  "estimate_ai_context",
   "estimate_history",
   "estimate_send_log",
   "notes",
@@ -63,6 +66,7 @@ const APP_TABLES = new Set([
 
 const JSON_COLUMNS: Record<string, string[]> = {
   catalog_items: ["tags", "synonyms"],
+  estimate_ai_context: ["inspection_json"],
   estimate_history: ["old_values", "new_values"],
   finance_entries: ["tags_json"],
   notifications: ["payload_json"],
@@ -90,6 +94,7 @@ const TABLES_WITH_UPDATED_AT = new Set([
   "estimates",
   "estimate_line_items",
   "catalog_items",
+  "estimate_ai_context",
   "payments",
   "finance_entries",
   "finance_settings",
@@ -104,6 +109,7 @@ const WORKSPACE_READ_TABLES = new Set([
   "estimates",
   "estimate_line_items",
   "catalog_items",
+  "estimate_ai_context",
   "estimate_history",
   "estimate_participants",
   "notes",
@@ -437,6 +443,291 @@ const canAdmin = (session: SessionContext | null) =>
 
 const isTechnician = (session: SessionContext | null) =>
   hasAnyRole(session, ["technician"]);
+
+const handleAiEstimateDraft = async (request: Request, env: Env, session: SessionContext | null) => {
+  if (!canManageWorkspace(session)) return textError("Недостаточно прав для работы с ИИ-сметчиком", 403);
+  if (!env.OPENAI_API_KEY) return textError("ИИ-сметчик не настроен: задайте OPENAI_API_KEY в секретах Cloudflare", 503);
+
+  const body = await request.json().catch(() => null) as { description?: unknown } | null;
+  const description = typeof body?.description === "string" ? body.description.trim() : "";
+  if (!description || description.length > 8000) return textError("Описание объекта обязательно и не должно превышать 8000 символов", 400);
+
+  const catalog = await fetchRows(env, "catalog_items", [{ op: "eq", column: "is_hidden", value: false }], {
+    columns: "id,name,description,unit,base_price,category,tags,synonyms",
+    limit: 300,
+  });
+  if (!catalog.length) return textError("В активном каталоге нет позиций для подбора", 422);
+
+  const allowedIds = catalog.map((item) => String(item.id));
+  const prompt = [
+    "Сформируй предварительный перечень электромонтажных работ из описания объекта.",
+    "Выбирай только позиции из переданного каталога. Не придумывай объёмы: если количества нет в описании, quantity=null.",
+    "Не включай работы, уже выполненные заказчиком. Не добавляй материалы, если они предоставляются заказчиком.",
+    "Не дублируй позиции. Цена в каталоге является утверждённой и будет добавлена сервером; не рассчитывай и не меняй цены.",
+    "Верни только JSON с полями location, objectType, summary, lines, questions, completedWork.",
+    "В lines используй catalog_item_id, quantity, quantity_source, quantity_evidence, reason. quantity_source может быть explicit или unknown.",
+    "Для explicit приведи quantity_evidence как точную короткую цитату из описания, содержащую число количества; иначе quantity=null и quantity_source=unknown.",
+    `Каталог: ${JSON.stringify(catalog.map(({ id, name, description: desc, unit, category, tags, synonyms }) => ({ id, name, description: desc, unit, category, tags, synonyms })))}`,
+    `Описание: ${description}`,
+  ].join("\n\n");
+
+  const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: env.OPENAI_MODEL || "gpt-4o-mini",
+      temperature: 0.1,
+      max_completion_tokens: 2000,
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "electric_work_draft",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              location: { type: "string" },
+              objectType: { type: "string" },
+              summary: { type: "string" },
+              completedWork: { type: "array", items: { type: "string" } },
+              questions: { type: "array", items: { type: "string" } },
+              lines: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    catalog_item_id: { type: "string", enum: allowedIds },
+                    quantity: { anyOf: [{ type: "number" }, { type: "null" }] },
+                    quantity_source: { type: "string", enum: ["explicit", "unknown"] },
+                    quantity_evidence: { type: "string" },
+                    reason: { type: "string" },
+                  },
+                  required: ["catalog_item_id", "quantity", "quantity_source", "quantity_evidence", "reason"],
+                },
+              },
+            },
+            required: ["location", "objectType", "summary", "completedWork", "questions", "lines"],
+          },
+        },
+      },
+      messages: [
+        { role: "system", content: "Ты помощник-сметчик. Соблюдай ограничения: никаких вымышленных объёмов, цен и работ." },
+        { role: "user", content: prompt },
+      ],
+    }),
+  });
+  if (!aiResponse.ok) return textError("Сервис ИИ временно недоступен. Попробуйте позже.", 502);
+  const completion = await aiResponse.json() as { choices?: Array<{ message?: { content?: string } }> };
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(completion.choices?.[0]?.message?.content || "{}");
+  } catch {
+    return textError("ИИ вернул некорректный формат. Повторите запрос.", 502);
+  }
+
+  const catalogById = new Map(catalog.map((item) => [String(item.id), item]));
+  const seen = new Set<string>();
+  const rawLines = Array.isArray(parsed.lines) ? parsed.lines : [];
+  const lines = rawLines.flatMap((value) => {
+    if (!value || typeof value !== "object") return [];
+    const line = value as Record<string, unknown>;
+    const id = typeof line.catalog_item_id === "string" ? line.catalog_item_id : "";
+    const item = catalogById.get(id);
+    if (!item || seen.has(id)) return [];
+    seen.add(id);
+    const evidence = typeof line.quantity_evidence === "string" ? line.quantity_evidence.trim() : "";
+    const evidenceNumbers = evidence.match(/\d+(?:[.,]\d+)?/g) || [];
+    const evidenceQuantity = evidenceNumbers.length === 1 ? Number(evidenceNumbers[0].replace(",", ".")) : NaN;
+    const candidateQuantity = typeof line.quantity === "number" && Number.isFinite(line.quantity) && line.quantity > 0 ? line.quantity : null;
+    const evidenceIsGrounded = evidence.length > 0 && description.toLocaleLowerCase().includes(evidence.toLocaleLowerCase());
+    const quantity = line.quantity_source === "explicit" && candidateQuantity !== null && evidenceIsGrounded && evidenceQuantity === candidateQuantity ? candidateQuantity : null;
+    const unitPrice = Number(item.base_price || 0);
+    return [{
+      catalog_item_id: id,
+      description: String(item.name),
+      unit: String(item.unit || "шт"),
+      quantity,
+      quantity_source: quantity === null ? "unknown" : "explicit",
+      reason: typeof line.reason === "string" ? line.reason.slice(0, 240) : "",
+      unit_price: unitPrice,
+      line_total: quantity === null ? null : roundMoney(quantity * unitPrice),
+    }];
+  });
+
+  return json({
+    location: typeof parsed.location === "string" ? parsed.location.slice(0, 120) : "",
+    objectType: typeof parsed.objectType === "string" ? parsed.objectType.slice(0, 120) : "",
+    summary: typeof parsed.summary === "string" ? parsed.summary.slice(0, 1000) : "",
+    completedWork: Array.isArray(parsed.completedWork) ? parsed.completedWork.filter((v): v is string => typeof v === "string").slice(0, 30) : [],
+    questions: Array.isArray(parsed.questions) ? parsed.questions.filter((v): v is string => typeof v === "string").slice(0, 30) : [],
+    lines,
+    currency: "RUB_PMR",
+    source: "catalog_items",
+  });
+};
+
+const handleAiEstimateSave = async (request: Request, env: Env, session: SessionContext | null) => {
+  if (!canManageWorkspace(session)) return textError("Недостаточно прав для сохранения сметы", 403);
+  const body = await request.json().catch(() => null) as {
+    clientName?: unknown;
+    title?: unknown;
+    description?: unknown;
+    inspection?: unknown;
+    lines?: unknown;
+  } | null;
+  const description = typeof body?.description === "string" ? body.description.trim() : "";
+  const rawInspection = body?.inspection && typeof body.inspection === "object" && !Array.isArray(body.inspection)
+    ? body.inspection as Record<string, unknown>
+    : {};
+  const cleanString = (value: unknown, maxLength: number) => typeof value === "string" ? value.slice(0, maxLength) : "";
+  const cleanStringList = (value: unknown) => Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string").map((item) => item.slice(0, 500)).slice(0, 30)
+    : [];
+  const inspection = {
+    location: cleanString(rawInspection.location, 120),
+    objectType: cleanString(rawInspection.objectType, 120),
+    summary: cleanString(rawInspection.summary, 1000),
+    completedWork: cleanStringList(rawInspection.completedWork),
+    questions: cleanStringList(rawInspection.questions),
+  };
+  const rawLines = Array.isArray(body?.lines) ? body.lines : [];
+  if (!description || description.length > 8000 || rawLines.length === 0 || rawLines.length > 100) {
+    return textError("Проверьте описание и список работ (от 1 до 100 позиций)", 400);
+  }
+
+  const requested = new Map<string, number>();
+  for (const rawLine of rawLines) {
+    if (!rawLine || typeof rawLine !== "object") return textError("Некорректная строка сметы", 400);
+    const line = rawLine as Record<string, unknown>;
+    const id = typeof line.catalog_item_id === "string" ? line.catalog_item_id : "";
+    const quantity = Number(line.quantity);
+    if (!id || requested.has(id) || !Number.isFinite(quantity) || quantity <= 0 || quantity > 1000000) {
+      return textError("Проверьте уникальность позиций и количество больше нуля", 400);
+    }
+    requested.set(id, quantity);
+  }
+
+  const activeCatalog = await fetchRows(env, "catalog_items", [{ op: "eq", column: "is_hidden", value: false }], {
+    columns: "id,name,unit,base_price",
+    limit: 300,
+  });
+  const catalogById = new Map(activeCatalog.map((item) => [String(item.id), item]));
+  if ([...requested.keys()].some((id) => !catalogById.has(id))) {
+    return textError("Одна или несколько позиций больше не доступны в каталоге. Обновите черновик.", 409);
+  }
+  const normalizedNames = new Set<string>();
+  for (const catalogId of requested.keys()) {
+    const name = String(catalogById.get(catalogId)?.name || "").trim().toLocaleLowerCase();
+    if (!name || normalizedNames.has(name)) {
+      return textError("В черновике обнаружены дублирующиеся работы. Удалите повтор перед сохранением.", 409);
+    }
+    normalizedNames.add(name);
+  }
+
+  const estimateId = createId();
+  const estimate = await prepareInsertRecord("estimates", {
+    id: estimateId,
+    client_name: typeof body?.clientName === "string" && body.clientName.trim() ? body.clientName.trim().slice(0, 160) : "Новый клиент",
+    title: typeof body?.title === "string" ? body.title.trim().slice(0, 240) : "Смета по описанию объекта",
+    currency: "RUB_PMR",
+    notes: `Черновик подготовлен ИИ по описанию: ${description}`,
+    valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+  }, session, env);
+  const estimateEntries = Object.entries(estimate);
+  const statements = [env.DB.prepare(
+    `INSERT INTO estimates (${estimateEntries.map(([column]) => column).join(", ")}) VALUES (${estimateEntries.map(() => "?").join(", ")})`,
+  ).bind(...estimateEntries.map(([, value]) => value))];
+
+  let position = 0;
+  for (const [catalogId, quantity] of requested) {
+    const catalogItem = catalogById.get(catalogId)!;
+    const lineItem = await prepareInsertRecord("estimate_line_items", {
+      estimate_id: estimateId,
+      position: position++,
+      catalog_item_id: catalogId,
+      item_type: "service",
+      description: String(catalogItem.name),
+      unit: String(catalogItem.unit || "шт"),
+      quantity,
+      unit_price: Number(catalogItem.base_price || 0),
+    }, session, env);
+    const entries = Object.entries(lineItem);
+    statements.push(env.DB.prepare(
+      `INSERT INTO estimate_line_items (${entries.map(([column]) => column).join(", ")}) VALUES (${entries.map(() => "?").join(", ")})`,
+    ).bind(...entries.map(([, value]) => value)));
+  }
+
+  statements.push(env.DB.prepare(
+    "INSERT INTO estimate_ai_context (id, estimate_id, description, inspection_json, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+  ).bind(createId(), estimateId, description, JSON.stringify(inspection), session.user.id, nowIso(), nowIso()));
+  statements.push(env.DB.prepare(
+    "INSERT INTO estimate_history (id, estimate_id, action, changed_by, changed_at, old_values, new_values) VALUES (?, ?, ?, ?, ?, ?, ?)",
+  ).bind(
+    createId(),
+    estimateId,
+    "ai_draft_created",
+    session.user.id,
+    nowIso(),
+    null,
+    JSON.stringify({ line_count: requested.size, source: "catalog_items" }),
+  ));
+
+  await env.DB.batch(statements);
+  await recalculateEstimate(env, estimateId);
+  return json({ id: estimateId });
+};
+
+const handleAiEstimateContext = async (env: Env, session: SessionContext | null, estimateId: string) => {
+  if (!session || !(canManageWorkspace(session) || isTechnician(session))) {
+    return textError("Недостаточно прав для просмотра контекста сметы", 403);
+  }
+  if (!/^[a-zA-Z0-9-]{8,64}$/.test(estimateId)) return textError("Некорректный идентификатор сметы", 400);
+  const estimate = await fetchRowById(env, "estimates", estimateId);
+  if (!estimate) return textError("Смета не найдена", 404);
+  const rows = await fetchRows(env, "estimate_ai_context", [{ op: "eq", column: "estimate_id", value: estimateId }], { limit: 1 });
+  return json({ data: rows[0] || null });
+};
+
+const handleAiEstimateAddLines = async (request: Request, env: Env, session: SessionContext | null) => {
+  if (!canManageWorkspace(session)) return textError("Недостаточно прав для изменения сметы", 403);
+  const body = await request.json().catch(() => null) as { estimateId?: unknown; lines?: unknown } | null;
+  const estimateId = typeof body?.estimateId === "string" ? body.estimateId : "";
+  const rawLines = Array.isArray(body?.lines) ? body.lines : [];
+  if (!/^[a-zA-Z0-9-]{8,64}$/.test(estimateId) || !rawLines.length || rawLines.length > 50) return textError("Проверьте смету и список работ", 400);
+  const estimate = await fetchRowById(env, "estimates", estimateId);
+  if (!estimate) return textError("Смета не найдена", 404);
+  if (!["draft", "sent"].includes(String(estimate.status))) return textError("Согласованную смету нельзя изменять", 409);
+  const requested = new Map<string, number>();
+  for (const raw of rawLines) {
+    const line = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
+    const catalogId = typeof line.catalog_item_id === "string" ? line.catalog_item_id : "";
+    const quantity = Number(line.quantity);
+    if (!catalogId || requested.has(catalogId) || !Number.isFinite(quantity) || quantity <= 0 || quantity > 1000000) return textError("Некорректная позиция или количество", 400);
+    requested.set(catalogId, quantity);
+  }
+  const catalog = await fetchRows(env, "catalog_items", [{ op: "eq", column: "is_hidden", value: false }], { columns: "id,name,unit,base_price", limit: 300 });
+  const byId = new Map(catalog.map((item) => [String(item.id), item]));
+  if ([...requested.keys()].some((catalogId) => !byId.has(catalogId))) return textError("Позиция каталога больше недоступна", 409);
+  const existing = await fetchRows(env, "estimate_line_items", [{ op: "eq", column: "estimate_id", value: estimateId }], { columns: "position,catalog_item_id" });
+  const existingCatalogIds = new Set(existing.map((item) => typeof item.catalog_item_id === "string" ? item.catalog_item_id : "").filter(Boolean));
+  if ([...requested.keys()].some((catalogId) => existingCatalogIds.has(catalogId))) {
+    return textError("Одна или несколько работ уже есть в смете. Измените количество существующей строки вручную.", 409);
+  }
+  let position = existing.reduce((max, item) => Math.max(max, Number(item.position || 0)), -1) + 1;
+  const statements: D1PreparedStatement[] = [];
+  for (const [catalogId, quantity] of requested) {
+    const item = byId.get(catalogId)!;
+    const line = await prepareInsertRecord("estimate_line_items", { estimate_id: estimateId, position: position++, catalog_item_id: catalogId, item_type: "service", description: String(item.name), unit: String(item.unit || "шт"), quantity, unit_price: Number(item.base_price || 0) }, session, env);
+    const entries = Object.entries(line);
+    statements.push(env.DB.prepare(`INSERT INTO estimate_line_items (${entries.map(([column]) => column).join(", ")}) VALUES (${entries.map(() => "?").join(", ")})`).bind(...entries.map(([, value]) => value)));
+  }
+  statements.push(env.DB.prepare("INSERT INTO estimate_history (id, estimate_id, action, changed_by, changed_at, new_values) VALUES (?, ?, ?, ?, ?, ?)").bind(createId(), estimateId, "ai_lines_added", session.user.id, nowIso(), JSON.stringify({ line_count: requested.size })));
+  await env.DB.batch(statements);
+  await recalculateEstimate(env, estimateId);
+  return json({ success: true });
+};
 
 const authorizeTable = (action: DbAction, table: string, session: SessionContext | null) => {
   if (action === "select" && PUBLIC_SELECT_TABLES.has(table)) {
@@ -1637,7 +1928,7 @@ const handleRpc = async (request: Request, env: Env, session: SessionContext | n
 
     if (totalPaid >= threshold) {
       const updateFields = ["prepayment_confirmed = 1", "prepayment_confirmed_at = ?", "prepayment_confirmed_by = ?"];
-      const bindParams: any[] = [confirmedAt, actorId];
+      const bindParams: string[] = [confirmedAt, actorId];
 
       if (estimate.status === "pending_prepayment") {
         updateFields.push("status = 'prepayment_received'");
@@ -2105,6 +2396,22 @@ export default {
 
       if (path === "/api/auth/change-password" && request.method === "POST") {
         return changePassword(request, env);
+      }
+
+      if (path === "/api/ai-estimator/draft" && request.method === "POST") {
+        return handleAiEstimateDraft(request, env, session);
+      }
+
+      if (path === "/api/ai-estimator/save" && request.method === "POST") {
+        return handleAiEstimateSave(request, env, session);
+      }
+
+      if (path === "/api/ai-estimator/add-lines" && request.method === "POST") {
+        return handleAiEstimateAddLines(request, env, session);
+      }
+
+      if (path.startsWith("/api/ai-estimator/context/") && request.method === "GET") {
+        return handleAiEstimateContext(env, session, decodeURIComponent(path.slice("/api/ai-estimator/context/".length)));
       }
 
       if (path === "/api/db/select" && request.method === "POST") {

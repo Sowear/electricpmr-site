@@ -24,7 +24,8 @@ import {
   Printer,
   Settings,
   Eye,
-  Plus
+  Plus,
+  Bot
 } from "lucide-react";
 import { useEstimate, useUpdateEstimate } from "@/hooks/useEstimates";
 import {
@@ -40,12 +41,24 @@ import PaymentFields from "./PaymentFields";
 import PaymentManager from "./PaymentManager";
 import SendEstimateDialog from "./SendEstimateDialog";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { getWorkerApiUrl, supabase } from "@/integrations/supabase/client";
 import { generatePDFPreviewHTML, printPDF, EstimateData, LineItemData } from "@/lib/pdfGenerator";
 import { downloadEstimatePDF, PDFEstimateData, PDFLineItem } from "@/lib/pdfDocumentGenerator";
 import { useDebounce } from "@/hooks/useDebounce";
 import FieldWithTooltip from "./FieldWithTooltip";
 import EstimateParticipantsPanel from "./EstimateParticipantsPanel";
+import AIEstimateChangeDialog from "./AIEstimateChangeDialog";
+
+type AIEstimateContext = {
+  description: string;
+  inspection_json: {
+    location?: string;
+    objectType?: string;
+    summary?: string;
+    completedWork?: string[];
+    questions?: string[];
+  };
+};
 
 const EstimateEditor = () => {
   const { id: routeEstimateId, estimateId: projectEstimateId, projectId } = useParams<{
@@ -94,6 +107,8 @@ const EstimateEditor = () => {
   
   type SendStatus = 'idle' | 'sending' | 'sent' | 'failed';
   const [sendStatus, setSendStatus] = useState<SendStatus>('idle');
+  const [aiContext, setAiContext] = useState<AIEstimateContext | null>(null);
+  const [aiChangeOpen, setAiChangeOpen] = useState(false);
 
   // Determine if estimate is locked (after approved status)
   const isLocked = useMemo(() => {
@@ -131,6 +146,23 @@ const EstimateEditor = () => {
       }
     }
   }, [estimate]);
+
+  useEffect(() => {
+    if (!id) return;
+    let active = true;
+    const loadContext = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) return;
+      const response = await fetch(getWorkerApiUrl(`/api/ai-estimator/context/${encodeURIComponent(id)}`), {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!response.ok || !active) return;
+      const result = await response.json().catch(() => ({}));
+      if (active) setAiContext(result.data || null);
+    };
+    loadContext();
+    return () => { active = false; };
+  }, [id]);
 
   const handleChange = useCallback((field: keyof Estimate, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -402,6 +434,11 @@ const EstimateEditor = () => {
         </div>
         <div className="flex flex-wrap gap-2 w-full lg:w-auto">
           {!isReadOnly && (
+            <Button variant="outline" size="sm" onClick={() => setAiChangeOpen(true)}>
+              <Bot className="h-4 w-4" /><span className="hidden sm:inline ml-2">ИИ: добавить работы</span>
+            </Button>
+          )}
+          {!isReadOnly && (
             <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving}>
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               <span className="hidden sm:inline ml-2">Сохранить</span>
@@ -468,6 +505,20 @@ const EstimateEditor = () => {
           </p>
         </div>
       )}
+
+      {aiContext && (
+        <div className="border rounded-lg bg-muted/30 p-3 lg:p-4">
+          <h2 className="font-semibold text-sm">Контекст ИИ-осмотра</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{aiContext.inspection_json?.summary || aiContext.description}</p>
+          {(aiContext.inspection_json?.objectType || aiContext.inspection_json?.location) && (
+            <p className="mt-2 text-xs text-muted-foreground">{[aiContext.inspection_json.objectType, aiContext.inspection_json.location].filter(Boolean).join(" · ")}</p>
+          )}
+          {!!aiContext.inspection_json?.questions?.length && (
+            <p className="mt-2 text-xs text-amber-700">Нужно уточнить: {aiContext.inspection_json.questions.join("; ")}</p>
+          )}
+        </div>
+      )}
+      {id && <AIEstimateChangeDialog estimateId={id} open={aiChangeOpen} onOpenChange={setAiChangeOpen} />}
 
       {/* Main Content */}
       <div className="grid grid-cols-1 gap-4 2xl:gap-6">

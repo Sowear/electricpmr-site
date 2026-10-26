@@ -61,6 +61,8 @@ const buildApiUrl = (path: string) => {
   return `${API_BASE_URL}${path}`;
 };
 
+export const getWorkerApiUrl = buildApiUrl;
+
 const getPublicOrigin = () => {
   if (!isBrowser) return "";
   if (!API_BASE_URL) return window.location.origin;

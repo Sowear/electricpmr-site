@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Plus, Search, FileText, Send, Eye, Trash2, MoreHorizontal, Filter
+  Plus, Search, FileText, Send, Eye, Trash2, MoreHorizontal, Filter, Bot
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -74,10 +74,15 @@ const EstimatesList = () => {
           </p>
         </div>
         {canManageEstimates && (
+          <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => navigate("/estimator/assistant")}>
+            <Bot className="h-4 w-4 mr-2" /> ИИ-помощник
+          </Button>
           <Button onClick={handleCreateNew} disabled={createEstimate.isPending}>
             <Plus className="h-4 w-4 mr-2" />
             Новая смета
           </Button>
+          </div>
         )}
       </div>
 

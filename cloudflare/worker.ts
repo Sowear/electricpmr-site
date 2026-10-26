@@ -1236,6 +1236,20 @@ const signin = async (request: Request, env: Env) => {
     return textError("Invalid login credentials", 401);
   }
 
+  // Keep the configured owner account privileged even when it was created
+  // before SUPER_ADMIN_EMAIL was configured. Roles live in D1, so this applies
+  // consistently across devices and only after the account proves its password.
+  const configuredSuperAdminEmail = env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
+  if (configuredSuperAdminEmail && String(user.email).toLowerCase() === configuredSuperAdminEmail) {
+    await env.DB.prepare(
+      `INSERT INTO user_roles (id, user_id, role, immutable, assigned_at)
+       VALUES (?, ?, 'super_admin', 1, ?)
+       ON CONFLICT(user_id, role) DO UPDATE SET immutable = 1`,
+    )
+      .bind(createId(), String(user.id), nowIso())
+      .run();
+  }
+
   const session = await issueSession(env, {
     id: String(user.id),
     email: String(user.email),

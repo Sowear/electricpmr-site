@@ -14,3 +14,4 @@ bucket_name = "electricpmr-work-examples"
 [vars]
 APP_BASE_URL = "http://127.0.0.1:8787"
 SESSION_TTL_DAYS = "30"
+SUPER_ADMIN_EMAIL = "mmxxnon@gmail.com"

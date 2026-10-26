@@ -59,6 +59,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [requests, setRequests] = useState<Request[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [requestsError, setRequestsError] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [activeTab, setActiveTab] = useState<"requests" | "security">("requests");
 
@@ -99,16 +100,30 @@ const Dashboard = () => {
 
   const fetchRequests = async (userId: string) => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from("requests")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+    setRequestsError(null);
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const requestsQuery = supabase
+        .from("requests")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      const { data, error } = await Promise.race([
+        requestsQuery,
+        new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error("Request timed out")), 20_000);
+        }),
+      ]);
 
-    if (!error && data) {
-      setRequests(data as Request[]);
+      if (error) throw error;
+      setRequests((data || []) as Request[]);
+    } catch (error) {
+      console.error("Failed to load dashboard requests:", error);
+      setRequestsError("Не удалось загрузить заявки. Проверьте подключение и попробуйте ещё раз.");
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -230,6 +245,11 @@ const Dashboard = () => {
           isLoading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : requestsError ? (
+            <div className="text-center py-20 card-industrial">
+              <p className="text-muted-foreground mb-4">{requestsError}</p>
+              <Button onClick={() => user && fetchRequests(user.id)}>Повторить</Button>
             </div>
           ) : requests.length === 0 ? (
             <div className="text-center py-20 card-industrial">

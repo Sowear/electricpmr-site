@@ -130,10 +130,18 @@ const request = async <T>(
     headers.set("Authorization", `Bearer ${session.access_token}`);
   }
 
-  const response = await fetch(buildApiUrl(path), {
-    ...init,
-    headers,
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20_000);
+  let response: Response;
+  try {
+    response = await fetch(buildApiUrl(path), {
+      ...init,
+      headers,
+      signal: init.signal || controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   const contentType = response.headers.get("content-type") || "";
   const isJson = contentType.includes("application/json");
@@ -309,6 +317,19 @@ class QueryBuilder implements PromiseLike<ApiEnvelope<any>> {
     return this;
   }
 
+  private applySupabaseFilters(query: any) {
+    for (const filter of this.filters) {
+      if (filter.op === "or") {
+        query = query.or(filter.expression);
+      } else if (filter.op === "in") {
+        query = query.in(filter.column, filter.value);
+      } else {
+        query = query[filter.op](filter.column, filter.value);
+      }
+    }
+    return query;
+  }
+
   private finalize(rows: unknown, count?: number | null): ApiEnvelope<any> {
     if (!this.wantsSingle) {
       return {
@@ -342,6 +363,27 @@ class QueryBuilder implements PromiseLike<ApiEnvelope<any>> {
   }
 
   private async executeSelect() {
+    if (!USE_CLOUDFLARE_API && supabaseClient) {
+      let query: any = supabaseClient
+        .from(this.table as any)
+        .select(this.selectColumns, {
+          count: this.selectOptions.count as any,
+          head: this.selectOptions.head,
+        });
+      query = this.applySupabaseFilters(query);
+      for (const order of this.orders) {
+        query = query.order(order.column, { ascending: order.ascending });
+      }
+      if (this.limitValue !== null) query = query.limit(this.limitValue);
+      if (this.wantsSingle) {
+        query = this.allowsEmptySingle ? query.maybeSingle() : query.single();
+      }
+      const { data, error, count } = await query;
+      if (error) return { data: null, error, count: count ?? null };
+      if (this.selectOptions.head) return { data: null, error: null, count: count ?? null };
+      return { data: data ?? (this.wantsSingle ? null : []), error: null, count: count ?? null };
+    }
+
     const { data, error, count } = await requestJson<any[]>(
       "/api/db/select",
       "POST",
@@ -365,6 +407,34 @@ class QueryBuilder implements PromiseLike<ApiEnvelope<any>> {
   }
 
   private async executeMutation() {
+    if (!USE_CLOUDFLARE_API && supabaseClient) {
+      let query: any;
+      if (this.action === "insert") {
+        query = supabaseClient.from(this.table as any).insert(this.payload as any);
+      } else if (this.action === "update") {
+        query = supabaseClient.from(this.table as any).update(this.payload as any);
+      } else if (this.action === "delete") {
+        query = supabaseClient.from(this.table as any).delete();
+      } else {
+        query = supabaseClient.from(this.table as any).upsert(this.payload as any, {
+          onConflict: this.conflictColumns.join(","),
+        });
+      }
+      query = this.applySupabaseFilters(query);
+      if (this.returningColumns) query = query.select(this.returningColumns);
+      if (this.wantsSingle) {
+        query = this.allowsEmptySingle ? query.maybeSingle() : query.single();
+      }
+      const { data, error } = await query;
+      if (error) return { data: null, error, count: null };
+      if (!this.returningColumns) return { data: null, error: null, count: null };
+      return {
+        data: this.wantsSingle ? data : (data ?? []),
+        error: null,
+        count: null,
+      };
+    }
+
     const endpointMap = {
       insert: "/api/db/insert",
       update: "/api/db/update",
